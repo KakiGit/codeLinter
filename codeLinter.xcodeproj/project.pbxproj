@@ -11,6 +11,7 @@
 		08C57943204B539400302080 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 08C57942204B539400302080 /* Assets.xcassets */; };
 		08C57946204B539400302080 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 08C57944204B539400302080 /* MainMenu.xib */; };
 		08C57949204B539400302080 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 08C57948204B539400302080 /* main.m */; };
+		08C57952204B554900302080 /* AppController.m in Sources */ = {isa = PBXBuildFile; fileRef = 08C57951204B554900302080 /* AppController.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -22,6 +23,8 @@
 		08C57947204B539400302080 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		08C57948204B539400302080 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		08C5794A204B539400302080 /* codeLinter.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = codeLinter.entitlements; sourceTree = "<group>"; };
+		08C57950204B554900302080 /* AppController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppController.h; sourceTree = "<group>"; };
+		08C57951204B554900302080 /* AppController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppController.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -56,6 +59,8 @@
 			children = (
 				08C5793F204B539400302080 /* AppDelegate.h */,
 				08C57940204B539400302080 /* AppDelegate.m */,
+				08C57950204B554900302080 /* AppController.h */,
+				08C57951204B554900302080 /* AppController.m */,
 				08C57942204B539400302080 /* Assets.xcassets */,
 				08C57944204B539400302080 /* MainMenu.xib */,
 				08C57947204B539400302080 /* Info.plist */,
@@ -136,6 +141,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				08C57949204B539400302080 /* main.m in Sources */,
+				08C57952204B554900302080 /* AppController.m in Sources */,
 				08C57941204B539400302080 /* AppDelegate.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
