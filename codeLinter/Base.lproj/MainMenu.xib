@@ -14,10 +14,8 @@
         <customObject id="-3" userLabel="Application"/>
         <customObject id="Jfa-Qh-Zd8" customClass="AppController">
             <connections>
-                <outlet property="fromFolderButton" destination="EiT-Mj-1SZ" id="k9i-OL-axy"/>
                 <outlet property="fromFolderText" destination="jmS-sC-rAF" id="1Dl-kr-qUn"/>
                 <outlet property="toFolderText" destination="SrT-Ou-4dQ" id="4vh-j2-D4i"/>
-                <outlet property="toTextFolder" destination="SrT-Ou-4dQ" id="WI2-q9-Jqe"/>
             </connections>
         </customObject>
         <customObject id="Voe-Tx-rLC" customClass="AppDelegate">
@@ -686,10 +684,10 @@
                     </menu>
                 </menuItem>
             </items>
-            <point key="canvasLocation" x="191" y="395"/>
+            <point key="canvasLocation" x="108" y="433"/>
         </menu>
-        <window title="codeLinter" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" releasedWhenClosed="NO" animationBehavior="default" id="QvC-M9-y7g">
-            <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES" resizable="YES"/>
+        <window title="codeLinter" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" animationBehavior="default" id="QvC-M9-y7g">
+            <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES"/>
             <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
             <rect key="contentRect" x="335" y="390" width="480" height="360"/>
             <rect key="screenRect" x="0.0" y="0.0" width="1440" height="878"/>
@@ -740,7 +738,7 @@
                     <textField verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="jmS-sC-rAF">
                         <rect key="frame" x="81" y="262" width="219" height="22"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                        <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" state="on" borderStyle="bezel" title="fromFolderText" drawsBackground="YES" id="ZjW-Dv-lQf">
+                        <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" state="on" borderStyle="bezel" drawsBackground="YES" id="ZjW-Dv-lQf">
                             <font key="font" metaFont="system"/>
                             <color key="textColor" name="controlShadowColor" catalog="System" colorSpace="catalog"/>
                             <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
@@ -749,7 +747,7 @@
                     <textField verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="SrT-Ou-4dQ">
                         <rect key="frame" x="81" y="189" width="219" height="22"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                        <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" state="on" borderStyle="bezel" title="toFolderText" drawsBackground="YES" id="i87-RK-4o6">
+                        <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" state="on" borderStyle="bezel" drawsBackground="YES" id="i87-RK-4o6">
                             <font key="font" metaFont="system"/>
                             <color key="textColor" name="controlShadowColor" catalog="System" colorSpace="catalog"/>
                             <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
@@ -768,7 +766,7 @@
                     </button>
                 </subviews>
             </view>
-            <point key="canvasLocation" x="107" y="189"/>
+            <point key="canvasLocation" x="36" y="-474"/>
         </window>
     </objects>
 </document>
