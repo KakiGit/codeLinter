@@ -92,19 +92,23 @@ const createWindow = () => {
 
   Menu.setApplicationMenu(menu) // 注意：这个代码要放到菜单添加完成之后，否则会造成新增菜单的快捷键无效
 
-  mainWindow.on('close', (e) => {
-    if (!safeExit) {
-      e.preventDefault()
-      mainWindow.webContents.send('action', 'exiting')
-    }
-  })
+  // mainWindow.on('close', (e) => {
+  //   if (!safeExit) {
+  //     e.preventDefault()
+  //     mainWindow.webContents.send('action', 'exiting')
+  //   }
+  // })
   // -----------------------------------------------------------------
-
+  mainWindow.onbeforeunload = (e) => {
+    mainWindow.webContents.send('action', 'exiting')
+    if (safeExit) return true
+    else return false
+  }
   // Emitted when the window is closed.
   mainWindow.on('closed', () => {
-    // Dereference the window object, usually you would store windows
-    // in an array if your app supports multi windows, this is the time
-    // when you should delete the corresponding element.
+  // Dereference the window object, usually you would store windows
+  // in an array if your app supports multi windows, this is the time
+  // when you should delete the corresponding element.
     mainWindow = null
   })
 }
