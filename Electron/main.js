@@ -82,6 +82,13 @@ const createWindow = () => {
           accelerator: 'CmdOrCtrl+s'
         },
         {
+          label: 'Close',
+          click () {
+            mainWindow.webContents.send('action', 'exiting') // 点击后向主页渲染进程发送“打开文件”的命令
+          },
+          accelerator: 'CmdOrCtrl+w'
+        },
+        {
           type: 'separator'
         },
         {
@@ -97,19 +104,23 @@ const createWindow = () => {
 
   Menu.setApplicationMenu(menu) // 注意：这个代码要放到菜单添加完成之后，否则会造成新增菜单的快捷键无效
 
-  mainWindow.on('close', (e) => {
-    if (!safeExit) {
-      e.preventDefault()
-      mainWindow.webContents.send('action', 'exiting')
-    }
-  })
+  // mainWindow.on('close', (e) => {
+  //   if (!safeExit) {
+  //     e.preventDefault()
+  //     mainWindow.webContents.send('action', 'exiting')
+  //   }
+  // })
   // -----------------------------------------------------------------
-
+  mainWindow.onbeforeunload = (e) => {
+    mainWindow.webContents.send('action', 'exiting')
+    if (safeExit) return true
+    else return false
+  }
   // Emitted when the window is closed.
   mainWindow.on('closed', () => {
-    // Dereference the window object, usually you would store windows
-    // in an array if your app supports multi windows, this is the time
-    // when you should delete the corresponding element.
+  // Dereference the window object, usually you would store windows
+  // in an array if your app supports multi windows, this is the time
+  // when you should delete the corresponding element.
     mainWindow = null
   })
 }
@@ -147,8 +158,8 @@ ipcMain.on('reqaction', (event, arg) => {
       // 做点其它操作：比如记录窗口大小、位置等，下次启动时自动使用这些设置；不过因为这里（主进程）无法访问localStorage，这些数据需要使用其它的方式来保存和加载，这里就不作演示了。这里推荐一个相关的工具类库，可以使用它在主进程中保存加载配置数据：https://github.com/sindresorhus/electron-store
       // ...
       safeExit = true
-      // mainWindow = null
-      app.quit()// 退出程序
+      mainWindow = null
+      // app.quit()// 退出程序
       break
   }
 })
