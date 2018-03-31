@@ -1,0 +1,2 @@
+The $arg variable is 
+/Users/lijiaqi/GitHub/learnCocoa/codeLinter/Electron/main.js

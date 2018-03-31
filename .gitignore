@@ -1,0 +1,114 @@
+.DS_Store
+.env
+.gclient_done
+**/.npmrc
+.tags*
+.vs/
+.vscode/
+*.log
+*.pyc
+*.sln
+*.swp
+*.VC.db
+*.VC.VC.opendb
+*.vcxproj
+*.vcxproj.filters
+*.vcxproj.user
+*.xcodeproj
+/.idea/
+/brightray/brightray.opensdf
+/brightray/brightray.sdf
+/brightray/brightray.sln
+/brightray/brightray.suo
+/brightray/brightray.v12.suo
+/brightray/brightray.vcxproj*
+/brightray/brightray.xcodeproj/
+/build/
+/dist/
+/external_binaries/
+/out/
+/vendor/.gclient
+/vendor/debian_jessie_mips64-sysroot/
+/vendor/debian_stretch_amd64-sysroot/
+/vendor/debian_stretch_arm-sysroot/
+/vendor/debian_stretch_arm64-sysroot/
+/vendor/debian_stretch_i386-sysroot/
+/vendor/gcc-4.8.3-d197-n64-loongson/
+/vendor/readme-gcc483-loongson.txt
+/vendor/download/
+/vendor/llvm-build/
+/vendor/llvm/
+/vendor/npm/
+/vendor/python_26/
+node_modules/
+SHASUMS256.txt
+**/package-lock.json
+**/yarn.lock
+
+# npm package
+/npm/dist
+/npm/path.txt
+
+# Xcode
+#
+# gitignore contributors: remember to update Global/Xcode.gitignore, Objective-C.gitignore & Swift.gitignore
+
+## Build generated
+build/
+DerivedData/
+
+## Various settings
+*.pbxuser
+!default.pbxuser
+*.mode1v3
+!default.mode1v3
+*.mode2v3
+!default.mode2v3
+*.perspectivev3
+!default.perspectivev3
+xcuserdata/
+
+## Other
+*.moved-aside
+*.xccheckout
+*.xcscmblueprint
+
+## Obj-C/Swift specific
+*.hmap
+*.ipa
+*.dSYM.zip
+*.dSYM
+
+# CocoaPods
+#
+# We recommend against adding the Pods directory to your .gitignore. However
+# you should judge for yourself, the pros and cons are mentioned at:
+# https://guides.cocoapods.org/using/using-cocoapods.html#should-i-check-the-pods-directory-into-source-control
+#
+# Pods/
+
+# Carthage
+#
+# Add this line if you want to avoid checking in source code from Carthage dependencies.
+# Carthage/Checkouts
+
+Carthage/Build
+
+# fastlane
+#
+# It is recommended to not store the screenshots in the git repo. Instead, use fastlane to re-generate the
+# screenshots whenever they are needed.
+# For more information about the recommended setup visit:
+# https://docs.fastlane.tools/best-practices/source-control/#source-control
+
+fastlane/report.xml
+fastlane/Preview.html
+fastlane/screenshots
+fastlane/test_output
+
+# Code Injection
+#
+# After new code Injection tools there's a generated folder /iOSInjectionProject
+# https://github.com/johnno1962/injectionforxcode
+
+iOSInjectionProject/
