@@ -97,12 +97,12 @@ const createWindow = () => {
 
   Menu.setApplicationMenu(menu) // 注意：这个代码要放到菜单添加完成之后，否则会造成新增菜单的快捷键无效
 
-  // mainWindow.on('close', (e) => {
-  //   if (!safeExit) {
-  //     e.preventDefault()
-  //     mainWindow.webContents.send('action', 'exiting')
-  //   }
-  // })
+  mainWindow.on('close', (e) => {
+    if (!safeExit) {
+      e.preventDefault()
+      mainWindow.webContents.send('action', 'exiting')
+    }
+  })
   // -----------------------------------------------------------------
 
   // Emitted when the window is closed.
@@ -141,17 +141,17 @@ app.on('activate', () => {
 
 // -----------------------------------------------------------------
 // 监听与渲染进程的通信
-// ipcMain.on('reqaction', (event, arg) => {
-//   switch (arg) {
-//     case 'exit':
-//       // 做点其它操作：比如记录窗口大小、位置等，下次启动时自动使用这些设置；不过因为这里（主进程）无法访问localStorage，这些数据需要使用其它的方式来保存和加载，这里就不作演示了。这里推荐一个相关的工具类库，可以使用它在主进程中保存加载配置数据：https://github.com/sindresorhus/electron-store
-//       // ...
-//       safeExit = true
-//       mainWindow = null
-//       // app.quit()// 退出程序
-//       break
-//   }
-// })
+ipcMain.on('reqaction', (event, arg) => {
+  switch (arg) {
+    case 'exit':
+      // 做点其它操作：比如记录窗口大小、位置等，下次启动时自动使用这些设置；不过因为这里（主进程）无法访问localStorage，这些数据需要使用其它的方式来保存和加载，这里就不作演示了。这里推荐一个相关的工具类库，可以使用它在主进程中保存加载配置数据：https://github.com/sindresorhus/electron-store
+      // ...
+      safeExit = true
+      // mainWindow = null
+      app.quit()// 退出程序
+      break
+  }
+})
 ipcMain.on('open-file', (event, arg) => {
   console.log(arg)
   exec(`/usr/local/bin/ctags ${arg}`, (error, stdout, stderr) => {

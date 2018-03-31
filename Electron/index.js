@@ -64,6 +64,7 @@ ipcRenderer.on('action', (event, arg) => {
       break
     case 'exiting':
       askSaveIfNeed()
+      askDeleteIfNeed()
       ipcRenderer.sendSync('reqaction', 'exit')
       break
     // case 'tagsGen':
@@ -99,6 +100,18 @@ function saveCurrentDoc () {
     saveText(txtSave, currentFile)
     isSaved = true
     document.title = 'Notepad - ' + currentFile
+  }
+}
+
+function askDeleteIfNeed () {
+  const fs = require('fs')
+  if (fs.statSync(currentTagFile).isFile()) {
+    const response = dialog.showMessageBox(remote.getCurrentWindow(), {
+      message: 'Do you want to delete the tag file?',
+      type: 'question',
+      buttons: ['Yes', 'No']
+    })
+    if (response === 0) fs.unlinkSync(currentTagFile)
   }
 }
 
