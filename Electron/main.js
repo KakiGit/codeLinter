@@ -15,7 +15,7 @@ const createWindow = () => {
   mainWindow.loadURL(`file://${__dirname}/index.html`)
 
   // Open the DevTools.
-  // mainWindow.webContents.openDevTools()
+  mainWindow.webContents.openDevTools()
 
   let menuTemplate = new Menu()
   menuTemplate = [
@@ -25,18 +25,6 @@ const createWindow = () => {
         {
           role: 'about'
         },
-        // {
-        //   type: 'separator'
-        // },
-        // {
-        //   role: 'recentDocuments'
-        // },
-        // {
-        //   role: 'clearRecentDocuments',
-        //   click () {
-        //     app.clearRecentDocuments()
-        //   }
-        // },
         {
           type: 'separator'
         },
@@ -80,6 +68,13 @@ const createWindow = () => {
             mainWindow.webContents.send('action', 'save') // 点击后向主页渲染进程发送“打开文件”的命令
           },
           accelerator: 'CmdOrCtrl+s'
+        },
+        {
+          label: 'Close',
+          click () {
+            mainWindow.webContents.send('action', 'exiting')
+          },
+          accelerator: 'CmdOrCtrl+w'
         },
         {
           type: 'separator'
@@ -147,8 +142,9 @@ ipcMain.on('reqaction', (event, arg) => {
       // 做点其它操作：比如记录窗口大小、位置等，下次启动时自动使用这些设置；不过因为这里（主进程）无法访问localStorage，这些数据需要使用其它的方式来保存和加载，这里就不作演示了。这里推荐一个相关的工具类库，可以使用它在主进程中保存加载配置数据：https://github.com/sindresorhus/electron-store
       // ...
       safeExit = true
-      // mainWindow = null
-      app.quit()// 退出程序
+      mainWindow.close()
+      mainWindow = null
+      // app.quit()// 退出程序
       break
   }
 })

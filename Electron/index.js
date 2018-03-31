@@ -105,13 +105,15 @@ function saveCurrentDoc () {
 
 function askDeleteIfNeed () {
   const fs = require('fs')
-  if (fs.statSync(currentTagFile).isFile()) {
-    const response = dialog.showMessageBox(remote.getCurrentWindow(), {
-      message: 'Do you want to delete the tag file?',
-      type: 'question',
-      buttons: ['Yes', 'No']
-    })
-    if (response === 0) fs.unlinkSync(currentTagFile)
+  if (currentTagFile != null) {
+    if (fs.statSync(currentTagFile).isFile()) {
+      const response = dialog.showMessageBox(remote.getCurrentWindow(), {
+        message: 'Do you want to delete the tag file?',
+        type: 'question',
+        buttons: ['Yes', 'No']
+      })
+      if (response === 0) fs.unlinkSync(currentTagFile)
+    }
   }
 }
 
