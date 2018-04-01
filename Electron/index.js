@@ -72,6 +72,11 @@ ipcRenderer.on('action', (event, arg) => {
   }
 })
 
+// ipcRenderer.on('open-file-dialog-sheet', function (event) {
+//   const window = remote.fromWebContents(event.sender)
+//   const files = dialog.showOpenDialog(window, { properties: ['openFile'] })
+// })
+
 // 读取文本文件
 function readText (file) {
   const fs = require('fs')
@@ -145,7 +150,24 @@ document.getElementById('open').addEventListener('click', function () {
 })
 
 document.getElementById('show').addEventListener('click', function () {
-  const txtRead = readText(currentTagFile)
-  txtEditor1.value = txtRead
+  if (currentTagFile != null) {
+    const txtRead = readText(currentTagFile)
+    txtEditor1.value = txtRead
+  } else {
+    const notification = {
+      title: 'Oops!',
+      body: 'Please select a file'
+    }
+    const myNotification = new window.Notification(notification.title, notification)
+    myNotification.onclick = () => {
+      console.log('Notification clicked')
+    }
+  }
+}
+)
+
+document.getElementById('close').addEventListener('click', function () {
+  askDeleteIfNeed()
+  ipcRenderer.sendSync('reqaction', 'exit')
 }
 )
