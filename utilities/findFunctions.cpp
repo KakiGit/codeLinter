@@ -26,6 +26,15 @@ class AFile
         AFile relied(name);
         reliedFiles.push_back(relied);
     }
+    bool isAdded(string str)
+    {
+        for(vector<AFile>::iterator v = reliedFiles.begin();v!=reliedFiles.end();v++)
+        {
+            if(v->myName==str)
+            return true;
+        }
+        return false;
+    }
     void addMyFunc(string funcName)
     {
         myFunctions.insert(funcName);
@@ -77,22 +86,23 @@ void findReliedFiles(string str, AFile &afile)
     smatch sm;
     if (regex_search(str, sm, fileExp))
         if (!regex_match(str, regNote))
+        if(!afile.isAdded(sm[2]))
             afile.addReliedFiles(sm[2]);
 }
 
 
 void findFuncs(string str, AFile &afile)
 {
-    regex regNote("\\s*(\\/|\\*).*"), regFunc("[a-z]+\\w*(?=\\s*\\()");
+    regex regNote("\\s*(\\/|\\*).*"), regFunc("(\\s+|\\.)([a-z]+\\w*(?=\\s*\\(.*\\)\\s*\\{))");
     set<string> notIncluded {"if","for","while","printf","putchar","abs","fclose","fopen","fscanf"};
     smatch sm;
     if (regex_search(str, sm, regFunc))
         if (!regex_match(str, regNote))
-            if (!notIncluded.count(sm[0]))
+            if (!notIncluded.count(sm[2]))
             {
                 // cout << str << endl;
-                // cout << sm[0] << endl;
-                afile.addMyFunc(sm[0]);
+                // cout << sm[2] << endl;
+                afile.addMyFunc(sm[2]);
             }
 }
 
@@ -115,8 +125,35 @@ void findReliances(string filePath) {
         while (getline(infile, str))
         {
             ++count;
+            string twoLines;
+            twoLines = str;
             findReliedFiles(str, afile);
-            findFuncs(str, afile);
+            if(getline(infile, str))
+            {
+                ++count;
+                findReliedFiles(str, afile);
+                twoLines = twoLines + "\n" + str;
+            }
+            else break;
+            findFuncs(twoLines, afile);
+        }
+        infile.close();
+        infile.open(filePath);
+        getline(infile, str);
+        while (getline(infile, str))
+        {
+            // ++count;
+            string twoLines;
+            twoLines = str;
+            findReliedFiles(str, afile);
+            if(getline(infile, str))
+            {
+                // ++count;
+                findReliedFiles(str, afile);
+                twoLines = twoLines + "\n" + str;
+            }
+            else break;
+            findFuncs(twoLines, afile);
         }
     infile.close();
     // outfile.close();
