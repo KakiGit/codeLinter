@@ -1,6 +1,6 @@
 const { ipcRenderer, remote } = require('electron')
 const { Menu, MenuItem, dialog } = remote
-const ctags = require('ctags')
+// const ctags = require('ctags')
 let currentFile = null // 当前文档保存的路径
 let currentTagFile = null
 // let isSaved = true // 当前文档是否已保存
@@ -80,8 +80,8 @@ ipcRenderer.on('action', (event, arg) => {
 // 读取文本文件
 function readText (file) {
   const fs = require('fs')
-  const path = require('path')
-  currentTagFile = path.join(file, '..', 'tags')
+  // const path = require('path')
+  // currentTagFile = path.join(file, '..', 'tags')
   return fs.readFileSync(file, 'utf8')
 }
 // // 保存文本内容到文件
@@ -113,7 +113,7 @@ function askDeleteIfNeed () {
   if (currentTagFile != null) {
     if (fs.statSync(currentTagFile).isFile()) {
       const response = dialog.showMessageBox(remote.getCurrentWindow(), {
-        message: 'Do you want to delete the tag file?',
+        message: 'Do you want to delete the result file?',
         type: 'question',
         buttons: ['Yes', 'No']
       })
@@ -146,6 +146,8 @@ document.getElementById('open').addEventListener('click', function () {
     txtEditor.value = txtRead
     document.title = 'Notepad - ' + currentFile
     ipcRenderer.send('open-file', currentFile)
+    const path = require('path')
+    currentTagFile = path.join(currentFile, '..', 'result')
   }
 })
 

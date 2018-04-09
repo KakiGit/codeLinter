@@ -4,6 +4,7 @@
 #include <fstream>
 #include <vector>
 #include <set>
+#include <dirent.h>
 
 using namespace std;
 
@@ -15,6 +16,7 @@ class AFile
     set<string> myFunctions;
 
   public:
+    friend void findReliances(string filePath);
     AFile(string name)
     {
         myName = name;
@@ -35,7 +37,7 @@ class AFile
         {
             cout << v->myName <<endl;
         }
-        cout << endl << endl;
+        cout << endl ;
     }
     void displayMyFunctions()
     {
@@ -44,17 +46,29 @@ class AFile
         {
             cout << *v << endl;
         }
-        cout << endl << endl;
+        cout << endl;
     }
 };
 
-void SplitPath(const string &str)
+void splitPath(const string &str, string &dir, string &ownname)
 {
     size_t found;
-    cout << "Splitting: " << str << endl;
+    // cout << "Splitting: " << str << endl;
     found = str.find_last_of("/\\");
-    cout << " folder: " << str.substr(0, found) << endl;
-    cout << " file: " << str.substr(found + 1) << endl;
+    dir = str.substr(0, found);
+    ownname = str.substr(found + 1);
+    // cout << " folder: " << str.substr(0, found) << endl;
+    // cout << " file: " << str.substr(found + 1) << endl;
+}
+
+void read_directory(const string &name, vector<string> &v)
+{
+    DIR* dirp = opendir(name.c_str());
+    struct dirent * dp;
+    while ((dp = readdir(dirp)) != NULL) {
+        v.push_back(dp->d_name);
+    }
+    closedir(dirp);
 }
 
 void findReliedFiles(string str, AFile &afile)
@@ -75,17 +89,28 @@ void findFuncs(string str, AFile &afile)
     if (regex_search(str, sm, regFunc))
         if (!regex_match(str, regNote))
             if (!notIncluded.count(sm[0]))
+            {
+                // cout << str << endl;
+                // cout << sm[0] << endl;
                 afile.addMyFunc(sm[0]);
+            }
 }
 
-void findReliances(string filePath, AFile &afile) {
+void findReliances(string filePath) {
+    
     ifstream infile;
+    infile.open(filePath);
+    if(infile)
+    {
+    cout << "Analysing: " << filePath << endl << endl;    
     // ofstream outfile, subfiles;
     string str;
+    AFile afile(filePath);
+    string dir,ownname;
     // outfile.open("./test.c");
     // subfiles.open("./testSubfiles.c");
     int count = 0;
-    infile.open(filePath);
+    
     if (infile)
         while (getline(infile, str))
         {
@@ -98,19 +123,36 @@ void findReliances(string filePath, AFile &afile) {
     // subfiles.close();
     afile.displayReliedFiles();
     afile.displayMyFunctions();
-    cout << "There are " << count << " lines." << endl;
+    splitPath(filePath, dir, ownname);
+    cout << "There are " << count << " lines in " << filePath << endl << endl;
+    
+    for(vector<AFile>::iterator it = afile.reliedFiles.begin(); it!= afile.reliedFiles.end();it++)
+    {
+        string path;
+        path = dir + "/" + it->myName;
+        // cout << "Next path: " << path << endl;
+        findReliances(path);
+    }
+    }
 }
+
 
 int main(int argc, char *argv[]) 
 {
     if(argc>=2)
     {
-        AFile afile(argv[1]);
-        findReliances(argv[1],afile);
+        vector<string> files;
+        string dir;
+        findReliances(argv[1]);
+        // read_directory(dir,files);
+        // for(int i=0;i<files.size();i++)
+        // {
+        //     cout  << " Path: " << files[i] <<endl;
+        // }
     }
-    cout << "Argument number: " << argc << endl;
-    for(int i=0;i<argc;i++)
-    cout <<  "Arguments: " << argv[i] << endl;
+    // cout << "Argument number: " << argc << endl;
+    // for(int i=0;i<argc;i++)
+    // cout <<  "Arguments: " << argv[i] << endl;
     return 0;
 }
 

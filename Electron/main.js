@@ -156,8 +156,8 @@ ipcMain.on('reqaction', (event, arg) => {
 ipcMain.on('open-file', (event, arg) => {
   console.log(arg)
   const path = require('path')
-  let str = path.join(arg, '..', 'tags')
-  exec(`/usr/local/bin/ctags -x ${arg} >> ${str}`, (error, stdout, stderr) => {
+  let str = path.join(arg, '..', 'result')
+  exec(`./findFunctions ${arg} > ${str}`, (error, stdout, stderr) => {
     if (error) {
       console.error(`exec error: ${error}`)
     }
