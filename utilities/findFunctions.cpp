@@ -96,12 +96,9 @@ void findReliances(string filePath) {
     if(infile)
     {
     cout << "Analysing: " << filePath << endl << endl;    
-    // ofstream outfile, subfiles;
     string str;
     AFile afile(filePath);
     string dir,ownname;
-    // outfile.open("./test.c");
-    // subfiles.open("./testSubfiles.c");
     int count = 0;
     
         while (getline(infile, str))
@@ -153,8 +150,9 @@ void findReliances(string filePath) {
             }
         }
     infile.close();
-    // outfile.close();
-    // subfiles.close();
+
+    
+
     afile.displayReliedFiles();
     afile.displayMyFunctions();
     splitPath(filePath, dir, ownname);

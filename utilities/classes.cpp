@@ -83,8 +83,8 @@ class AFile
         for (map<int,string>::iterator v = myFunctions.begin(); v != myFunctions.end(); v++)
         {
             cout << (*v).second << " in line " << (*v).first << endl;
-            // cout << "Used Functions: " << endl;
-            // displayUsedFuncs(*v);
+            cout << "Used Functions: " << endl << "例子1" << endl << "例子2" << endl << "例子3" << endl;
+            displayUsedFuncs((*v).second);
         }
         cout << endl;
     }
