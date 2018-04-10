@@ -1,4 +1,9 @@
 #include "classes.cpp"
+/**
+ * 
+ * splitPath to get directory name and file name
+ * 
+ */
 
 void splitPath(const string &str, string &dir, string &ownname)
 {
@@ -10,7 +15,12 @@ void splitPath(const string &str, string &dir, string &ownname)
     // cout << " folder: " << str.substr(0, found) << endl;
     // cout << " file: " << str.substr(found + 1) << endl;
 }
-
+/**
+ * 
+ * 
+ * read all files in a directory
+ * 
+ */
 void read_directory(const string &name, vector<string> &v)
 {
     DIR* dirp = opendir(name.c_str());
@@ -20,7 +30,11 @@ void read_directory(const string &name, vector<string> &v)
     }
     closedir(dirp);
 }
-
+/**
+ * 
+ * find relied files in a file.
+ * 
+ */
 void findReliedFiles(string str, AFile &afile)
 {
     regex regNote("\\s*(\\/|\\*).*"), fileExp("#include\\s*(<|\"|')(.*)(>|\"|')\\s*");
@@ -32,7 +46,11 @@ void findReliedFiles(string str, AFile &afile)
                 afile.addReliedFiles(sm[2]);
             }
 }
-
+/**
+ * 
+ * find functions defined in a files
+ * 
+ */
 
 bool findFuncs(string str, AFile &afile, int count)
 {
@@ -50,7 +68,11 @@ bool findFuncs(string str, AFile &afile, int count)
             }
     return false;
 }
-
+/**
+ * 
+ * find functions used by a function
+ * 
+ */
 bool findUsedFuncs(string str, AFunc &aFunc)
 {
     regex regNote("\\s*(\\/|\\*).*"), regFunc("(\\s+|\\.)([a-z]+\\w*(?=\\s*\\(.*\\)))");
@@ -67,7 +89,11 @@ bool findUsedFuncs(string str, AFunc &aFunc)
             }
     return false;
 }
-
+/**
+ * 
+ * find the code lump in the definition of a function
+ * 
+ */
 // void findFuncDef(string str)
 // {
 //      while (getline(infile, str))
@@ -88,7 +114,11 @@ bool findUsedFuncs(string str, AFunc &aFunc)
 //         infile.close();
 // }
 
-
+/**
+ * 
+ * find all reliances of a file
+ * 
+ */
 void findReliances(string filePath) {
     
     ifstream infile;
@@ -151,7 +181,7 @@ void findReliances(string filePath) {
         }
     infile.close();
 
-    
+
 
     afile.displayReliedFiles();
     afile.displayMyFunctions();
@@ -173,7 +203,7 @@ int main(int argc, char *argv[])
 {
     if(argc>=2)
     {
-        vector<string> files;
+        // vector<string> files;
         string dir;
         findReliances(argv[1]);
         // read_directory(dir,files);
