@@ -191,11 +191,8 @@ class TreeNode {
         this.children[i].Print()
       }
     }
-    // Method
-    // calcArea() {
-    //     return this.height * this.width;
-    // }
 }
+
 let rootNode = new TreeNode(null, "root", "root")
 
 /*
@@ -226,7 +223,15 @@ function resolveFile(texts, node) {
   res = str0.split("\n")
   for (var i = 0; i < res.length; i++) {
       if (res[i].length > 0) {
-          node.Add(new TreeNode(node, res[i], "file"))
+          var tempNode = new TreeNode(node, res[i], "file")
+          node.Add(tempNode)
+          // todo emmm this is silly
+          if (res[i][res[i].length-1] === 'c' && res[i][res[i].length-2] === '.') {
+              // todo: get file path
+              //var texts2 = getFileContent("../utilities/" + res[i])
+              //resolveFile(texts2, tempNode)
+              getFileContent("../utilities/" + res[i])
+          }
       }
   }
 
@@ -263,6 +268,13 @@ function DrawTree(node, posy, posx) {
       context.lineTo(y, x);
       context.stroke()
   }
+}
+function getFileContent(filepath) {
+    ipcRenderer.send('open-file', filepath)
+    const path = require('path')
+    var tagFile = path.join(filepath, '..', 'result')
+    const txtRead = readText(tagFile)
+    console.log(txtRead)
 }
 document.getElementById('open').addEventListener('click', function () {
   const files = remote.dialog.showOpenDialog(remote.getCurrentWindow(), {
