@@ -98,7 +98,7 @@
 
     NSTask *task = [[NSTask alloc] init];
     task.launchPath = @"/usr/local/bin/node";
-    task.arguments = @[@"/usr/local/lib/node_modules/standard/bin/cmd.js", augument, @"--fix"];
+    task.arguments = @[@"/usr/local/lib/node_modules/standard/bin/cmd.js", augument];
     task.standardOutput = pipe;
 
     [task launch];
@@ -110,4 +110,15 @@
     NSLog (@"grep returned:\n%@", grepOutput);
     
 }
+
+
+- (void) copyFile {
+    
+}
+
+- (void) cmdAction {
+    
+}
+
+
 @end
