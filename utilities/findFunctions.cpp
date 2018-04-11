@@ -115,7 +115,7 @@ void findFuncDefStr(string path, AFile aFile, string &code) {
   while (getline(infile, str)) {
     count++;
     if (findFuncDefBegin(count, str, aFile)) {
-      int symCount;
+      int symCount = 0;
       char c;
       if (regex_search(str, sm, e))
         symCount++;
@@ -123,17 +123,28 @@ void findFuncDefStr(string path, AFile aFile, string &code) {
         while (symCount == 0) {
           infile.get(c);
           if (c == '\n') count++;
-          if (c == '{') symCount++;
+          if (c == '{') {
+            symCount++;
+            // cout << symCount << endl;
+          }
         }
       }
       while (symCount != 0) {
         infile.get(c);
-        if (c == '{') symCount++;
-        if (c == '}') symCount--;
+        if (c == '{') {
+          symCount++;
+          // cout << symCount << endl;
+        }
+        if (c == '}') {
+          symCount--;
+          // cout << symCount << endl;
+        }
         if (c == '\n') count++;
         code = code + c;
       }
+      cout << str << endl;
       cout << code << endl;
+      code.clear();
     }
   }
   infile.close();
@@ -198,8 +209,8 @@ void findReliances(string filePath) {
     aFile.displayReliedFiles();
     aFile.displayMyFunctions();
 
-    // string code;
-    // findFuncDefStr(filePath, aFile, code);
+    string code;
+    findFuncDefStr(filePath, aFile, code);
 
     splitPath(filePath, dir, ownname);
     cout << "There are " << count << " lines in " << filePath << endl << endl;

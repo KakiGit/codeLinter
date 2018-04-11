@@ -14,5 +14,6 @@ int main() {
   bool a;
   a = c == '{';
   cout << a << endl;
+  cout << c << endl;
   return 0;
 }

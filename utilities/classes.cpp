@@ -118,11 +118,11 @@ class AFile {
     for (map<int, string>::iterator v = myFunctions.begin();
          v != myFunctions.end(); v++) {
       cout << (*v).second << " in line " << (*v).first << endl;
-      cout << "Used Functions: " << endl
-           << "例子1 defined in file 1" << endl
-           << "例子2 defined in file 2" << endl
-           << "例子3 defined in file 3" << endl;
-      displayUsedFuncs((*v).second);
+      // cout << "Used Functions: " << endl
+      //      << "例子1 defined in file 1" << endl
+      //      << "例子2 defined in file 2" << endl
+      //      << "例子3 defined in file 3" << endl;
+      // displayUsedFuncs((*v).second);
     }
     cout << endl;
   }
