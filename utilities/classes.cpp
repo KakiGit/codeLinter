@@ -28,7 +28,17 @@ class AFunc {
   /**
    * returns the name of the function
    */
-  string getMyName() { return myName; }
+  string getMyName() {
+    regex regFunc("(\\s+|\\.)([a-z]+\\w*(?=\\s*\\(.*\\)))");
+    smatch sm;
+    regex_search(myName, sm, regFunc);
+    // cout << "getMyName: " << sm[2] << endl;
+    return sm[2];
+  }
+  /**
+   * returns the real name of the function
+   */
+  string getMyRealName() { return myName; }
   /**
    * add functions used by this function
    */
@@ -101,9 +111,12 @@ class AFile {
    * whether the definition of a function has been added
    */
   bool funcIsAdded(int count, string str) {
+    regex regFunc("(\\s+|\\.)([a-z]+\\w*(?=\\s*\\(.*\\)))");
+    smatch sm;
     map<int, string>::iterator v = myFunctions.find(count);
     if (v != myFunctions.end()) {
-      if (myFunctions[count] == str) return true;
+      regex_search(myFunctions.at(count), sm, regFunc);
+      if (sm[2] == str) return true;
     }
     return false;
   }
@@ -112,7 +125,9 @@ class AFile {
         find_if(myFunc.begin(), myFunc.end(),
                 [&](AFunc &aFunc) { return aFunc.getMyName() == funcName; });
     if (it != myFunc.end()) {
-      // cout << "iterator found and funcName: " << usedFunc << endl;
+      // cout << "iterator found" << endl
+      //      << " funcName: " << funcName << endl
+      //      << "usedFunc:" << usedFunc << endl;
       it->addUsedFunc(usedFunc);
     }
   }
@@ -150,7 +165,7 @@ class AFile {
    */
   void displayUsedFuncs(string str) {
     for (vector<AFunc>::iterator v = myFunc.begin(); v != myFunc.end(); v++) {
-      if (v->getMyName() == str) v->showUsedFunc();
+      if (v->getMyRealName() == str) v->showUsedFunc();
     }
   }
   /**
@@ -161,6 +176,12 @@ class AFile {
          v != myFunctions.end(); v++) {
       AFunc aFunc((*v).second);
       myFunc.push_back(aFunc);
+    }
+  }
+
+  void displayFuncSequence() {
+    for (vector<AFunc>::iterator v = myFunc.begin(); v != myFunc.end(); v++) {
+      v->showUsedFuncSequence();
     }
   }
 };

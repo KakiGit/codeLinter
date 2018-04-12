@@ -43,7 +43,7 @@ void read_directory(const string &name, vector<string> &v) {
  *
  */
 void findReliedFiles(string str, AFile &aFile) {
-  regex regNote("\\s*(\\/|\\*).*"),
+  regex regNote("\\s*(\\/|\\*)(\\s|\\S)*"),
       fileExp("#include\\s*(<|\"|')(.*)(>|\"|')\\s*");
   smatch sm;
   if (regex_search(str, sm, fileExp))
@@ -59,18 +59,17 @@ void findReliedFiles(string str, AFile &aFile) {
  */
 
 bool findFuncs(string str, AFile &aFile, int count) {
-  regex regNote("\\s*(\\/|\\*).*"),
-      regFunc("(\\s+|\\.)([a-z]+\\w*(?=\\s*\\(.*\\)\\s*\\{))");
+  regex regNote("\\s*(\\/|\\*)(\\s|\\S)*"),
+      regFunc("([a-z]+)\\s+([a-z]+\\w*)\\s*\\(.*\\)(?=(\\s*\\{)))");
   set<string> notIncluded{"if", "for", "while"};
   smatch sm;
   if (regex_search(str, sm, regFunc))
-    if (!regex_match(str, regNote))
-      if (!notIncluded.count(sm[2])) {
-        // cout << str << endl;
-        // cout << sm[2] << endl;
-        aFile.addMyFunc(sm[2], count);
-        return true;
-      }
+    if (!regex_match(str, regNote)) {
+      // cout << str << endl;
+      // cout << sm[2] << endl;
+      aFile.addMyFunc(sm[0], count);
+      return true;
+    }
   return false;
 }
 /**
@@ -79,15 +78,16 @@ bool findFuncs(string str, AFile &aFile, int count) {
  * if this line has a function in aFile adding it to aFunc
  */
 void findUsedFuncs(string funcName, string code, AFile &aFile) {
-  regex regNote("\\s*(\\/|\\*).*"),
+  regex regNote("\\s*(\\/|\\*)(\\s|\\S)*"),
       regFunc("(\\s+|\\.)([a-z]+\\w*(?=\\s*\\(.*\\)))");
   set<string> notIncluded{"if", "for", "while"};
   smatch sm;
-  auto searchFunc = [&](string str) -> bool {
+  auto searchFunc = [=, &sm](string str) -> bool {
     if (regex_search(str, sm, regFunc))
       if (!regex_match(str, regNote))
+        // cout << "note passed" << endl;
         if (!notIncluded.count(sm[2])) {
-          // cout << sm[2] << endl;
+          // cout << str << endl;
           return true;
         }
     return false;
@@ -100,25 +100,23 @@ void findUsedFuncs(string funcName, string code, AFile &aFile) {
       line = line + c;
       if (c == '\n') {
         if (searchFunc(line)) {
-          // cout << "<<<" << funcName << endl;
+          // cout << line << endl;
+          // cout << "add " << sm[2] << " to " << funcName << endl;
           // cout << sm[2] << endl;
           aFile.addFuncsInDef(funcName, sm[2]);
         }
-        line = "";
+        line.clear();
       }
     }
   };
   readLine(code);
-  // eliminate comments
-  // find functions
-  // push it to aFile.myFunc.usedFuncs
 }
 
 /**
  * find the beginning of a code definition
  */
 bool findFuncDefBegin(string &funcName, int count, string str, AFile &aFile) {
-  regex regNote("\\s*(\\/|\\*).*"),
+  regex regNote("\\s*(\\/|\\*)(\\s|\\S)*"),
       regFunc("(\\s+|\\.)([a-z]+\\w*(?=\\s*\\(.*\\)))");
   set<string> notIncluded{"if", "for", "while"};
   smatch sm;
@@ -126,6 +124,8 @@ bool findFuncDefBegin(string &funcName, int count, string str, AFile &aFile) {
     if (!regex_match(str, regNote))
       if (!notIncluded.count(sm[2]))
         if (aFile.funcIsAdded(count, sm[2])) {
+          // cout << "function Name: " << sm[2] << endl;
+          // cout << "code line: " << str << endl;
           funcName = sm[2];
           return true;
         }
@@ -247,6 +247,7 @@ void findReliances(string filePath, int depth, int width) {
     dirs.push_back(dir);
     read_directory(dir, dirs);
     cout << "There are " << count << " lines in " << filePath << endl << endl;
+
     int width = 0;
     for (vector<AFile>::iterator it = aFile.reliedFiles.begin();
          it != aFile.reliedFiles.end(); it++) {
