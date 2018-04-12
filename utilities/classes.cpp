@@ -17,7 +17,8 @@ using namespace std;
 class AFunc {
  private:
   string myName;
-  vector<string> usedFuncs;
+  vector<string> usedFuncsSequence;
+  set<string> usedFuncs;
 
  public:
   /**
@@ -31,13 +32,20 @@ class AFunc {
   /**
    * add functions used by this function
    */
-  void addUsedFunc(string str) { usedFuncs.push_back(str); }
+  void addUsedFunc(string str) {
+    usedFuncsSequence.push_back(str);
+    usedFuncs.insert(str);
+  }
   /**
    * show used functions on terminal
    */
   void showUsedFunc() {
-    for (vector<string>::iterator v = usedFuncs.begin(); v != usedFuncs.end();
-         v++)
+    for (set<string>::iterator v = usedFuncs.begin(); v != usedFuncs.end(); v++)
+      cout << *v << endl;
+  }
+  void showUsedFuncSequence() {
+    for (vector<string>::iterator v = usedFuncsSequence.begin();
+         v != usedFuncsSequence.end(); v++)
       cout << *v << endl;
   }
 };
@@ -99,6 +107,15 @@ class AFile {
     }
     return false;
   }
+  void addFuncsInDef(string funcName, string usedFunc) {
+    vector<AFunc>::iterator it =
+        find_if(myFunc.begin(), myFunc.end(),
+                [&](AFunc &aFunc) { return aFunc.getMyName() == funcName; });
+    if (it != myFunc.end()) {
+      // cout << "iterator found and funcName: " << usedFunc << endl;
+      it->addUsedFunc(usedFunc);
+    }
+  }
   /**
    * display its relied files
    */
@@ -117,12 +134,13 @@ class AFile {
     cout << "Contained Functions:" << endl;
     for (map<int, string>::iterator v = myFunctions.begin();
          v != myFunctions.end(); v++) {
-      cout << (*v).second << " in line " << (*v).first << endl;
-      // cout << "Used Functions: " << endl
+      cout << ">" << (*v).second << " in line " << (*v).first << endl;
+      // cout << "Used Functions: " << endl;
       //      << "例子1 defined in file 1" << endl
       //      << "例子2 defined in file 2" << endl
       //      << "例子3 defined in file 3" << endl;
-      // displayUsedFuncs((*v).second);
+      displayUsedFuncs((*v).second);
+      cout << "<" << endl;
     }
     cout << endl;
   }

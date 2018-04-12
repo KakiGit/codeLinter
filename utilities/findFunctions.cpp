@@ -24,7 +24,16 @@ void read_directory(const string &name, vector<string> &v) {
   DIR *dirp = opendir(name.c_str());
   struct dirent *dp;
   while ((dp = readdir(dirp)) != NULL) {
-    v.push_back(dp->d_name);
+    // if (!(dp->d_type & DT_DIR)) v.push_back(name + '/' + dp->d_name);
+    if ((dp->d_type & DT_DIR) && (strcmp(dp->d_name, ".")) &&
+        (strcmp(dp->d_name, ".."))) {
+      v.push_back(name + '/' + dp->d_name);
+      read_directory(name + '/' + dp->d_name, v);
+    }
+    // cout << "name: " << dp->d_name << endl;
+    // cout << "type: " << dp->d_type << endl;
+    // if (strcmp(dp->d_name, ".") || strcmp(dp->d_name, ".."))
+    //   read_directory(dp->d_name, v);
   }
   closedir(dirp);
 }
@@ -69,20 +78,46 @@ bool findFuncs(string str, AFile &aFile, int count) {
  * find functions used by a function
  * if this line has a function in aFile adding it to aFunc
  */
-bool findUsedFuncs(string code, AFunc &aFunc) {
+void findUsedFuncs(string funcName, string code, AFile &aFile) {
   regex regNote("\\s*(\\/|\\*).*"),
       regFunc("(\\s+|\\.)([a-z]+\\w*(?=\\s*\\(.*\\)))");
   set<string> notIncluded{"if", "for", "while"};
+  smatch sm;
+  auto searchFunc = [&](string str) -> bool {
+    if (regex_search(str, sm, regFunc))
+      if (!regex_match(str, regNote))
+        if (!notIncluded.count(sm[2])) {
+          // cout << sm[2] << endl;
+          return true;
+        }
+    return false;
+  };
+  auto readLine = [&](string str) {
+    char c;
+    string line;
+    for (int i = 0; i < str.length(); i++) {
+      c = str.at(i);
+      line = line + c;
+      if (c == '\n') {
+        if (searchFunc(line)) {
+          // cout << "<<<" << funcName << endl;
+          // cout << sm[2] << endl;
+          aFile.addFuncsInDef(funcName, sm[2]);
+        }
+        line = "";
+      }
+    }
+  };
+  readLine(code);
   // eliminate comments
   // find functions
   // push it to aFile.myFunc.usedFuncs
-  return true;
 }
 
 /**
  * find the beginning of a code definition
  */
-bool findFuncDefBegin(int count, string str, AFile &aFile) {
+bool findFuncDefBegin(string &funcName, int count, string str, AFile &aFile) {
   regex regNote("\\s*(\\/|\\*).*"),
       regFunc("(\\s+|\\.)([a-z]+\\w*(?=\\s*\\(.*\\)))");
   set<string> notIncluded{"if", "for", "while"};
@@ -90,7 +125,10 @@ bool findFuncDefBegin(int count, string str, AFile &aFile) {
   if (regex_search(str, sm, regFunc))
     if (!regex_match(str, regNote))
       if (!notIncluded.count(sm[2]))
-        if (aFile.funcIsAdded(count, sm[2])) return true;
+        if (aFile.funcIsAdded(count, sm[2])) {
+          funcName = sm[2];
+          return true;
+        }
   return false;
 }
 
@@ -99,7 +137,7 @@ bool findFuncDefBegin(int count, string str, AFile &aFile) {
  * find the codes in the definition of a function
  * between {}
  */
-void findFuncDefStr(string path, AFile aFile, string &code) {
+void findFuncDefStr(string path, AFile &aFile, string &code) {
   int count = 0;
   string str;
   ifstream infile;
@@ -107,8 +145,9 @@ void findFuncDefStr(string path, AFile aFile, string &code) {
   smatch sm;
   infile.open(path);
   while (getline(infile, str)) {
+    string funcName;
     count++;
-    if (findFuncDefBegin(count, str, aFile)) {
+    if (findFuncDefBegin(funcName, count, str, aFile)) {
       int symCount = 0;
       char c;
       if (regex_search(str, sm, e))
@@ -128,7 +167,8 @@ void findFuncDefStr(string path, AFile aFile, string &code) {
         if (c == '\n') count++;
         code = code + c;
       }
-      cout << str << endl;
+      // cout << str << endl;
+      findUsedFuncs(funcName, code, aFile);
       // cout << code << endl;
 
       code.clear();
@@ -148,7 +188,6 @@ void findReliances(string filePath) {
     cout << "Analysing: " << filePath << endl << endl;
     string str;
     AFile aFile(filePath);
-    string dir, ownname;
     int count = 0;
 
     while (getline(infile, str)) {
@@ -193,13 +232,14 @@ void findReliances(string filePath) {
     }
     infile.close();
 
-    aFile.displayReliedFiles();
-    aFile.displayMyFunctions();
-
     aFile.copyTomyFunc();
     string code;
     findFuncDefStr(filePath, aFile, code);
 
+    aFile.displayReliedFiles();
+    aFile.displayMyFunctions();
+
+    string dir, ownname;
     splitPath(filePath, dir, ownname);
     cout << "There are " << count << " lines in " << filePath << endl << endl;
 
@@ -215,14 +255,16 @@ void findReliances(string filePath) {
 
 int main(int argc, char *argv[]) {
   if (argc >= 2) {
-    // vector<string> files;
-    string dir;
+    int depth = 0;
     findReliances(argv[1]);
-    // read_directory(dir,files);
-    // for(int i=0;i<files.size();i++)
-    // {
-    //     cout  << " Path: " << files[i] <<endl;
-    // }
+
+    string dir, name;
+    splitPath(argv[1], dir, name);
+    vector<string> files;
+    read_directory(dir, files);
+    for (int i = 0; i < files.size(); i++) {
+      cout << " Path: " << files[i] << endl;
+    }
   }
   // cout << "Argument number: " << argc << endl;
   // for (int i = 0; i < argc; i++) cout << "Arguments: " << argv[i] << endl;
