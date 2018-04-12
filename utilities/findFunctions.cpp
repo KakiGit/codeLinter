@@ -243,21 +243,24 @@ void findReliances(string filePath, int depth, int width) {
 
     string dir, ownname;
     splitPath(filePath, dir, ownname);
+    vector<string> dirs;
+    dirs.push_back(dir);
+    read_directory(dir, dirs);
     cout << "There are " << count << " lines in " << filePath << endl << endl;
     int width = 0;
     for (vector<AFile>::iterator it = aFile.reliedFiles.begin();
          it != aFile.reliedFiles.end(); it++) {
       string path;
-      path = dir + "/" + it->myName;
-      infile.open(path);
+      for (int i = 0; i < dirs.size(); i++) {
+        path = dirs[i] + "/" + it->myName;
+        infile.open(path);
 
-      if (infile) {
-        width++;
-        infile.close();
-        findReliances(path, depth, width);
+        if (infile) {
+          width++;
+          infile.close();
+          findReliances(path, depth, width);
+        }
       }
-
-      // cout << "Next path: " << path << endl;
     }
   }
 }
@@ -267,15 +270,8 @@ int main(int argc, char *argv[]) {
     int depth = 0;
     int width = 1;
     findReliances(argv[1], depth, width);
-
-    string dir, name;
-    splitPath(argv[1], dir, name);
-    vector<string> files;
-    read_directory(dir, files);
-    for (int i = 0; i < files.size(); i++) {
-      cout << " Path: " << files[i] << endl;
-    }
   }
+
   // cout << "Argument number: " << argc << endl;
   // for (int i = 0; i < argc; i++) cout << "Arguments: " << argv[i] << endl;
   return 0;
