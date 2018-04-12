@@ -17,7 +17,7 @@ using namespace std;
 class AFunc {
  private:
   string myName;
-  vector<string> usedFunc;
+  vector<string> usedFuncs;
 
  public:
   /**
@@ -31,12 +31,12 @@ class AFunc {
   /**
    * add functions used by this function
    */
-  void addUsedFunc(string str) { usedFunc.push_back(str); }
+  void addUsedFunc(string str) { usedFuncs.push_back(str); }
   /**
    * show used functions on terminal
    */
   void showUsedFunc() {
-    for (vector<string>::iterator v = usedFunc.begin(); v != usedFunc.end();
+    for (vector<string>::iterator v = usedFuncs.begin(); v != usedFuncs.end();
          v++)
       cout << *v << endl;
   }

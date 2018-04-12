@@ -69,20 +69,14 @@ bool findFuncs(string str, AFile &aFile, int count) {
  * find functions used by a function
  * if this line has a function in aFile adding it to aFunc
  */
-bool findUsedFuncs(string str, AFunc &aFunc) {
+bool findUsedFuncs(string code, AFunc &aFunc) {
   regex regNote("\\s*(\\/|\\*).*"),
       regFunc("(\\s+|\\.)([a-z]+\\w*(?=\\s*\\(.*\\)))");
   set<string> notIncluded{"if", "for", "while"};
-  smatch sm;
-  if (regex_search(str, sm, regFunc))
-    if (!regex_match(str, regNote))
-      if (!notIncluded.count(sm[2])) {
-        // cout << str << endl;
-        // cout << sm[2] << endl;
-        aFunc.addUsedFunc(sm[2]);
-        return true;
-      }
-  return false;
+  // eliminate comments
+  // find functions
+  // push it to aFile.myFunc.usedFuncs
+  return true;
 }
 
 /**
@@ -123,27 +117,20 @@ void findFuncDefStr(string path, AFile aFile, string &code) {
         while (symCount == 0) {
           infile.get(c);
           if (c == '\n') count++;
-          if (c == '{') {
-            symCount++;
-            // cout << symCount << endl;
-          }
+          if (c == '{') symCount++;
         }
       }
       while (symCount != 0) {
         infile.get(c);
-        if (c == '{') {
-          symCount++;
-          // cout << symCount << endl;
-        }
-        if (c == '}') {
-          symCount--;
-          // cout << symCount << endl;
-        }
+        if (c == '{') symCount++;
+        if (c == '}') symCount--;
+
         if (c == '\n') count++;
         code = code + c;
       }
       cout << str << endl;
-      cout << code << endl;
+      // cout << code << endl;
+
       code.clear();
     }
   }
@@ -209,6 +196,7 @@ void findReliances(string filePath) {
     aFile.displayReliedFiles();
     aFile.displayMyFunctions();
 
+    aFile.copyTomyFunc();
     string code;
     findFuncDefStr(filePath, aFile, code);
 
