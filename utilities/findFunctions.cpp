@@ -181,10 +181,11 @@ void findFuncDefStr(string path, AFile &aFile, string &code) {
  * find all reliances of a file
  *
  */
-void findReliances(string filePath) {
+void findReliances(string filePath, int depth, int width) {
   ifstream infile;
   infile.open(filePath);
   if (infile) {
+    depth++;
     cout << "Analysing: " << filePath << endl << endl;
     string str;
     AFile aFile(filePath);
@@ -236,19 +237,27 @@ void findReliances(string filePath) {
     string code;
     findFuncDefStr(filePath, aFile, code);
 
-    aFile.displayReliedFiles();
+    // int width = 0;
+    aFile.displayReliedFiles(depth, width);
     aFile.displayMyFunctions();
 
     string dir, ownname;
     splitPath(filePath, dir, ownname);
     cout << "There are " << count << " lines in " << filePath << endl << endl;
-
+    int width = 0;
     for (vector<AFile>::iterator it = aFile.reliedFiles.begin();
          it != aFile.reliedFiles.end(); it++) {
       string path;
       path = dir + "/" + it->myName;
+      infile.open(path);
+
+      if (infile) {
+        width++;
+        infile.close();
+        findReliances(path, depth, width);
+      }
+
       // cout << "Next path: " << path << endl;
-      findReliances(path);
     }
   }
 }
@@ -256,7 +265,8 @@ void findReliances(string filePath) {
 int main(int argc, char *argv[]) {
   if (argc >= 2) {
     int depth = 0;
-    findReliances(argv[1]);
+    int width = 1;
+    findReliances(argv[1], depth, width);
 
     string dir, name;
     splitPath(argv[1], dir, name);

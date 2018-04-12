@@ -1,6 +1,7 @@
 #include "stdio.h"
 #include "imageProcessFunc.c"
 #include "math.h"
+#include "test.c"
 #define F_PATH "/Users/lijiaqi/Desktop/ha/hap6.ppm"
 unsigned char asciiToBinary(unsigned char c); 
 

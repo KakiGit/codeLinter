@@ -69,7 +69,7 @@ class AFile {
   /**
    * friend function, allowing it to have access to private variables
    */
-  friend void findReliances(string filePath);
+  friend void findReliances(string filePath, int depth, int width);
   /**
    * constructor
    */
@@ -119,7 +119,8 @@ class AFile {
   /**
    * display its relied files
    */
-  void displayReliedFiles() {
+  void displayReliedFiles(int depth, int width) {
+    cout << "[" << depth << "-" << width << "]" << endl;
     cout << "Relied Files:" << endl;
     for (vector<AFile>::iterator v = reliedFiles.begin();
          v != reliedFiles.end(); v++) {
