@@ -1,6 +1,6 @@
 
 #include<stdio.h>
-#include "imageProcessFunc3.c"
+#include“class.cpp”
 // #include <math.h>
 void printAscii();
 void rgbToGray();

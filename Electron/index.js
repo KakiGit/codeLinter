@@ -148,6 +148,9 @@ class TreeNode {
         this.y = -1
         this.element = null
         this.type = type  // types : root, func, file, mult
+        // filename can also be obtained from parent.name
+        this.filename = ""
+        this.line = 0
     }
     GetChildren() {
       return this.children
@@ -174,6 +177,12 @@ class TreeNode {
     SetType(type) {
       this.type = type
     }
+    SetFilename(str) {
+        this.filename = str
+    }
+    SetLine(line) {
+        this.line = line
+    }
     GetType() {
         return this.type
     }
@@ -199,60 +208,83 @@ let rootNode = new TreeNode(null, "root", "root")
 
  */
 function resolveFile(texts, node) {
+  var tagx = "Analysing:"
   var tag0 = "Relied Files:"
   var tag1 = "Contained Functions:"
   var tag2 = "There are "
+  var tag3 = "in line"
 
+  var indexx = texts.indexOf(tagx)
+  if (indexx < 0) return
   var index0 = texts.indexOf(tag0)
   var index1 = texts.indexOf(tag1)
   var index2 = texts.indexOf(tag2)
+
+  // obtain filename
+  var filename = texts.substring(indexx + tagx.length, index0)
+  filename = filename.split('\n')[0].split('/')
+  filename = filename[filename.length-1]
+
   // str0: substring containing all relied files, split by '\n'
   var str0 = texts.substring(index0 + tag0.length, index1)
   // str1: substring containing all functions in current files, split by '\n'
   var str1 = texts.substring(index1 + tag1.length, index2)
   // 'node' file contains the above str1 functions
 
-  var res = str1.split("\n")
-  var res2 = []
-  for (var i = 0; i < res.length; i++) {
-    if (res[i].length > 0) {
-      res2.push(res[i])
-      node.Add(new TreeNode(node, res[i], "func"))
-    }
-  }
-  res = str0.split("\n")
+  // record all the relied files
+  var countFile = 0
+  var res = str0.split("\n")
   for (var i = 0; i < res.length; i++) {
       if (res[i].length > 0) {
           var tempNode = new TreeNode(node, res[i], "file")
+          tempNode.SetFilename(res[i])
           node.Add(tempNode)
-          // todo emmm this is silly
-          if (res[i][res[i].length-1] === 'c' && res[i][res[i].length-2] === '.') {
-              // todo: get file path
-              //var texts2 = getFileContent("../utilities/" + res[i])
-              //resolveFile(texts2, tempNode)
-              getFileContent("../utilities/" + res[i])
-          }
+          countFile++
       }
   }
+  // record current file's contained functions
+  res = str1.split("\n")
+  for (var i = 0; i < res.length; i++) {
+      // tag: containing "in line"
+      if (res[i].length > 0 && res[i].indexOf(tag3) > 0) {
+          var temp = res[i].split(' ')
+          var tempNode = new TreeNode(node, temp[0], "func")
+          tempNode.SetFilename(filename)
+          tempNode.SetLine(temp[3])
+          node.Add(tempNode)
+      }
+  }
+  var str2 = texts.substring(10, texts.length-1)
+  //console.log(texts)
+  console.log(str2)
+  var children = node.GetChildren()
+  for (var i = 0; i < children.length; i++) {
 
+      if (children[i].type === "file") {
+
+      }
+  }
   return node
 }
 function DrawTree(node, posy, posx) {
+  posy = 10
   var btn1 = document.createElement("button")
   btn1.innerText = node.GetName()
   btn1.setAttribute("style", "background-color: yellow;position: absolute;top:" +
-  posx.toString() + "px;" + "left:" + posy.toString() + "px;");
+  posx.toString() + "px;" + "left:" + (posy.toString() + "px;"))
   node.SetPosition(posx, posy)
   rightDiv.appendChild(btn1)
   var children = node.GetChildren()
   for (var i = 0; i < children.length; i++) {
-    if(i > 5) {
+    if (i > 5) {
       // todo: node overlap
     }
       var btn1 = document.createElement("button")
       btn1.innerText = children[i].GetName()
-      var x = posx + 100 * Math.cos(Math.PI / 3 * i)
-      var y = posy + 100 * Math.sin(Math.PI / 3 * i)
+      // var x = posx + 100 * Math.cos(Math.PI / 3 * i)
+      // var y = posy + 100 * Math.sin(Math.PI / 3 * i)
+      var x = posx + 50 * (i - children.length / 2)
+      var y = 100
       var color = "cyan"
       if (children[i].GetType() === "file") {
         color = "pink"
@@ -265,7 +297,7 @@ function DrawTree(node, posy, posx) {
       context.beginPath();
 
       context.moveTo(node.GetY(), node.GetX());
-      context.lineTo(y, x);
+      context.lineTo(y, x)
       context.stroke()
   }
 }
@@ -274,7 +306,6 @@ function getFileContent(filepath) {
     const path = require('path')
     var tagFile = path.join(filepath, '..', 'result')
     const txtRead = readText(tagFile)
-    console.log(txtRead)
 }
 document.getElementById('open').addEventListener('click', function () {
   const files = remote.dialog.showOpenDialog(remote.getCurrentWindow(), {
