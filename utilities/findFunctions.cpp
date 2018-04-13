@@ -88,7 +88,7 @@ bool findFuncs(string str, AFile &aFile, int count)
 void findUsedFuncs(string funcName, string code, AFile &aFile)
 {
   regex regNote("\\s*(\\/|\\*)(\\s|\\S)*"),
-      regFunc("(\\s+|\\.)([a-z]+\\w*(?=\\s*\\(.*\\)))");
+      regFunc("(\\s|\\.)([a-z]+\\w*(?=\\s*\\(.*\\)))");
   set<string> notIncluded{"if", "for", "while"};
   smatch sm;
   auto searchFunc = [=, &sm](string str) -> bool {
@@ -168,6 +168,14 @@ void findFuncDefStr(string path, AFile &aFile, string &code)
     {
       int symCount = 0;
       char c;
+      auto ignoreSym = [&](char ch) {
+        if (c == ch)
+        {
+          infile.get(c);
+          while (c != ch)
+            infile.get(c);
+        }
+      };
       if (regex_search(str, sm, e))
         symCount++;
       else
@@ -175,6 +183,8 @@ void findFuncDefStr(string path, AFile &aFile, string &code)
         while (symCount == 0)
         {
           infile.get(c);
+          ignoreSym('\'');
+          ignoreSym('\"');
           if (c == '\n')
             count++;
           if (c == '{')
@@ -184,6 +194,8 @@ void findFuncDefStr(string path, AFile &aFile, string &code)
       while (symCount != 0)
       {
         infile.get(c);
+        ignoreSym('\'');
+        ignoreSym('\"');
         if (c == '{')
           symCount++;
         if (c == '}')
