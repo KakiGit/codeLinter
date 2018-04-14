@@ -1,7 +1,7 @@
 #include "classes.cpp"
 /**
  *
- * splitPath to get directory name and file name
+ * watchDog that might be used to exit when the programme halts.
  *
  */
 void watchDog(int &i)
@@ -10,6 +10,11 @@ void watchDog(int &i)
   if (i > 1000)
     exit(0);
 }
+/**
+ *
+ * splitPath to get directory name and file name
+ *
+ */
 void splitPath(const string &str, string &dir, string &ownname)
 {
   size_t found;
@@ -170,75 +175,59 @@ void findReliances(string filePath, int depth, int width)
   infile.open(filePath);
   if (infile)
   {
+    int count = 0;
     depth++;
     cout << "Analysing: " << filePath << endl
          << endl;
     string str;
     AFile aFile(filePath);
-    int count = 0;
 
-    while (getline(infile, str))
-    {
-      ++count;
-      string twoLines;
-      twoLines = str;
-      findReliedFiles(str, aFile);
-      findFuncs(str, aFile, count);
-
-      if (getline(infile, str))
+    auto searchDef = [&]() {
+      while (getline(infile, str))
       {
         ++count;
+        string twoLines;
+        twoLines = str;
         findReliedFiles(str, aFile);
-        if (!findFuncs(str, aFile, count))
-          twoLines = twoLines + str;
-        findFuncs(twoLines, aFile, count - 1);
+        findFuncs(str, aFile, count);
+
+        if (getline(infile, str))
+        {
+          ++count;
+          findReliedFiles(str, aFile);
+          if (!findFuncs(str, aFile, count))
+            twoLines = twoLines + str;
+          findFuncs(twoLines, aFile, count - 1);
+        }
+        else
+          break;
       }
-      else
-        break;
-    }
-    infile.close();
+      infile.close();
+    };
+
+    searchDef();
 
     count = 0;
     infile.open(filePath);
     getline(infile, str);
     ++count;
-    while (getline(infile, str))
-    {
-      ++count;
-      string twoLines;
-      twoLines = str;
-      findReliedFiles(str, aFile);
-      findFuncs(str, aFile, count);
-
-      if (getline(infile, str))
-      {
-        ++count;
-        findReliedFiles(str, aFile);
-        if (!findFuncs(str, aFile, count))
-          twoLines = twoLines + str;
-        findFuncs(twoLines, aFile, count - 1);
-      }
-      else
-        break;
-    }
-    infile.close();
+    searchDef();
 
     aFile.copyTomyFunc();
 
     findFuncDefStr(count, filePath, aFile);
 
-    // int width = 0;
     aFile.displayReliedFiles(depth, width);
     aFile.displayMyFunctions();
+
+    cout << "There are " << count << " lines in " << filePath << endl
+         << endl;
 
     string dir, ownname;
     splitPath(filePath, dir, ownname);
     vector<string> dirs;
     dirs.push_back(dir);
     read_directory(dir, dirs);
-    cout << "There are " << count << " lines in " << filePath << endl
-         << endl;
-
     int width = 0;
     for (vector<AFile>::iterator it = aFile.reliedFiles.begin();
          it != aFile.reliedFiles.end(); it++)
