@@ -33,12 +33,19 @@ void splitPath(const string &str, string &dir, string &ownname)
  */
 void read_directory(const string &name, vector<string> &v)
 {
+  auto isDirectory = [](const char *path) {
+    struct stat statbuf;
+    if (stat(path, &statbuf) != 0)
+      return false;
+    return S_ISDIR(statbuf.st_mode);
+  };
+
   DIR *dirp = opendir(name.c_str());
   struct dirent *dp;
   while ((dp = readdir(dirp)) != NULL)
   {
     // if (!(dp->d_type & DT_DIR)) v.push_back(name + '/' + dp->d_name);
-    if ((dp->d_type & DT_DIR) && (strcmp(dp->d_name, ".")) &&
+    if ((isDirectory((name + '/' + dp->d_name).c_str())) && (strcmp(dp->d_name, ".")) &&
         (strcmp(dp->d_name, "..")))
     {
       v.push_back(name + '/' + dp->d_name);
@@ -85,7 +92,8 @@ bool findFuncs(string str, AFile &aFile, int count)
     {
       // cout << str << endl;
       // cout << sm[2] << endl;
-      aFile.addMyFunc(sm[0], count);
+      string s = sm[0];
+      aFile.addMyFunc(s, count);
       return true;
     }
   return false;
@@ -101,12 +109,14 @@ void findUsedFuncs(string funcName, string str, AFile &aFile)
       regFunc("(\\s+|\\.)([a-z]+\\w*)\\s*\\(.*\\)");
   set<string> notIncluded{"if", "for", "while"};
   smatch sm;
-  auto searchFunc = [=, &sm](string str) -> bool {
+  string s;
+  auto searchFunc = [&](string str) -> bool {
     if (regex_search(str, sm, regFunc))
       if (!regex_match(str, regNote))
         // cout << "note passed" << endl;
         if (!notIncluded.count(sm[2]))
         {
+          s = sm[2];
           // for (int i = 0; i < sm.length(); i++)
           //   cout << sm[i] << endl;
           return true;
@@ -117,7 +127,6 @@ void findUsedFuncs(string funcName, string str, AFile &aFile)
   {
     // cout << line << endl;
     // cout << "add " << sm[2] << " to " << funcName << endl;
-    string s = sm[2];
     // cout << sm[2] << endl;
     aFile.addFuncsInDef(funcName, s);
   }
