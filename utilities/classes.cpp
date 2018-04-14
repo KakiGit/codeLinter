@@ -29,17 +29,6 @@ public:
   /**
    * returns the name of the function
    */
-  string getMyName()
-  {
-    regex regFunc("(\\s+|\\.)([a-z]+\\w*(?=\\s*\\(.*\\)))");
-    smatch sm;
-    regex_search(myName, sm, regFunc);
-    // cout << "getMyName: " << sm[2] << endl;
-    return sm[2];
-  }
-  /**
-   * returns the real name of the function
-   */
   string getMyRealName() { return myName; }
   /**
    * add functions used by this function
@@ -77,7 +66,6 @@ class AFile
 private:
   string myName;
   vector<AFile> reliedFiles;
-  // set<string> myFunctions;
   map<int, string> myFunctions;
   vector<AFunc> myFunc;
 
@@ -90,6 +78,13 @@ public:
    * constructor
    */
   AFile(string name) { myName = name; }
+  /**
+   * get the number for the definition of a function
+   */
+  map<int, string> getMapOfMyFunc()
+  {
+    return myFunctions;
+  }
   /**
    * add relied files
    */
@@ -118,27 +113,13 @@ public:
   {
     myFunctions.insert(pair<int, string>(count, funcName));
   }
-  /**
-   * whether the definition of a function has been added
-   */
-  bool funcIsAdded(int count, string str)
-  {
-    regex regFunc("(\\s+|\\.)([a-z]+\\w*(?=\\s*\\(.*\\)))");
-    smatch sm;
-    map<int, string>::iterator v = myFunctions.find(count);
-    if (v != myFunctions.end())
-    {
-      regex_search(myFunctions.at(count), sm, regFunc);
-      if (sm[2] == str)
-        return true;
-    }
-    return false;
-  }
+
   void addFuncsInDef(string funcName, string usedFunc)
   {
+    // cout << "add " << usedFunc << " to " << funcName << " in addFuncsInDef" << endl;
     vector<AFunc>::iterator it =
         find_if(myFunc.begin(), myFunc.end(),
-                [&](AFunc &aFunc) { return aFunc.getMyName() == funcName; });
+                [&](AFunc &aFunc) { return aFunc.getMyRealName() == funcName; });
     if (it != myFunc.end())
     {
       // cout << "iterator found" << endl
