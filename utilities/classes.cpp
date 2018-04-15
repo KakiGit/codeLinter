@@ -6,6 +6,10 @@
 #include <set>
 #include <string>
 #include <vector>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <unistd.h>
+
 using namespace std;
 
 /**
@@ -14,13 +18,14 @@ using namespace std;
  * its definition
  *
  */
-class AFunc {
- private:
+class AFunc
+{
+private:
   string myName;
   vector<string> usedFuncsSequence;
   set<string> usedFuncs;
 
- public:
+public:
   /**
    * constructor, giving a name of a function instance
    */
@@ -28,22 +33,25 @@ class AFunc {
   /**
    * returns the name of the function
    */
-  string getMyName() { return myName; }
+  string getMyRealName() { return myName; }
   /**
    * add functions used by this function
    */
-  void addUsedFunc(string str) {
+  void addUsedFunc(string str)
+  {
     usedFuncsSequence.push_back(str);
     usedFuncs.insert(str);
   }
   /**
    * show used functions on terminal
    */
-  void showUsedFunc() {
+  void showUsedFunc()
+  {
     for (set<string>::iterator v = usedFuncs.begin(); v != usedFuncs.end(); v++)
       cout << *v << endl;
   }
-  void showUsedFuncSequence() {
+  void showUsedFuncSequence()
+  {
     for (vector<string>::iterator v = usedFuncsSequence.begin();
          v != usedFuncsSequence.end(); v++)
       cout << *v << endl;
@@ -57,15 +65,15 @@ class AFunc {
  *
  */
 
-class AFile {
- private:
+class AFile
+{
+private:
   string myName;
   vector<AFile> reliedFiles;
-  // set<string> myFunctions;
   map<int, string> myFunctions;
   vector<AFunc> myFunc;
 
- public:
+public:
   /**
    * friend function, allowing it to have access to private variables
    */
@@ -75,55 +83,65 @@ class AFile {
    */
   AFile(string name) { myName = name; }
   /**
+   * get the number for the definition of a function
+   */
+  map<int, string> getMapOfMyFunc()
+  {
+    return myFunctions;
+  }
+  /**
    * add relied files
    */
-  void addReliedFiles(string name) {
+  void addReliedFiles(string name)
+  {
     AFile relied(name);
     reliedFiles.push_back(relied);
   }
   /**
    * whether the relied file name has been added before
    */
-  bool isAdded(string str) {
+  bool isAdded(string str)
+  {
     for (vector<AFile>::iterator v = reliedFiles.begin();
-         v != reliedFiles.end(); v++) {
-      if (v->myName == str) return true;
+         v != reliedFiles.end(); v++)
+    {
+      if (v->myName == str)
+        return true;
     }
     return false;
   }
   /**
    * add functions it defines
    */
-  void addMyFunc(string funcName, int count) {
+  void addMyFunc(string funcName, int count)
+  {
     myFunctions.insert(pair<int, string>(count, funcName));
   }
-  /**
-   * whether the definition of a function has been added
-   */
-  bool funcIsAdded(int count, string str) {
-    map<int, string>::iterator v = myFunctions.find(count);
-    if (v != myFunctions.end()) {
-      if (myFunctions[count] == str) return true;
-    }
-    return false;
-  }
-  void addFuncsInDef(string funcName, string usedFunc) {
+
+  void addFuncsInDef(string funcName, string usedFunc)
+  {
+    // cout << "add " << usedFunc << " to " << funcName << " in addFuncsInDef" << endl;
     vector<AFunc>::iterator it =
         find_if(myFunc.begin(), myFunc.end(),
-                [&](AFunc &aFunc) { return aFunc.getMyName() == funcName; });
-    if (it != myFunc.end()) {
-      // cout << "iterator found and funcName: " << usedFunc << endl;
+                [&](AFunc &aFunc) { return aFunc.getMyRealName() == funcName; });
+    if (it != myFunc.end())
+    {
+      // cout << "iterator found" << endl
+      //      << " funcName: " << funcName << endl
+      //      << "usedFunc:" << usedFunc << endl;
       it->addUsedFunc(usedFunc);
     }
   }
   /**
    * display its relied files
    */
-  void displayReliedFiles(int depth, int width) {
+  void displayReliedFiles(int depth, int width)
+  {
     cout << "[" << depth << "-" << width << "]" << endl;
     cout << "Relied Files:" << endl;
     for (vector<AFile>::iterator v = reliedFiles.begin();
-         v != reliedFiles.end(); v++) {
+         v != reliedFiles.end(); v++)
+    {
       cout << v->myName << endl;
     }
     cout << endl;
@@ -131,10 +149,12 @@ class AFile {
   /**
    * display functions it defines
    */
-  void displayMyFunctions() {
+  void displayMyFunctions()
+  {
     cout << "Contained Functions:" << endl;
     for (map<int, string>::iterator v = myFunctions.begin();
-         v != myFunctions.end(); v++) {
+         v != myFunctions.end(); v++)
+    {
       cout << ">" << (*v).second << " in line " << (*v).first << endl;
       // cout << "Used Functions: " << endl;
       //      << "例子1 defined in file 1" << endl
@@ -148,19 +168,32 @@ class AFile {
   /**
    * displays functions the defined functions uses
    */
-  void displayUsedFuncs(string str) {
-    for (vector<AFunc>::iterator v = myFunc.begin(); v != myFunc.end(); v++) {
-      if (v->getMyName() == str) v->showUsedFunc();
+  void displayUsedFuncs(string str)
+  {
+    for (vector<AFunc>::iterator v = myFunc.begin(); v != myFunc.end(); v++)
+    {
+      if (v->getMyRealName() == str)
+        v->showUsedFunc();
     }
   }
   /**
    * create function instances
    */
-  void copyTomyFunc() {
+  void copyTomyFunc()
+  {
     for (map<int, string>::iterator v = myFunctions.begin();
-         v != myFunctions.end(); v++) {
+         v != myFunctions.end(); v++)
+    {
       AFunc aFunc((*v).second);
       myFunc.push_back(aFunc);
+    }
+  }
+
+  void displayFuncSequence()
+  {
+    for (vector<AFunc>::iterator v = myFunc.begin(); v != myFunc.end(); v++)
+    {
+      v->showUsedFuncSequence();
     }
   }
 };
