@@ -11,6 +11,8 @@ let myCanvas = document.getElementById('myCanvas')
 let rightDivWidth = rightDiv.clientWidth
 let rightDivHeight = rightDiv.clientHeight
 let nodeID = 0
+let currentNode
+let nodeList = [] // stores used nodes. (for "go back" button)
 document.title = 'Notepad - Untitled' // 设置文档标题，影响窗口标题栏名称
 
 // 给文本框增加右键菜单
@@ -185,6 +187,9 @@ class TreeNode {
     SetLine(line) {
         this.line = line
     }
+    GetID() {
+        return this.ID;
+    }
     GetType() {
         return this.type
     }
@@ -346,14 +351,54 @@ function getIndicesOf(searchStr, str, caseSensitive) {
     }
     return indices;
 }
+function TraverseTree(id) {
+    BSTree(rootNode, id);
+    var children = rightDiv.children;
+    for (var i = 0; i < children.length; i++) {
+        var color;
+        if (children[i].className === "node-file") {
+            color = "#dd948a"
+        } else if (children[i].className === "node-func") {
+            color = "#f9fbb6"
+        }
+        children[i].setAttribute("style", "border-radius: 15px; background-color:" + color + ";position: absolute;top:" +
+            children[i].offsetTop.toString() + "px;" + "left:" + children[i].offsetLeft.toString() + "px;");
 
+        color = "#31ee72";
+        if (children[i].id === currentNode.GetID().toString()) {
+            children[i].setAttribute("style", "border-radius: 15px; background-color:" + color + ";position: absolute;top:" +
+                children[i].offsetTop.toString() + "px;" + "left:" + children[i].offsetLeft.toString() + "px;");
+            console.log(currentNode.GetName())
+        }
+        for (var j = 0; j < currentNode.children.length; j++) {
+            if (children[i].id === currentNode.children[j].GetID().toString()) {
+                children[i].setAttribute("style", "border-radius: 15px; background-color:" + color + ";position: absolute;top:" +
+                    children[i].offsetTop.toString() + "px;" + "left:" + children[i].offsetLeft.toString() + "px;");
+            }
+        }
 
+    }
+}
+function BSTree(node, id) {
+    if (node === null) {
+        return
+    }
+    if (node.GetID().toString() === id) {
+        currentNode = node
+        return
+    }
+    for (var i = 0; i < node.children.length; i++) {
+        BSTree(node.children[i], id)
+    }
+}
 function DrawTree(node, posy, posx, level) {
   posy = 10
   if(node.name == "root") {
       var btn1 = document.createElement("button")
       btn1.innerText = node.GetName()
-      btn1.setAttribute("style", "background-color: yellow;position: absolute;top:" +
+      btn1.setAttribute("class", "node-root")
+      btn1.setAttribute("style", "background-color: #697586; color: #eeeeee;" +
+          "border-radius: 15px;position: absolute;top:" +
           posx.toString() + "px;" + "left:" + (posy.toString() + "px;"))
       node.SetPosition(posx, posy)
       rightDiv.appendChild(btn1)
@@ -369,12 +414,21 @@ function DrawTree(node, posy, posx, level) {
       // var y = posy + 100 * Math.sin(Math.PI / 3 * i)
       var x = posx + 60 * (i - children.length / 2) * Math.pow(0.6, level)
       var y = 100 * level
-      var color = "cyan"
+      var color;
       if (children[i].GetType() === "file") {
-        color = "pink"
+        btn1.setAttribute("class", "node-file")
+        color = "#dd948a"
+      } else {
+        btn1.setAttribute("class", "node-func")
+        color = "#f9fbb6"
       }
-      btn1.setAttribute("style", "background-color:" + color + ";position: absolute;top:" +
+
+      btn1.setAttribute("style", "border-radius: 15px; background-color:" + color + ";position: absolute;top:" +
          x.toString() + "px;" + "left:" + y.toString() + "px;");
+      btn1.setAttribute("id", children[i].GetID().toString())
+      btn1.addEventListener('click', function () {
+          TraverseTree(this.id)
+      })
       rightDiv.appendChild(btn1)
       children[i].SetPosition(x, y)
 
@@ -388,6 +442,8 @@ function DrawTree(node, posy, posx, level) {
       DrawTree(children[i], y, x, level + 1)
   }
 }
+
+
 function getFileContent(filepath) {
     ipcRenderer.send('open-file', filepath)
     const path = require('path')
@@ -417,6 +473,7 @@ document.getElementById('show').addEventListener('click', function () {
     const txtRead = readText(currentTagFile)
 
     resolveFile(txtRead, rootNode, 1)
+    currentNode = rootNode
     rootNode.Print()
     // todo: now the tree structure is ready, we need to draw it on screen
     DrawTree(rootNode, rightDiv.clientWidth / 2, rightDiv.clientHeight / 2, 1)
