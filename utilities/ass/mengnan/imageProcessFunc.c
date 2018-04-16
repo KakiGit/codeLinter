@@ -1,5 +1,7 @@
 
 #include<stdio.h>
+#include<3-1.c>
+#include<3-2.c>
 // #include <math.h>
 void printAscii();
 void rgbToGray();
