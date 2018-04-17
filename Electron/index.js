@@ -13,6 +13,7 @@ let rightDivHeight = rightDiv.clientHeight
 let nodeID = 0
 let currentNode
 let nodeList = [] // stores used nodes. (for "go back" button)
+let currentOpenedFile = null
 document.title = 'Notepad - Untitled' // 设置文档标题，影响窗口标题栏名称
 
 // 给文本框增加右键菜单
@@ -119,6 +120,7 @@ function traverseD3TreeNodes(node, obj, level) {
     var o = {};
     o['id'] = node.GetID()
     o['name'] = node.GetName()
+    o['path'] = node.GetFilePath()
     o['group'] = level
     obj['nodes'].push(o);
     for (var i = 0; i < node.children.length; i++) {
@@ -149,7 +151,7 @@ function writeJson() {
         if (err) return console.log(err)
         drawD3Tree()
     });
-    console.log("File has been created");
+    //console.log("File has been created");
 }
 
 function drawD3Tree() {
@@ -230,7 +232,9 @@ function drawD3Tree() {
     });
 
     function toggleColor(d) {
-        console.log(d.id);
+        console.log(d.path);
+        currentFile = d.path
+        // TODO open new file?!
         var currentColor = "pink";
         d3.select(this).style("fill", currentColor);
         d3.select('[id="' + d.id + '"]').style("fill", "yellow");
@@ -292,6 +296,7 @@ class TreeNode {
         this.filename = ""
         this.line = 0
         this.ID = nodeID // unique ID
+        this.filepath = ""
         nodeID++
     }
     GetChildren() {
@@ -299,6 +304,12 @@ class TreeNode {
     }
     GetParent() {
         return this.parent
+    }
+    SetFilePath(str) {
+        this.filepath = str
+    }
+    GetFilePath(str) {
+        return this.filepath
     }
     GetX() {
       return this.x
@@ -368,6 +379,7 @@ function resolveFile(texts, node, level) {
 
   // obtain filename
   var filename = texts.substring(indexx + tagx.length, index0)
+  node.SetFilePath(filename.split('\n')[0])
   filename = filename.split('\n')[0].split('/')
   filename = filename[filename.length-1]
 
@@ -402,7 +414,6 @@ function resolveFile(texts, node, level) {
   }
   // expand sub level nodes: (relied file nodes)
   var tag = '[' + (level+1).toString() + '-'
-  console.log(tag)
   var indices = getIndicesOf(tag, texts, true)
   var children = node.GetChildren()
   var index = 0
@@ -506,7 +517,6 @@ function TraverseTree(id) {
         if (children[i].id === currentNode.GetID().toString()) {
             children[i].setAttribute("style", "border-radius: 15px; background-color:" + color + ";position: absolute;top:" +
                 children[i].offsetTop.toString() + "px;" + "left:" + children[i].offsetLeft.toString() + "px;");
-            console.log(currentNode.GetName())
         }
         for (var j = 0; j < currentNode.children.length; j++) {
             if (children[i].id === currentNode.children[j].GetID().toString()) {
