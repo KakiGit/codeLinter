@@ -13,6 +13,7 @@ let rightDivHeight = rightDiv.clientHeight
 let nodeID = 0
 let currentNode
 let nodeList = [] // stores used nodes. (for "go back" button)
+let currentOpenedFile = null
 document.title = 'Notepad - Untitled' // 设置文档标题，影响窗口标题栏名称
 
 // 给文本框增加右键菜单
@@ -115,6 +116,147 @@ function readText (file) {
 //   }
 // }
 
+function traverseD3TreeNodes(node, obj, level) {
+    var o = {};
+    o['id'] = node.GetID()
+    o['name'] = node.GetName()
+    o['path'] = node.GetFilePath()
+    o['group'] = level
+    obj['nodes'].push(o);
+    for (var i = 0; i < node.children.length; i++) {
+        traverseD3TreeNodes(node.children[i], obj, level+1)
+    }
+}
+
+function traverseD3TreeLinks(node, obj) {
+    for (var i = 0; i < node.children.length; i++) {
+        var o = {}
+        o['source'] = node.GetID()
+        o['target'] = node.children[i].GetID()
+        obj['links'].push(o)
+        traverseD3TreeLinks(node.children[i], obj)
+    }
+}
+
+function writeJson() {
+    var jsonStr = '{"nodes":[],' + '"links":[]}'
+
+    var jsonObj = JSON.parse(jsonStr)
+
+    traverseD3TreeNodes(rootNode, jsonObj, 1)
+    traverseD3TreeLinks(rootNode, jsonObj)
+
+    var fs = require("fs");
+    fs.writeFile("./tree.json", JSON.stringify(jsonObj), function (err) {
+        if (err) return console.log(err)
+        drawD3Tree()
+    });
+    //console.log("File has been created");
+}
+
+function drawD3Tree() {
+    var svg = d3.select("svg"),
+        width = +svg.attr("width"),
+        height = +svg.attr("height");
+
+    var color = d3.scaleOrdinal(d3.schemeCategory20);
+
+    var linkDistance = 50;
+    var linkForce = -100;
+    var simulation = d3.forceSimulation()
+        .force("link", d3.forceLink().id(function(d) { return d.id; }).distance(linkDistance))
+        .force("charge", d3.forceManyBody().strength(linkForce))
+        .force("center", d3.forceCenter(width / 2, height / 2));
+
+
+    d3.json("./tree.json", function(error, graph) {
+        if (error) throw error;
+
+        var link = svg.append("g")
+            .attr("class", "links")
+            .selectAll("line")
+            .data(graph.links)
+            .enter().append("line")
+            .attr("stroke-width", function(d) { return Math.sqrt(d.value); });
+
+        var group = svg.append("g")
+            .attr("class", "nodes");
+
+
+        var node = group
+            .selectAll("circle")
+            .data(graph.nodes)
+            .enter().append("circle")
+            .attr("r", 10)
+            .attr("id", function(d) { return d.id; })
+            .attr("text", "ss")
+            .attr("fill", function(d) { return color(d.group); })
+            .call(d3.drag()
+                .on("start", dragstarted)
+                .on("drag", dragged)
+                .on("end", dragended));
+
+        var text = group.selectAll("text")
+            .data(graph.nodes)
+            .enter().append("text")
+            .on("mousedown", toggleColor)
+            .text(function(d) { return d.name; });
+
+
+
+        node.append("title")
+            .text(function(d) { return d.id; });
+
+        simulation
+            .nodes(graph.nodes)
+            .on("tick", ticked);
+
+        simulation.force("link")
+            .links(graph.links);
+
+        function ticked() {
+            link
+                .attr("x1", function(d) { return d.source.x; })
+                .attr("y1", function(d) { return d.source.y; })
+                .attr("x2", function(d) { return d.target.x; })
+                .attr("y2", function(d) { return d.target.y; });
+
+            node
+                .attr("cx", function(d) { return d.x; })
+                .attr("cy", function(d) { return d.y; });
+
+            text
+                .attr("x", function(d) {return d.x; })
+                .attr("y", function(d) {return d.y; });
+        }
+    });
+
+    function toggleColor(d) {
+        console.log(d.path);
+        currentFile = d.path
+        // TODO open new file?!
+        var currentColor = "pink";
+        d3.select(this).style("fill", currentColor);
+        d3.select('[id="' + d.id + '"]').style("fill", "yellow");
+    }
+    function dragstarted(d) {
+        if (!d3.event.active) simulation.alphaTarget(0.3).restart();
+        d.fx = d.x;
+        d.fy = d.y;
+    }
+
+    function dragged(d) {
+        d.fx = d3.event.x;
+        d.fy = d3.event.y;
+    }
+
+    function dragended(d) {
+        if (!d3.event.active) simulation.alphaTarget(0);
+        d.fx = null;
+        d.fy = null;
+    }
+}
+
 function askDeleteIfNeed () {
   const fs = require('fs')
   if (currentTagFile != null) {
@@ -154,6 +296,7 @@ class TreeNode {
         this.filename = ""
         this.line = 0
         this.ID = nodeID // unique ID
+        this.filepath = ""
         nodeID++
     }
     GetChildren() {
@@ -161,6 +304,12 @@ class TreeNode {
     }
     GetParent() {
         return this.parent
+    }
+    SetFilePath(str) {
+        this.filepath = str
+    }
+    GetFilePath(str) {
+        return this.filepath
     }
     GetX() {
       return this.x
@@ -230,6 +379,7 @@ function resolveFile(texts, node, level) {
 
   // obtain filename
   var filename = texts.substring(indexx + tagx.length, index0)
+  node.SetFilePath(filename.split('\n')[0])
   filename = filename.split('\n')[0].split('/')
   filename = filename[filename.length-1]
 
@@ -264,7 +414,6 @@ function resolveFile(texts, node, level) {
   }
   // expand sub level nodes: (relied file nodes)
   var tag = '[' + (level+1).toString() + '-'
-  console.log(tag)
   var indices = getIndicesOf(tag, texts, true)
   var children = node.GetChildren()
   var index = 0
@@ -368,7 +517,6 @@ function TraverseTree(id) {
         if (children[i].id === currentNode.GetID().toString()) {
             children[i].setAttribute("style", "border-radius: 15px; background-color:" + color + ";position: absolute;top:" +
                 children[i].offsetTop.toString() + "px;" + "left:" + children[i].offsetLeft.toString() + "px;");
-            console.log(currentNode.GetName())
         }
         for (var j = 0; j < currentNode.children.length; j++) {
             if (children[i].id === currentNode.children[j].GetID().toString()) {
@@ -472,11 +620,14 @@ document.getElementById('show').addEventListener('click', function () {
   if (currentTagFile != null) {
     const txtRead = readText(currentTagFile)
 
-    resolveFile(txtRead, rootNode, 1)
-    currentNode = rootNode
-    rootNode.Print()
+      //
+      resolveFile(txtRead, rootNode, 1)
+      writeJson()
+
+    //currentNode = rootNode
+    //rootNode.Print()
     // todo: now the tree structure is ready, we need to draw it on screen
-    DrawTree(rootNode, rightDiv.clientWidth / 2, rightDiv.clientHeight / 2, 1)
+    //DrawTree(rootNode, rightDiv.clientWidth / 2, rightDiv.clientHeight / 2, 1)
 
   } else {
     const notification = {

@@ -31,6 +31,15 @@
             border: 0px;
             font-size: 18px;
         }
+        .links line {
+            stroke: #999;
+            stroke-opacity: 0.6;
+        }
+
+        .nodes circle {
+            stroke: #fff;
+            stroke-width: 1.5px;
+        }
     </style>
 </head>
 
@@ -42,9 +51,9 @@
             <textarea  id="txtEditor" readonly="readonly"></textarea>
         </div>
         <div class="col-6" id="rightDiv">
-            <canvas id="myCanvas" width="500px" height="500px">
-
-            </canvas>
+            <!-- canvas id="myCanvas" width="500px" height="500px" -->
+                <svg width="500" height="600"></svg>
+            <!-- /canvas -->
         </div>
         </div>
     </div>
@@ -56,6 +65,7 @@
         <button type="button" class="btn btn-warning" id="close">Close</button>
     </div>
 </body>
+<script src="https://d3js.org/d3.v4.min.js"></script>
 <script>
     require('./index.js');
 </script>
