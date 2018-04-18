@@ -5,7 +5,7 @@ let currentFile = null // 当前文档保存的路径
 let currentTagFile = null
 // let isSaved = true // 当前文档是否已保存
 let txtEditor = document.getElementById('txtEditor') // 获得TextArea文本框的引用
-//let txtEditor1 = document.getElementById('txtEditor1')
+// let txtEditor1 = document.getElementById('txtEditor1')
 let rightDiv = document.getElementById('rightDiv')
 let myCanvas = document.getElementById('myCanvas')
 let rightDivWidth = rightDiv.clientWidth
@@ -42,42 +42,42 @@ document.title = 'Notepad - Untitled' // 设置文档标题，影响窗口标题
 
 // 监听与主进程的通信
 ipcRenderer.on('action', (event, arg) => {
-  switch (arg) {
-    // case 'new': // 新建文件
-    //   askSaveIfNeed()
-    //   currentFile = null
-    //   txtEditor.value = ''
-    //   document.title = 'Notepad - Untitled'
-    //   // remote.getCurrentWindow().setTitle("Notepad - Untitled *");
-    //   isSaved = true
-    //   break
-    // case 'open': // 打开文件
-    //   askSaveIfNeed()
-    //   const files = remote.dialog.showOpenDialog(remote.getCurrentWindow(), {
-    //     filters: [
-    //       { name: 'Text Files', extensions: ['txt', 'js', 'html', 'md'] },
-    //       { name: 'All Files', extensions: ['*'] }],
-    //     properties: ['openFile']
-    //   })
-    //   if (files) {
-    //     currentFile = files[0]
-    //     const txtRead = readText(currentFile)
-    //     txtEditor.value = txtRead
-    //     document.title = 'Notepad - ' + currentFile
-    //     isSaved = true
-    //   }
-    //   break
-    // case 'save': // 保存文件
-    //   saveCurrentDoc()
-    //   break
-    case 'exiting':
-      // askSaveIfNeed()
-      askDeleteIfNeed()
-      ipcRenderer.sendSync('reqaction', 'exit')
-      break
-    // case 'tagsGen':
-    //   currentTagFile = currentFile
-  }
+    switch (arg) {
+        // case 'new': // 新建文件
+        //   askSaveIfNeed()
+        //   currentFile = null
+        //   txtEditor.value = ''
+        //   document.title = 'Notepad - Untitled'
+        //   // remote.getCurrentWindow().setTitle("Notepad - Untitled *");
+        //   isSaved = true
+        //   break
+        // case 'open': // 打开文件
+        //   askSaveIfNeed()
+        //   const files = remote.dialog.showOpenDialog(remote.getCurrentWindow(), {
+        //     filters: [
+        //       { name: 'Text Files', extensions: ['txt', 'js', 'html', 'md'] },
+        //       { name: 'All Files', extensions: ['*'] }],
+        //     properties: ['openFile']
+        //   })
+        //   if (files) {
+        //     currentFile = files[0]
+        //     const txtRead = readText(currentFile)
+        //     txtEditor.value = txtRead
+        //     document.title = 'Notepad - ' + currentFile
+        //     isSaved = true
+        //   }
+        //   break
+        // case 'save': // 保存文件
+        //   saveCurrentDoc()
+        //   break
+        case 'exiting':
+            // askSaveIfNeed()
+            askDeleteIfNeed()
+            ipcRenderer.sendSync('reqaction', 'exit')
+            break
+        // case 'tagsGen':
+        //   currentTagFile = currentFile
+    }
 })
 
 // ipcRenderer.on('open-file-dialog-sheet', function (event) {
@@ -86,11 +86,11 @@ ipcRenderer.on('action', (event, arg) => {
 // })
 
 // 读取文本文件
-function readText (file) {
-  const fs = require('fs')
-  // const path = require('path')
-  // currentTagFile = path.join(file, '..', 'tags')
-  return fs.readFileSync(file, 'utf8')
+function readText(file) {
+    const fs = require('fs')
+    // const path = require('path')
+    // currentTagFile = path.join(file, '..', 'tags')
+    return fs.readFileSync(file, 'utf8')
 }
 // // 保存文本内容到文件
 // function saveText (text, file) {
@@ -117,14 +117,14 @@ function readText (file) {
 // }
 
 function traverseD3TreeNodes(node, obj, level) {
-    var o = {};
+    var o = {}
     o['id'] = node.GetID()
     o['name'] = node.GetName()
     o['path'] = node.GetFilePath()
     o['group'] = level
-    obj['nodes'].push(o);
+    obj['nodes'].push(o)
     for (var i = 0; i < node.children.length; i++) {
-        traverseD3TreeNodes(node.children[i], obj, level+1)
+        traverseD3TreeNodes(node.children[i], obj, level + 1)
     }
 }
 
@@ -146,129 +146,132 @@ function writeJson() {
     traverseD3TreeNodes(rootNode, jsonObj, 1)
     traverseD3TreeLinks(rootNode, jsonObj)
 
-    var fs = require("fs");
-    fs.writeFile("./tree.json", JSON.stringify(jsonObj), function (err) {
+    var fs = require('fs')
+    fs.writeFile('./tree.json', JSON.stringify(jsonObj), function (err) {
         if (err) return console.log(err)
         drawD3Tree()
-    });
+    })
     //console.log("File has been created");
 }
 
 function drawD3Tree() {
-    var svg = d3.select("svg"),
-        width = +svg.attr("width"),
-        height = +svg.attr("height");
+    var svg = d3.select('svg'),
+        width = +svg.attr('width'),
+        height = +svg.attr('height')
 
-    var color = d3.scaleOrdinal(d3.schemeCategory20);
+    var color = d3.scaleOrdinal(d3.schemeCategory20)
 
-    var linkDistance = 50;
-    var linkForce = -100;
+    var linkDistance = 50
+    var linkForce = -100
     var simulation = d3.forceSimulation()
-        .force("link", d3.forceLink().id(function(d) { return d.id; }).distance(linkDistance))
-        .force("charge", d3.forceManyBody().strength(linkForce))
-        .force("center", d3.forceCenter(width / 2, height / 2));
+        .force('link', d3.forceLink().id(function (d) { return d.id }).distance(linkDistance))
+        .force('charge', d3.forceManyBody().strength(linkForce))
+        .force('center', d3.forceCenter(width / 2, height / 2))
 
 
-    d3.json("./tree.json", function(error, graph) {
-        if (error) throw error;
+    d3.json('./tree.json', function (error, graph) {
+        if (error) throw error
 
-        var link = svg.append("g")
-            .attr("class", "links")
-            .selectAll("line")
+        var link = svg.append('g')
+            .attr('class', 'links')
+            .selectAll('line')
             .data(graph.links)
-            .enter().append("line")
-            .attr("stroke-width", function(d) { return Math.sqrt(d.value); });
+            .enter().append('line')
+            .attr('stroke-width', function (d) { return Math.sqrt(d.value) })
 
-        var group = svg.append("g")
-            .attr("class", "nodes");
+        var group = svg.append('g')
+            .attr('class', 'nodes')
 
 
         var node = group
-            .selectAll("circle")
+            .selectAll('circle')
             .data(graph.nodes)
-            .enter().append("circle")
-            .attr("r", 10)
-            .attr("id", function(d) { return d.id; })
-            .attr("text", "ss")
-            .attr("fill", function(d) { return color(d.group); })
+            .enter().append('circle')
+            .attr('r', 10)
+            .attr('id', function (d) { return d.id })
+            .attr('text', 'ss')
+            .attr('fill', function (d) { return color(d.group) })
             .call(d3.drag()
-                .on("start", dragstarted)
-                .on("drag", dragged)
-                .on("end", dragended));
+                .on('start', dragstarted)
+                .on('drag', dragged)
+                .on('end', dragended))
 
-        var text = group.selectAll("text")
+        var text = group.selectAll('text')
             .data(graph.nodes)
-            .enter().append("text")
-            .on("mousedown", toggleColor)
-            .text(function(d) { return d.name; });
+            .enter().append('text')
+            .on('mousedown', toggleColor)
+            .text(function (d) { return d.name })
 
 
 
-        node.append("title")
-            .text(function(d) { return d.id; });
+        node.append('title')
+            .text(function (d) { return d.id })
 
         simulation
             .nodes(graph.nodes)
-            .on("tick", ticked);
+            .on('tick', ticked)
 
-        simulation.force("link")
-            .links(graph.links);
+        simulation.force('link')
+            .links(graph.links)
 
         function ticked() {
             link
-                .attr("x1", function(d) { return d.source.x; })
-                .attr("y1", function(d) { return d.source.y; })
-                .attr("x2", function(d) { return d.target.x; })
-                .attr("y2", function(d) { return d.target.y; });
+                .attr('x1', function (d) { return d.source.x })
+                .attr('y1', function (d) { return d.source.y })
+                .attr('x2', function (d) { return d.target.x })
+                .attr('y2', function (d) { return d.target.y })
 
             node
-                .attr("cx", function(d) { return d.x; })
-                .attr("cy", function(d) { return d.y; });
+                .attr('cx', function (d) { return d.x })
+                .attr('cy', function (d) { return d.y })
 
             text
-                .attr("x", function(d) {return d.x; })
-                .attr("y", function(d) {return d.y; });
+                .attr('x', function (d) { return d.x })
+                .attr('y', function (d) { return d.y })
         }
-    });
+    })
 
     function toggleColor(d) {
-        console.log(d.path);
+        console.log(d.path)
         currentFile = d.path
         // TODO open new file?!
-        var currentColor = "pink";
-        d3.select(this).style("fill", currentColor);
-        d3.select('[id="' + d.id + '"]').style("fill", "yellow");
+        var currentColor = 'pink';
+        d3.select(this).style('fill', currentColor)
+        d3.select('[id="' + d.id + '"]').style('fill', 'yellow')
     }
     function dragstarted(d) {
-        if (!d3.event.active) simulation.alphaTarget(0.3).restart();
-        d.fx = d.x;
-        d.fy = d.y;
+        if (!d3.event.active) simulation.alphaTarget(0.3).restart()
+        d.fx = d.x
+        d.fy = d.y
     }
 
     function dragged(d) {
-        d.fx = d3.event.x;
-        d.fy = d3.event.y;
+        d.fx = d3.event.x
+        d.fy = d3.event.y
     }
 
     function dragended(d) {
-        if (!d3.event.active) simulation.alphaTarget(0);
-        d.fx = null;
-        d.fy = null;
+        if (!d3.event.active) simulation.alphaTarget(0)
+        d.fx = null
+        d.fy = null
     }
 }
 
-function askDeleteIfNeed () {
-  const fs = require('fs')
-  if (currentTagFile != null) {
-    if (fs.statSync(currentTagFile).isFile()) {
-      const response = dialog.showMessageBox(remote.getCurrentWindow(), {
-        message: 'Do you want to delete the result file?',
-        type: 'question',
-        buttons: ['Yes', 'No']
-      })
-      if (response === 0) fs.unlinkSync(currentTagFile)
+function askDeleteIfNeed() {
+    const fs = require('fs')
+    if (currentTagFile != null) {
+        if (fs.statSync(currentTagFile).isFile()) {
+            const response = dialog.showMessageBox(remote.getCurrentWindow(), {
+                message: 'Do you want to delete the result file?',
+                type: 'question',
+                buttons: ['Yes', 'No']
+            })
+            if (response === 0) {
+                fs.unlinkSync('./tree.json')
+                fs.unlinkSync(currentTagFile)
+            }
+        }
     }
-  }
 }
 
 // 如果需要保存，弹出保存对话框询问用户是否保存当前文档
@@ -282,7 +285,6 @@ function askDeleteIfNeed () {
 //   if (response === 0) saveCurrentDoc() // 点击Yes按钮后保存当前文档
 // }
 
-
 class TreeNode {
     constructor(parent, name, type) {
         this.parent = parent
@@ -291,16 +293,16 @@ class TreeNode {
         this.x = -1
         this.y = -1
         this.element = null
-        this.type = type  // types : root, func, file, mult
+        this.type = type // types : root, func, file, mult
         // filename can also be obtained from parent.name
-        this.filename = ""
+        this.filename = ''
         this.line = 0
         this.ID = nodeID // unique ID
-        this.filepath = ""
+        this.filepath = ''
         nodeID++
     }
     GetChildren() {
-      return this.children
+        return this.children
     }
     GetParent() {
         return this.parent
@@ -312,7 +314,7 @@ class TreeNode {
         return this.filepath
     }
     GetX() {
-      return this.x
+        return this.x
     }
     GetY() {
         return this.y
@@ -321,14 +323,14 @@ class TreeNode {
         return this.name
     }
     Add(node) {
-      this.children.push(node)
+        this.children.push(node)
     }
     SetPosition(x, y) {
-      this.x = x
-      this.y = y
+        this.x = x
+        this.y = y
     }
     SetType(type) {
-      this.type = type
+        this.type = type
     }
     SetFilename(str) {
         this.filename = str
@@ -337,103 +339,103 @@ class TreeNode {
         this.line = line
     }
     GetID() {
-        return this.ID;
+        return this.ID
     }
     GetType() {
         return this.type
     }
     SetElement(element) {
-      this.element = element
+        this.element = element
     }
     ComputePosition() {
 
     }
     Print() {
-      console.log("Children size:" + this.children.length.toString())
-      for (var i = 0; i < this.children.length; i++) {
-        if (this.children[i].type === "file") {
-            console.log(this.name + "'s child No." + (i+1).toString() + " " + this.children[i].GetName());
-            this.children[i].Print()
+        console.log('Children size:' + this.children.length.toString())
+        for (var i = 0; i < this.children.length; i++) {
+            if (this.children[i].type === 'file') {
+                console.log(this.name + "'s child No." + (i + 1).toString() + ' ' + this.children[i].GetName())
+                this.children[i].Print()
+            }
         }
-      }
     }
 }
 
-let rootNode = new TreeNode(null, "root", "root")
+let rootNode = new TreeNode(null, 'root', 'root')
 
 /*
 
  */
 function resolveFile(texts, node, level) {
-  var tagx = "Analysing:"
-  var tag0 = "Relied Files:"
-  var tag1 = "Contained Functions:"
-  var tag2 = "There are "
-  var tag3 = "in line"
+    var tagx = 'Analysing:'
+    var tag0 = 'Relied Files:'
+    var tag1 = 'Contained Functions:'
+    var tag2 = 'There are '
+    var tag3 = 'in line'
 
-  var indexx = texts.indexOf(tagx)
-  if (indexx < 0) return
-  var index0 = texts.indexOf(tag0)
-  var index1 = texts.indexOf(tag1)
-  var index2 = texts.indexOf(tag2)
+    var indexx = texts.indexOf(tagx)
+    if (indexx < 0) return
+    var index0 = texts.indexOf(tag0)
+    var index1 = texts.indexOf(tag1)
+    var index2 = texts.indexOf(tag2)
 
-  // obtain filename
-  var filename = texts.substring(indexx + tagx.length, index0)
-  node.SetFilePath(filename.split('\n')[0])
-  filename = filename.split('\n')[0].split('/')
-  filename = filename[filename.length-1]
+    // obtain filename
+    var filename = texts.substring(indexx + tagx.length, index0)
+    node.SetFilePath(filename.split('\n')[0])
+    filename = filename.split('\n')[0].split('/')
+    filename = filename[filename.length - 1]
 
-  // str0: substring containing all relied files, split by '\n'
-  var str0 = texts.substring(index0 + tag0.length, index1)
-  // str1: substring containing all functions in current files, split by '\n'
-  var str1 = texts.substring(index1 + tag1.length, index2)
-  // 'node' file contains the above str1 functions
+    // str0: substring containing all relied files, split by '\n'
+    var str0 = texts.substring(index0 + tag0.length, index1)
+    // str1: substring containing all functions in current files, split by '\n'
+    var str1 = texts.substring(index1 + tag1.length, index2)
+    // 'node' file contains the above str1 functions
 
-  // record all the relied files
-  var countFile = 0
-  var res = str0.split("\n")
-  for (var i = 0; i < res.length; i++) {
-      if (res[i].length > 0) {
-          var tempNode = new TreeNode(node, res[i], "file")
-          tempNode.SetFilename(res[i])
-          node.Add(tempNode)
-          countFile++
-      }
-  }
-  // record current file's contained functions
-  res = str1.split("\n")
-  for (var i = 0; i < res.length; i++) {
-      // tag: containing "in line"
-      if (res[i].length > 0 && res[i].indexOf(tag3) > 0) {
-          var temp = res[i].split(' ')
-          var tempNode = new TreeNode(node, temp[0], "func")
-          tempNode.SetFilename(filename)
-          tempNode.SetLine(temp[3])
-          node.Add(tempNode)
-      }
-  }
-  // expand sub level nodes: (relied file nodes)
-  var tag = '[' + (level+1).toString() + '-'
-  var indices = getIndicesOf(tag, texts, true)
-  var children = node.GetChildren()
-  var index = 0
+    // record all the relied files
+    var countFile = 0
+    var res = str0.split('\n')
+    for (var i = 0; i < res.length; i++) {
+        if (res[i].length > 0) {
+            var tempNode = new TreeNode(node, res[i], 'file')
+            tempNode.SetFilename(res[i])
+            node.Add(tempNode)
+            countFile++
+        }
+    }
+    // record current file's contained functions
+    res = str1.split('\n')
+    for (var i = 0; i < res.length; i++) {
+        // tag: containing "in line"
+        if (res[i].length > 0 && res[i].indexOf(tag3) > 0) {
+            var temp = res[i].split(' ')
+            var tempNode = new TreeNode(node, temp[0], 'func')
+            tempNode.SetFilename(filename)
+            tempNode.SetLine(temp[3])
+            node.Add(tempNode)
+        }
+    }
+    // expand sub level nodes: (relied file nodes)
+    var tag = '[' + (level + 1).toString() + '-'
+    var indices = getIndicesOf(tag, texts, true)
+    var children = node.GetChildren()
+    var index = 0
 
-  for (var i = 0; i < children.length; i++) {
-      // console.log("/" + children[i].name)
-      // console.log(occurrences(texts, "/" + children[i].name, false) > 0)
-      if (children[i].type === "file" && occurrences(texts, "/" + children[i].name, false) > 0) {
-          // since all nodes are in order, we can just do this:
-          // if children contains N 'file' node, indices.length must > N-1
-          var start = getStartIndex(indices[index], texts)
-          var end = indices.length === index + 1?texts.length-1:getEndIndex(indices[index+1], texts)
-          // subtexts contains the new text for iteration
-          var subtexts = texts.substring(start, end)
-          //console.log(subtexts)
-          resolveFile(subtexts, children[i], level + 1)
-          index++
-      }
-  }
-  return node
+    for (var i = 0; i < children.length; i++) {
+        // console.log("/" + children[i].name)
+        // console.log(occurrences(texts, "/" + children[i].name, false) > 0)
+        if (children[i].type === 'file' && occurrences(texts, '/' + children[i].name, false) > 0) {
+            // since all nodes are in order, we can just do this:
+            // if children contains N 'file' node, indices.length must > N-1
+            var start = getStartIndex(indices[index], texts)
+            var end = indices.length === index + 1 ? texts.length - 1 : getEndIndex(indices[index + 1], texts)
+            // subtexts contains the new text for iteration
+            var subtexts = texts.substring(start, end)
+            // console.log(subtexts)
+            resolveFile(subtexts, children[i], level + 1)
+            index++
+        }
+    }
+    return node
 }
 
 /*
@@ -441,7 +443,7 @@ function resolveFile(texts, node, level) {
     'Analysing ...'.
  */
 function getStartIndex(index, texts) {
-    var tag = "Analysing:"
+    var tag = 'Analysing:'
     var indices = getIndicesOf(tag, texts, true)
     for (var i = indices.length; i >= 0; i--) {
         if (indices[i] < index) {
@@ -452,7 +454,7 @@ function getStartIndex(index, texts) {
 }
 
 function getEndIndex(index, texts) {
-    var tag = "Analysing:"
+    var tag = 'Analysing:'
     var indices = getIndicesOf(tag, texts, true)
     for (var i = indices.length; i >= 0; i--) {
         if (indices[i] < index) {
@@ -462,69 +464,65 @@ function getEndIndex(index, texts) {
     return index
 }
 
-
 function occurrences(string, subString, allowOverlapping) {
-
-    string += "";
-    subString += "";
-    if (subString.length <= 0) return (string.length + 1);
+    string += '';
+    subString += '';
+    if (subString.length <= 0) return (string.length + 1)
 
     var n = 0,
         pos = 0,
-        step = allowOverlapping ? 1 : subString.length;
+        step = allowOverlapping ? 1 : subString.length
 
     while (true) {
-        pos = string.indexOf(subString, pos);
+        pos = string.indexOf(subString, pos)
         if (pos >= 0) {
-            ++n;
-            pos += step;
-        } else break;
+            ++n
+            pos += step
+        } else break
     }
-    return n;
+    return n
 }
-
 
 function getIndicesOf(searchStr, str, caseSensitive) {
-    var searchStrLen = searchStr.length;
+    var searchStrLen = searchStr.length
     if (searchStrLen == 0) {
-        return [];
+        return []
     }
-    var startIndex = 0, index, indices = [];
+    var startIndex = 0, index, indices = []
     if (!caseSensitive) {
-        str = str.toLowerCase();
-        searchStr = searchStr.toLowerCase();
+        str = str.toLowerCase()
+        searchStr = searchStr.toLowerCase()
     }
     while ((index = str.indexOf(searchStr, startIndex)) > -1) {
-        indices.push(index);
-        startIndex = index + searchStrLen;
+        indices.push(index)
+        startIndex = index + searchStrLen
     }
-    return indices;
+    return indices
 }
 function TraverseTree(id) {
-    BSTree(rootNode, id);
-    var children = rightDiv.children;
+    BSTree(rootNode, id)
+    var children = rightDiv.children
     for (var i = 0; i < children.length; i++) {
-        var color;
-        if (children[i].className === "node-file") {
-            color = "#dd948a"
-        } else if (children[i].className === "node-func") {
-            color = "#f9fbb6"
+        var color
+        if (children[i].className === 'node-file') {
+            color = '#dd948a'
+        } else if (children[i].className === 'node-func') {
+            color = '#f9fbb6'
         }
-        children[i].setAttribute("style", "border-radius: 15px; background-color:" + color + ";position: absolute;top:" +
-            children[i].offsetTop.toString() + "px;" + "left:" + children[i].offsetLeft.toString() + "px;");
+        children[i].setAttribute('style', 'border-radius: 15px; background-color:' + color + ';position: absolute;top:' +
+            children[i].offsetTop.toString() + 'px;' + 'left:' + children[i].offsetLeft.toString() + 'px;')
 
-        color = "#31ee72";
+        color = '#31ee72';
         if (children[i].id === currentNode.GetID().toString()) {
-            children[i].setAttribute("style", "border-radius: 15px; background-color:" + color + ";position: absolute;top:" +
-                children[i].offsetTop.toString() + "px;" + "left:" + children[i].offsetLeft.toString() + "px;");
+            children[i].setAttribute('style', 'border-radius: 15px; background-color:' + color + ';position: absolute;top:' +
+                children[i].offsetTop.toString() + 'px;' + 'left:' + children[i].offsetLeft.toString() + 'px;')
         }
         for (var j = 0; j < currentNode.children.length; j++) {
             if (children[i].id === currentNode.children[j].GetID().toString()) {
-                children[i].setAttribute("style", "border-radius: 15px; background-color:" + color + ";position: absolute;top:" +
-                    children[i].offsetTop.toString() + "px;" + "left:" + children[i].offsetLeft.toString() + "px;");
+                children[i].setAttribute('style', 'border-radius: 15px; background-color:' + color + ';position: absolute;top:' +
+                    children[i].offsetTop.toString() + 'px;' + 'left:' + children[i].offsetLeft.toString() + 'px;')
             }
         }
-
     }
 }
 function BSTree(node, id) {
@@ -540,57 +538,56 @@ function BSTree(node, id) {
     }
 }
 function DrawTree(node, posy, posx, level) {
-  posy = 10
-  if(node.name == "root") {
-      var btn1 = document.createElement("button")
-      btn1.innerText = node.GetName()
-      btn1.setAttribute("class", "node-root")
-      btn1.setAttribute("style", "background-color: #697586; color: #eeeeee;" +
-          "border-radius: 15px;position: absolute;top:" +
-          posx.toString() + "px;" + "left:" + (posy.toString() + "px;"))
-      node.SetPosition(posx, posy)
-      rightDiv.appendChild(btn1)
-  }
-  var children = node.GetChildren()
-  for (var i = 0; i < children.length; i++) {
-      // if (children[i].type == "func") {
-      //     return
-      // }
-      var btn1 = document.createElement("button")
-      btn1.innerText = children[i].GetName()
-      // var x = posx + 100 * Math.cos(Math.PI / 3 * i)
-      // var y = posy + 100 * Math.sin(Math.PI / 3 * i)
-      var x = posx + 60 * (i - children.length / 2) * Math.pow(0.6, level)
-      var y = 100 * level
-      var color;
-      if (children[i].GetType() === "file") {
-        btn1.setAttribute("class", "node-file")
-        color = "#dd948a"
-      } else {
-        btn1.setAttribute("class", "node-func")
-        color = "#f9fbb6"
-      }
+    posy = 10
+    if (node.name == 'root') {
+        var btn1 = document.createElement('button')
+        btn1.innerText = node.GetName()
+        btn1.setAttribute('class', 'node-root')
+        btn1.setAttribute('style', 'background-color: #697586; color: #eeeeee;' +
+            'border-radius: 15px;position: absolute;top:' +
+            posx.toString() + 'px;' + 'left:' + (posy.toString() + 'px;'))
+        node.SetPosition(posx, posy)
+        rightDiv.appendChild(btn1)
+    }
+    var children = node.GetChildren()
+    for (var i = 0; i < children.length; i++) {
+        // if (children[i].type == "func") {
+        //     return
+        // }
+        var btn1 = document.createElement('button')
+        btn1.innerText = children[i].GetName()
+        // var x = posx + 100 * Math.cos(Math.PI / 3 * i)
+        // var y = posy + 100 * Math.sin(Math.PI / 3 * i)
+        var x = posx + 60 * (i - children.length / 2) * Math.pow(0.6, level)
+        var y = 100 * level
+        var color
+        if (children[i].GetType() === 'file') {
+            btn1.setAttribute('class', 'node-file')
+            color = '#dd948a'
+        } else {
+            btn1.setAttribute('class', 'node-func')
+            color = '#f9fbb6'
+        }
 
-      btn1.setAttribute("style", "border-radius: 15px; background-color:" + color + ";position: absolute;top:" +
-         x.toString() + "px;" + "left:" + y.toString() + "px;");
-      btn1.setAttribute("id", children[i].GetID().toString())
-      btn1.addEventListener('click', function () {
-          TraverseTree(this.id)
-      })
-      rightDiv.appendChild(btn1)
-      children[i].SetPosition(x, y)
+        btn1.setAttribute('style', 'border-radius: 15px; background-color:' + color + ';position: absolute;top:' +
+            x.toString() + 'px;' + 'left:' + y.toString() + 'px;')
+        btn1.setAttribute('id', children[i].GetID().toString())
+        btn1.addEventListener('click', function () {
+            TraverseTree(this.id)
+        })
+        rightDiv.appendChild(btn1)
+        children[i].SetPosition(x, y)
 
-      var context = myCanvas.getContext('2d')
-      context.beginPath();
+        var context = myCanvas.getContext('2d')
+        context.beginPath()
 
-      context.moveTo(node.GetY(), node.GetX())
-      context.lineTo(y, x)
-      context.stroke()
+        context.moveTo(node.GetY(), node.GetX())
+        context.lineTo(y, x)
+        context.stroke()
 
-      DrawTree(children[i], y, x, level + 1)
-  }
+        DrawTree(children[i], y, x, level + 1)
+    }
 }
-
 
 function getFileContent(filepath) {
     ipcRenderer.send('open-file', filepath)
@@ -599,51 +596,50 @@ function getFileContent(filepath) {
     const txtRead = readText(tagFile)
 }
 document.getElementById('open').addEventListener('click', function () {
-  const files = remote.dialog.showOpenDialog(remote.getCurrentWindow(), {
-    filters: [
-      { name: 'Text Files', extensions: ['txt', 'js', 'html', 'md'] },
-      { name: 'All Files', extensions: ['*'] }],
-    properties: ['openFile']
-  })
-  if (files) {
-    currentFile = files[0]
-    const txtRead = readText(currentFile)
-    txtEditor.value = txtRead
-    document.title = 'Notepad - ' + currentFile
-    ipcRenderer.send('open-file', currentFile)
-    const path = require('path')
-    currentTagFile = path.join(currentFile, '..', 'result')
-  }
+    const files = remote.dialog.showOpenDialog(remote.getCurrentWindow(), {
+        filters: [
+            { name: 'Text Files', extensions: ['txt', 'js', 'html', 'md'] },
+            { name: 'All Files', extensions: ['*'] }],
+        properties: ['openFile']
+    })
+    if (files) {
+        currentFile = files[0]
+        const txtRead = readText(currentFile)
+        txtEditor.value = txtRead
+        document.title = 'Notepad - ' + currentFile
+        ipcRenderer.send('open-file', currentFile)
+        const path = require('path')
+        currentTagFile = path.join(currentFile, '..', 'result')
+    }
 })
 
 document.getElementById('show').addEventListener('click', function () {
-  if (currentTagFile != null) {
-    const txtRead = readText(currentTagFile)
+    if (currentTagFile != null) {
+        const txtRead = readText(currentTagFile)
 
-      //
-      resolveFile(txtRead, rootNode, 1)
-      writeJson()
+        //
+        resolveFile(txtRead, rootNode, 1)
+        writeJson()
 
-    //currentNode = rootNode
-    //rootNode.Print()
-    // todo: now the tree structure is ready, we need to draw it on screen
-    //DrawTree(rootNode, rightDiv.clientWidth / 2, rightDiv.clientHeight / 2, 1)
-
-  } else {
-    const notification = {
-      title: 'Oops!',
-      body: 'Please select a file'
+        // currentNode = rootNode
+        // rootNode.Print()
+        // todo: now the tree structure is ready, we need to draw it on screen
+        // DrawTree(rootNode, rightDiv.clientWidth / 2, rightDiv.clientHeight / 2, 1)
+    } else {
+        const notification = {
+            title: 'Oops!',
+            body: 'Please select a file'
+        }
+        const myNotification = new window.Notification(notification.title, notification)
+        myNotification.onclick = () => {
+            console.log('Notification clicked')
+        }
     }
-    const myNotification = new window.Notification(notification.title, notification)
-    myNotification.onclick = () => {
-      console.log('Notification clicked')
-    }
-  }
 }
 )
 
 document.getElementById('close').addEventListener('click', function () {
-  askDeleteIfNeed()
-  ipcRenderer.sendSync('reqaction', 'exit')
+    askDeleteIfNeed()
+    ipcRenderer.sendSync('reqaction', 'exit')
 }
 )

@@ -1,7 +1,7 @@
-
 <!DOCTYPE html>
 <html>
 <link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap.css" crossorigin="anonymous">
+
 <head>
     <meta charset="utf-8">
     <title>Notepad</title>
@@ -13,8 +13,9 @@
         }
 
         .mh1 div {
-        height: 90vh; 
+            height: 90vh;
         }
+
         #txtEditor {
             width: 100%;
             height: 89.535%;
@@ -23,6 +24,7 @@
             border: 0px;
             font-size: 18px;
         }
+
         #txtEditor1 {
             width: 100%;
             height: 89.535%;
@@ -31,6 +33,7 @@
             border: 0px;
             font-size: 18px;
         }
+
         .links line {
             stroke: #999;
             stroke-opacity: 0.6;
@@ -44,23 +47,23 @@
 </head>
 
 <body>
-    <div class="container-fluid" >
+    <div class="container-fluid">
         <!-- Content here -->
         <div class="row mh1">
-        <div class="col-6">            
-            <textarea  id="txtEditor" readonly="readonly"></textarea>
-        </div>
-        <div class="col-6" id="rightDiv">
-            <!-- canvas id="myCanvas" width="500px" height="500px" -->
-                <svg width="500" height="600"></svg>
-            <!-- /canvas -->
-        </div>
+            <div class="col-6">
+                <textarea id="txtEditor" readonly="readonly"></textarea>
+            </div>
+            <div class="col-6" id="rightDiv">
+                <!-- canvas id="myCanvas" width="500px" height="500px" -->
+                <svg width="500" height="500"></svg>
+                <!-- /canvas -->
+            </div>
         </div>
     </div>
-    
+
     <div class="text-center">
         <button type="button" class="btn btn-primary" id="open">Open File</button>
-        
+
         <button type="button" class="btn btn-success" id="show">Show Analysis</button>
         <button type="button" class="btn btn-warning" id="close">Close</button>
     </div>
@@ -69,4 +72,5 @@
 <script>
     require('./index.js');
 </script>
+
 </html>
