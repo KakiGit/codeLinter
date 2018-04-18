@@ -121,7 +121,18 @@ function traverseD3TreeNodes(node, obj, level) {
     o['id'] = node.GetID()
     o['name'] = node.GetName()
     o['path'] = node.GetFilePath()
-    o['group'] = level
+    o['type'] = node.GetType()
+    //o['group'] = level
+    if (node.GetType() === "func") {
+        o['group'] = 2
+    }
+    if (node.GetType() === "file") {
+        o['group'] = 1
+    }
+    if (node.GetType() === "root") {
+        o['group'] = 0
+    }
+
     obj['nodes'].push(o);
     for (var i = 0; i < node.children.length; i++) {
         traverseD3TreeNodes(node.children[i], obj, level+1)
@@ -142,7 +153,7 @@ function writeJson() {
     var jsonStr = '{"nodes":[],' + '"links":[]}'
 
     var jsonObj = JSON.parse(jsonStr)
-
+    console.log(rootNode.GetName())
     traverseD3TreeNodes(rootNode, jsonObj, 1)
     traverseD3TreeLinks(rootNode, jsonObj)
 
@@ -168,6 +179,7 @@ function drawD3Tree() {
         .force("charge", d3.forceManyBody().strength(linkForce))
         .force("center", d3.forceCenter(width / 2, height / 2));
 
+    var nodeColor = ["#1e7dd8", "#b5575b", "#4099a8", "#ffff00", "#00ffff"]
 
     d3.json("./tree.json", function(error, graph) {
         if (error) throw error;
@@ -187,25 +199,49 @@ function drawD3Tree() {
             .selectAll("circle")
             .data(graph.nodes)
             .enter().append("circle")
-            .attr("r", 10)
+            .attr("r", function(d) {
+                if (d.type === "func") return 15;
+                else if (d.type === "file") return 15;
+                else if (d.type === "root") return 30;})
+            // .attr("xlink:href", function(d) {
+            //     if (d.type === "file") return "./image/filenode_default.png";
+            //     else if (d.type === "func") return "./image/funcnode_default.png";
+            //     else if (d.type === "root") return "./image/rootnode_default.png";})
+            .attr("fill", function(d) { return nodeColor[d.group]; })
             .attr("id", function(d) { return d.id; })
-            .attr("text", "ss")
-            .attr("fill", function(d) { return color(d.group); })
             .call(d3.drag()
                 .on("start", dragstarted)
                 .on("drag", dragged)
                 .on("end", dragended));
 
+        var icons = group
+            .selectAll("image")
+            .data(graph.nodes)
+            .enter().append("image")
+            .attr("height", function(d) {
+                if (d.type === "func") return 10;
+                else if (d.type === "file") return 15;
+                else if (d.type === "root") return 15;})
+            .attr("width", function(d) {
+                if (d.type === "func") return 10;
+                else if (d.type === "file") return 15;
+                else if (d.type === "root") return 15;})
+            .attr("xlink:href", function(d) {
+                if (d.type === "func") return "./image/func_icon.png";
+                else if (d.type === "file") return "./image/file_icon.png";
+                else if (d.type === "root") return "./image/file_icon.png";})
+
         var text = group.selectAll("text")
             .data(graph.nodes)
             .enter().append("text")
+            .attr("fill", "#ddd")
             .on("mousedown", toggleColor)
             .text(function(d) { return d.name; });
 
 
 
         node.append("title")
-            .text(function(d) { return d.id; });
+            .text(function(d) { return d.name; });
 
         simulation
             .nodes(graph.nodes)
@@ -221,13 +257,28 @@ function drawD3Tree() {
                 .attr("x2", function(d) { return d.target.x; })
                 .attr("y2", function(d) { return d.target.y; });
 
+            // todo change the const 15 in 'd.x - 15'
             node
-                .attr("cx", function(d) { return d.x; })
-                .attr("cy", function(d) { return d.y; });
+                .attr("cx", function(d) { return d.x - 5; })
+                .attr("cy", function(d) { return d.y - 5; });
+
+            icons
+                .attr("x", function(d) {
+                    if (d.type === "func") return d.x - 10;
+                    else if (d.type === "file") return d.x - 12;
+                    else if (d.type === "root") return -100;})
+                .attr("y", function(d) {
+                    if (d.type === "func") return d.y - 10;
+                    else if (d.type === "file") return d.y - 12;
+                    else if (d.type === "root") return -100;})
 
             text
-                .attr("x", function(d) {return d.x; })
-                .attr("y", function(d) {return d.y; });
+                .attr("x", function(d) {
+                    if (d.type === "root") return d.x - 30;
+                    return -100; })
+                .attr("y", function(d) {
+                    if (d.type === "root") return d.y;
+                    return -100; });
         }
     });
 
@@ -331,7 +382,7 @@ class TreeNode {
       this.type = type
     }
     SetFilename(str) {
-        this.filename = str
+        this.name = str
     }
     SetLine(line) {
         this.line = line
@@ -382,6 +433,7 @@ function resolveFile(texts, node, level) {
   node.SetFilePath(filename.split('\n')[0])
   filename = filename.split('\n')[0].split('/')
   filename = filename[filename.length-1]
+  node.SetFilename(filename)
 
   // str0: substring containing all relied files, split by '\n'
   var str0 = texts.substring(index0 + tag0.length, index1)
@@ -619,7 +671,6 @@ document.getElementById('open').addEventListener('click', function () {
 document.getElementById('show').addEventListener('click', function () {
   if (currentTagFile != null) {
     const txtRead = readText(currentTagFile)
-
       //
       resolveFile(txtRead, rootNode, 1)
       writeJson()
