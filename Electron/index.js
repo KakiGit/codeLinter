@@ -148,21 +148,15 @@ function traverseD3TreeLinks(node, obj) {
         traverseD3TreeLinks(node.children[i], obj)
     }
 }
-
+var jsonObj;
 function writeJson() {
     var jsonStr = '{"nodes":[],' + '"links":[]}'
 
-    var jsonObj = JSON.parse(jsonStr)
+    jsonObj = JSON.parse(jsonStr)
     console.log(rootNode.GetName())
     traverseD3TreeNodes(rootNode, jsonObj, 1)
     traverseD3TreeLinks(rootNode, jsonObj)
-
-    var fs = require("fs");
-    fs.writeFile("./tree.json", JSON.stringify(jsonObj), function (err) {
-        if (err) return console.log(err)
-        drawD3Tree()
-    });
-    //console.log("File has been created");
+    drawD3Tree()
 }
 
 function drawD3Tree() {
@@ -181,9 +175,9 @@ function drawD3Tree() {
 
     var nodeColor = ["#1e7dd8", "#b5575b", "#4099a8", "#ffff00", "#00ffff"]
 
-    d3.json("./tree.json", function(error, graph) {
-        if (error) throw error;
-
+    // d3.json("./tree.json", function(error, graph) {
+    //     if (error) throw error;
+        var graph = jsonObj
         var link = svg.append("g")
             .attr("class", "links")
             .selectAll("line")
@@ -280,7 +274,7 @@ function drawD3Tree() {
                     if (d.type === "root") return d.y;
                     return -100; });
         }
-    });
+
 
     function toggleColor(d) {
         console.log(d.path);
