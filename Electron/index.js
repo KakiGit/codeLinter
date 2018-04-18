@@ -5,7 +5,12 @@ let currentFile = null // 当前文档保存的路径
 let currentTagFile = null
 // let isSaved = true // 当前文档是否已保存
 let txtEditor = document.getElementById('txtEditor') // 获得TextArea文本框的引用
-let txtEditor1 = document.getElementById('txtEditor1')
+//let txtEditor1 = document.getElementById('txtEditor1')
+let rightDiv = document.getElementById('rightDiv')
+let myCanvas = document.getElementById('myCanvas')
+let rightDivWidth = rightDiv.clientWidth
+let rightDivHeight = rightDiv.clientHeight
+let nodeID = 0
 document.title = 'Notepad - Untitled' // 设置文档标题，影响窗口标题栏名称
 
 // 给文本框增加右键菜单
@@ -133,6 +138,262 @@ function askDeleteIfNeed () {
 //   if (response === 0) saveCurrentDoc() // 点击Yes按钮后保存当前文档
 // }
 
+
+class TreeNode {
+    constructor(parent, name, type) {
+        this.parent = parent
+        this.name = name
+        this.children = []
+        this.x = -1
+        this.y = -1
+        this.element = null
+        this.type = type  // types : root, func, file, mult
+        // filename can also be obtained from parent.name
+        this.filename = ""
+        this.line = 0
+        this.ID = nodeID // unique ID
+        nodeID++
+    }
+    GetChildren() {
+      return this.children
+    }
+    GetParent() {
+        return this.parent
+    }
+    GetX() {
+      return this.x
+    }
+    GetY() {
+        return this.y
+    }
+    GetName() {
+        return this.name
+    }
+    Add(node) {
+      this.children.push(node)
+    }
+    SetPosition(x, y) {
+      this.x = x
+      this.y = y
+    }
+    SetType(type) {
+      this.type = type
+    }
+    SetFilename(str) {
+        this.filename = str
+    }
+    SetLine(line) {
+        this.line = line
+    }
+    GetType() {
+        return this.type
+    }
+    SetElement(element) {
+      this.element = element
+    }
+    ComputePosition() {
+
+    }
+    Print() {
+      console.log("Children size:" + this.children.length.toString())
+      for (var i = 0; i < this.children.length; i++) {
+        if (this.children[i].type === "file") {
+            console.log(this.name + "'s child No." + (i+1).toString() + " " + this.children[i].GetName());
+            this.children[i].Print()
+        }
+      }
+    }
+}
+
+let rootNode = new TreeNode(null, "root", "root")
+
+/*
+
+ */
+function resolveFile(texts, node, level) {
+  var tagx = "Analysing:"
+  var tag0 = "Relied Files:"
+  var tag1 = "Contained Functions:"
+  var tag2 = "There are "
+  var tag3 = "in line"
+
+  var indexx = texts.indexOf(tagx)
+  if (indexx < 0) return
+  var index0 = texts.indexOf(tag0)
+  var index1 = texts.indexOf(tag1)
+  var index2 = texts.indexOf(tag2)
+
+  // obtain filename
+  var filename = texts.substring(indexx + tagx.length, index0)
+  filename = filename.split('\n')[0].split('/')
+  filename = filename[filename.length-1]
+
+  // str0: substring containing all relied files, split by '\n'
+  var str0 = texts.substring(index0 + tag0.length, index1)
+  // str1: substring containing all functions in current files, split by '\n'
+  var str1 = texts.substring(index1 + tag1.length, index2)
+  // 'node' file contains the above str1 functions
+
+  // record all the relied files
+  var countFile = 0
+  var res = str0.split("\n")
+  for (var i = 0; i < res.length; i++) {
+      if (res[i].length > 0) {
+          var tempNode = new TreeNode(node, res[i], "file")
+          tempNode.SetFilename(res[i])
+          node.Add(tempNode)
+          countFile++
+      }
+  }
+  // record current file's contained functions
+  res = str1.split("\n")
+  for (var i = 0; i < res.length; i++) {
+      // tag: containing "in line"
+      if (res[i].length > 0 && res[i].indexOf(tag3) > 0) {
+          var temp = res[i].split(' ')
+          var tempNode = new TreeNode(node, temp[0], "func")
+          tempNode.SetFilename(filename)
+          tempNode.SetLine(temp[3])
+          node.Add(tempNode)
+      }
+  }
+  // expand sub level nodes: (relied file nodes)
+  var tag = '[' + (level+1).toString() + '-'
+  console.log(tag)
+  var indices = getIndicesOf(tag, texts, true)
+  var children = node.GetChildren()
+  var index = 0
+
+  for (var i = 0; i < children.length; i++) {
+      // console.log("/" + children[i].name)
+      // console.log(occurrences(texts, "/" + children[i].name, false) > 0)
+      if (children[i].type === "file" && occurrences(texts, "/" + children[i].name, false) > 0) {
+          // since all nodes are in order, we can just do this:
+          // if children contains N 'file' node, indices.length must > N-1
+          var start = getStartIndex(indices[index], texts)
+          var end = indices.length === index + 1?texts.length-1:getEndIndex(indices[index+1], texts)
+          // subtexts contains the new text for iteration
+          var subtexts = texts.substring(start, end)
+          //console.log(subtexts)
+          resolveFile(subtexts, children[i], level + 1)
+          index++
+      }
+  }
+  return node
+}
+
+/*
+   when the index of [N-x] is found, we need to traverse back to previous line of
+    'Analysing ...'.
+ */
+function getStartIndex(index, texts) {
+    var tag = "Analysing:"
+    var indices = getIndicesOf(tag, texts, true)
+    for (var i = indices.length; i >= 0; i--) {
+        if (indices[i] < index) {
+            return indices[i]
+        }
+    }
+    return index
+}
+
+function getEndIndex(index, texts) {
+    var tag = "Analysing:"
+    var indices = getIndicesOf(tag, texts, true)
+    for (var i = indices.length; i >= 0; i--) {
+        if (indices[i] < index) {
+            return indices[i] - 1
+        }
+    }
+    return index
+}
+
+
+function occurrences(string, subString, allowOverlapping) {
+
+    string += "";
+    subString += "";
+    if (subString.length <= 0) return (string.length + 1);
+
+    var n = 0,
+        pos = 0,
+        step = allowOverlapping ? 1 : subString.length;
+
+    while (true) {
+        pos = string.indexOf(subString, pos);
+        if (pos >= 0) {
+            ++n;
+            pos += step;
+        } else break;
+    }
+    return n;
+}
+
+
+function getIndicesOf(searchStr, str, caseSensitive) {
+    var searchStrLen = searchStr.length;
+    if (searchStrLen == 0) {
+        return [];
+    }
+    var startIndex = 0, index, indices = [];
+    if (!caseSensitive) {
+        str = str.toLowerCase();
+        searchStr = searchStr.toLowerCase();
+    }
+    while ((index = str.indexOf(searchStr, startIndex)) > -1) {
+        indices.push(index);
+        startIndex = index + searchStrLen;
+    }
+    return indices;
+}
+
+
+function DrawTree(node, posy, posx, level) {
+  posy = 10
+  if(node.name == "root") {
+      var btn1 = document.createElement("button")
+      btn1.innerText = node.GetName()
+      btn1.setAttribute("style", "background-color: yellow;position: absolute;top:" +
+          posx.toString() + "px;" + "left:" + (posy.toString() + "px;"))
+      node.SetPosition(posx, posy)
+      rightDiv.appendChild(btn1)
+  }
+  var children = node.GetChildren()
+  for (var i = 0; i < children.length; i++) {
+      // if (children[i].type == "func") {
+      //     return
+      // }
+      var btn1 = document.createElement("button")
+      btn1.innerText = children[i].GetName()
+      // var x = posx + 100 * Math.cos(Math.PI / 3 * i)
+      // var y = posy + 100 * Math.sin(Math.PI / 3 * i)
+      var x = posx + 60 * (i - children.length / 2) * Math.pow(0.6, level)
+      var y = 100 * level
+      var color = "cyan"
+      if (children[i].GetType() === "file") {
+        color = "pink"
+      }
+      btn1.setAttribute("style", "background-color:" + color + ";position: absolute;top:" +
+         x.toString() + "px;" + "left:" + y.toString() + "px;");
+      rightDiv.appendChild(btn1)
+      children[i].SetPosition(x, y)
+
+      var context = myCanvas.getContext('2d')
+      context.beginPath();
+
+      context.moveTo(node.GetY(), node.GetX())
+      context.lineTo(y, x)
+      context.stroke()
+
+      DrawTree(children[i], y, x, level + 1)
+  }
+}
+function getFileContent(filepath) {
+    ipcRenderer.send('open-file', filepath)
+    const path = require('path')
+    var tagFile = path.join(filepath, '..', 'result')
+    const txtRead = readText(tagFile)
+}
 document.getElementById('open').addEventListener('click', function () {
   const files = remote.dialog.showOpenDialog(remote.getCurrentWindow(), {
     filters: [
@@ -154,7 +415,12 @@ document.getElementById('open').addEventListener('click', function () {
 document.getElementById('show').addEventListener('click', function () {
   if (currentTagFile != null) {
     const txtRead = readText(currentTagFile)
-    txtEditor1.value = txtRead
+
+    resolveFile(txtRead, rootNode, 1)
+    rootNode.Print()
+    // todo: now the tree structure is ready, we need to draw it on screen
+    DrawTree(rootNode, rightDiv.clientWidth / 2, rightDiv.clientHeight / 2, 1)
+
   } else {
     const notification = {
       title: 'Oops!',

@@ -1,0 +1,73 @@
+Analysing: /Users/jhn/Documents/GitHub/CodeLinter/utilities/asciiImg.c
+
+[1-1]
+Relied Files:
+stdio.h
+imageProcessFunc.c
+math.h
+test.c
+
+Contained Functions:
+>main in line 8
+asciiToBinary
+fclose
+fopen
+fscanf
+printf
+rgbToGray
+<
+>asciiToBinary in line 78
+<
+
+There are 86 lines in /Users/jhn/Documents/GitHub/CodeLinter/utilities/asciiImg.c
+
+Analysing: /Users/jhn/Documents/GitHub/CodeLinter/utilities/imageProcessFunc.c
+
+[2-1]
+Relied Files:
+stdio.h
+
+Contained Functions:
+>printAscii in line 15
+printf
+putchar
+<
+>rgbToGray in line 45
+brightCorrect
+printAscii
+printf
+sobel
+<
+>resizeImg in line 81
+brightCorrect
+printAscii
+printf
+sobel
+<
+>brightCorrect in line 114
+printAscii
+printf
+sobel
+<
+>sobel in line 171
+abs
+printAscii
+printf
+resizeImg
+sqrt
+sqrt_
+sqrt_16
+<
+
+There are 235 lines in /Users/jhn/Documents/GitHub/CodeLinter/utilities/imageProcessFunc.c
+
+Analysing: /Users/jhn/Documents/GitHub/CodeLinter/utilities/test.c
+
+[2-2]
+Relied Files:
+stdio.h
+
+Contained Functions:
+
+There are 1 lines in /Users/jhn/Documents/GitHub/CodeLinter/utilities/test.c
+
