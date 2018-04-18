@@ -8,58 +8,66 @@ math.h
 test.c
 
 Contained Functions:
->main in line 8
+>int main(int argc, const char *argv[]) in line 8
 asciiToBinary
 fclose
 fopen
 fscanf
-printf
 rgbToGray
 <
->asciiToBinary in line 78
+>char asciiToBinary (unsigned char c) in line 78
 <
 
 There are 86 lines in /Users/jhn/Documents/GitHub/CodeLinter/utilities/asciiImg.c
 
-Analysing: /Users/jhn/Documents/GitHub/CodeLinter/utilities/imageProcessFunc.c
+Analysing: /Users/jhn/Documents/GitHub/CodeLinter/utilities/ass/mengnan/imageProcessFunc.c
 
 [2-1]
 Relied Files:
 stdio.h
+3-1.c
+3-2.c
 
 Contained Functions:
->printAscii in line 15
+>void printAscii(unsigned char* img) in line 17
 printf
 putchar
 <
->rgbToGray in line 45
+>void rgbToGray(unsigned char* base) in line 47
+<
+>void resizeImg(unsigned char* base) in line 83
 brightCorrect
-printAscii
-printf
-sobel
 <
->resizeImg in line 81
-brightCorrect
+>void brightCorrect(unsigned char* img) in line 116
 printAscii
-printf
-sobel
 <
->brightCorrect in line 114
-printAscii
-printf
-sobel
-<
->sobel in line 171
+>void sobel (unsigned char* base) in line 173
 abs
 printAscii
 printf
-resizeImg
-sqrt
-sqrt_
-sqrt_16
 <
 
-There are 235 lines in /Users/jhn/Documents/GitHub/CodeLinter/utilities/imageProcessFunc.c
+There are 237 lines in /Users/jhn/Documents/GitHub/CodeLinter/utilities/ass/mengnan/imageProcessFunc.c
+
+Analysing: /Users/jhn/Documents/GitHub/CodeLinter/utilities/ass/mengnan/3-1.c
+
+[3-1]
+Relied Files:
+stdio.h
+
+Contained Functions:
+
+There are 1 lines in /Users/jhn/Documents/GitHub/CodeLinter/utilities/ass/mengnan/3-1.c
+
+Analysing: /Users/jhn/Documents/GitHub/CodeLinter/utilities/ass/mengnan/3-2.c
+
+[3-2]
+Relied Files:
+stdio.h
+
+Contained Functions:
+
+There are 1 lines in /Users/jhn/Documents/GitHub/CodeLinter/utilities/ass/mengnan/3-2.c
 
 Analysing: /Users/jhn/Documents/GitHub/CodeLinter/utilities/test.c
 
