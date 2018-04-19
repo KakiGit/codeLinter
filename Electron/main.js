@@ -3,11 +3,16 @@ let exec = require('child_process').exec
 let safeExit = false
 // be closed automatically when the JavaScript object is garbage collected.
 let mainWindow
-
+// console.log(process.platform)
+let exeFile
+if (process.platform === "darwin")
+  exeFile = 'findFunctions'
+else
+  exeFile = 'findFunctions_Linux'
 const createWindow = () => {
   // Create the browser window.
   mainWindow = new BrowserWindow({
-    width: 800,
+    width: 1000,
     height: 600,
     frame: false
   })
@@ -157,7 +162,7 @@ ipcMain.on('open-file', (event, arg) => {
   console.log(arg)
   const path = require('path')
   let str = path.join(arg, '..', 'result')
-  let p = path.join(app.getAppPath(), 'findFunctions')
+  let p = path.join(app.getAppPath(), exeFile)
   exec(`${p} ${arg} > ${str}`, (error, stdout, stderr) => {
     if (error) {
       console.error(`exec error: ${error}`)
@@ -176,4 +181,4 @@ ipcMain.on('open-file', (event, arg) => {
 })
 // -----------------------------------------------------------------
 
-console.log('hello world from log')
+// console.log('hello world from log')

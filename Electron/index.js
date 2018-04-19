@@ -16,7 +16,6 @@ let currentNode
 let nodeList = [] // stores used nodes. (for "go back" button)
 let currentOpenedFile = null
 document.title = 'Notepad - Untitled' // 设置文档标题，影响窗口标题栏名称
-
 // 给文本框增加右键菜单
 // const contextMenuTemplate = [
 //   { role: 'undo' }, // Undo菜单项
@@ -653,7 +652,7 @@ function getFileContent(filepath) {
 document.getElementById('open').addEventListener('click', function () {
     const files = remote.dialog.showOpenDialog(remote.getCurrentWindow(), {
         filters: [
-            { name: 'Text Files', extensions: ['txt', 'js', 'html', 'md'] },
+            { name: 'Text Files', extensions: ['c', 'cpp'] },
             { name: 'All Files', extensions: ['*'] }],
         properties: ['openFile']
     })
