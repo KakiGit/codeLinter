@@ -1,3 +1,5 @@
+　"use strict"
+
 const { ipcRenderer, remote } = require('electron')
 const { Menu, MenuItem, dialog } = remote
 // const ctags = require('ctags')
@@ -16,6 +18,9 @@ let currentNode
 let nodeList = [] // stores used nodes. (for "go back" button)
 let currentOpenedFile = null
 document.title = 'Notepad - Untitled' // 设置文档标题，影响窗口标题栏名称
+// document.getElementById('show').disabled = true
+var showBtn = document.getElementById('show')
+showBtn.disabled = true
 // 给文本框增加右键菜单
 // const contextMenuTemplate = [
 //   { role: 'undo' }, // Undo菜单项
@@ -149,14 +154,15 @@ function traverseD3TreeLinks(node, obj) {
     }
 }
 var jsonObj;
+
 function writeJson() {
     var jsonStr = '{"nodes":[],' + '"links":[]}'
 
     jsonObj = JSON.parse(jsonStr)
-    console.log(rootNode.GetName())
+    // console.log(rootNode.GetName())
     traverseD3TreeNodes(rootNode, jsonObj, 1)
     traverseD3TreeLinks(rootNode, jsonObj)
-    drawD3Tree()
+
 }
 
 function drawD3Tree() {
@@ -643,12 +649,12 @@ function DrawTree(node, posy, posx, level) {
     }
 }
 
-function getFileContent(filepath) {
-    ipcRenderer.send('open-file', filepath)
-    const path = require('path')
-    var tagFile = path.join(filepath, '..', 'result')
-    const txtRead = readText(tagFile)
-}
+// function getFileContent(filepath) {
+//     ipcRenderer.sendSync('open-file', filepath)
+//     const path = require('path')
+//     var tagFile = path.join(filepath, '..', 'result')
+//     const txtRead = readText(tagFile)
+// }
 document.getElementById('open').addEventListener('click', function () {
     const files = remote.dialog.showOpenDialog(remote.getCurrentWindow(), {
         filters: [
@@ -661,17 +667,26 @@ document.getElementById('open').addEventListener('click', function () {
         const txtRead = readText(currentFile)
         txtEditor.value = txtRead
         document.title = 'Notepad - ' + currentFile
-        ipcRenderer.send('open-file', currentFile)
+        ipcRenderer.sendSync('open-file', currentFile)
         const path = require('path')
         currentTagFile = path.join(currentFile, '..', 'result')
+
+        const txtRead1 = readText(currentTagFile)
+        resolveFile(txtRead1, rootNode, 1)
+        writeJson()
+        showBtn.disabled = false
+
     }
 })
 
 document.getElementById('show').addEventListener('click', function () {
     if (currentTagFile != null) {
-        const txtRead = readText(currentTagFile)
-        resolveFile(txtRead, rootNode, 1)
-        writeJson()
+
+        showBtn.disabled = true
+        drawD3Tree()
+        jsonObj = null
+        rootNode = new TreeNode(null, 'root', 'root')
+
     } else {
         const notification = {
             title: 'Oops!',

@@ -21,7 +21,7 @@ const createWindow = () => {
   mainWindow.loadURL(`file://${__dirname}/index.html`)
 
   // Open the DevTools.
-  // mainWindow.webContents.openDevTools()
+  mainWindow.webContents.openDevTools()
 
   let menuTemplate = new Menu()
   menuTemplate = [
@@ -164,12 +164,16 @@ ipcMain.on('open-file', (event, arg) => {
   let str = path.join(arg, '..', 'result')
   let p = path.join(app.getAppPath(), exeFile)
   exec(`${p} ${arg} > ${str}`, (error, stdout, stderr) => {
+    event.returnValue = 0
     if (error) {
       console.error(`exec error: ${error}`)
     }
     console.log(`stdout: ${stdout}`)
     console.log(`stderr: ${stderr}`)
-  })
+  }
+  )
+
+
   // exec(`./findFunctions ${arg} > ${str}`, (error, stdout, stderr) => {
   //   if (error) {
   //     console.error(`exec error: ${error}`)
