@@ -1,6 +1,7 @@
 const { ipcRenderer, remote } = require('electron')
 const { Menu, MenuItem, dialog } = remote
 // const ctags = require('ctags')
+let d3 = require('d3')
 let currentFile = null // 当前文档保存的路径
 let currentTagFile = null
 // let isSaved = true // 当前文档是否已保存
@@ -121,8 +122,19 @@ function traverseD3TreeNodes(node, obj, level) {
     o['id'] = node.GetID()
     o['name'] = node.GetName()
     o['path'] = node.GetFilePath()
-    o['group'] = level
-    obj['nodes'].push(o)
+    o['type'] = node.GetType()
+    //o['group'] = level
+    if (node.GetType() === "func") {
+        o['group'] = 2
+    }
+    if (node.GetType() === "file") {
+        o['group'] = 1
+    }
+    if (node.GetType() === "root") {
+        o['group'] = 0
+    }
+
+    obj['nodes'].push(o);
     for (var i = 0; i < node.children.length; i++) {
         traverseD3TreeNodes(node.children[i], obj, level + 1)
     }
@@ -137,21 +149,15 @@ function traverseD3TreeLinks(node, obj) {
         traverseD3TreeLinks(node.children[i], obj)
     }
 }
-
+var jsonObj;
 function writeJson() {
     var jsonStr = '{"nodes":[],' + '"links":[]}'
 
-    var jsonObj = JSON.parse(jsonStr)
-
+    jsonObj = JSON.parse(jsonStr)
+    console.log(rootNode.GetName())
     traverseD3TreeNodes(rootNode, jsonObj, 1)
     traverseD3TreeLinks(rootNode, jsonObj)
-
-    var fs = require('fs')
-    fs.writeFile('./tree.json', JSON.stringify(jsonObj), function (err) {
-        if (err) return console.log(err)
-        drawD3Tree()
-    })
-    //console.log("File has been created");
+    drawD3Tree()
 }
 
 function drawD3Tree() {
@@ -168,68 +174,116 @@ function drawD3Tree() {
         .force('charge', d3.forceManyBody().strength(linkForce))
         .force('center', d3.forceCenter(width / 2, height / 2))
 
+    var nodeColor = ["#1e7dd8", "#b5575b", "#4099a8", "#ffff00", "#00ffff"]
 
-    d3.json('./tree.json', function (error, graph) {
-        if (error) throw error
+    // d3.json("./tree.json", function(error, graph) {
+    //     if (error) throw error;
+    var graph = jsonObj
+    var link = svg.append("g")
+        .attr("class", "links")
+        .selectAll("line")
+        .data(graph.links)
+        .enter().append('line')
+        .attr('stroke-width', function (d) { return Math.sqrt(d.value) })
 
-        var link = svg.append('g')
-            .attr('class', 'links')
-            .selectAll('line')
-            .data(graph.links)
-            .enter().append('line')
-            .attr('stroke-width', function (d) { return Math.sqrt(d.value) })
-
-        var group = svg.append('g')
-            .attr('class', 'nodes')
-
-
-        var node = group
-            .selectAll('circle')
-            .data(graph.nodes)
-            .enter().append('circle')
-            .attr('r', 10)
-            .attr('id', function (d) { return d.id })
-            .attr('text', 'ss')
-            .attr('fill', function (d) { return color(d.group) })
-            .call(d3.drag()
-                .on('start', dragstarted)
-                .on('drag', dragged)
-                .on('end', dragended))
-
-        var text = group.selectAll('text')
-            .data(graph.nodes)
-            .enter().append('text')
-            .on('mousedown', toggleColor)
-            .text(function (d) { return d.name })
+    var group = svg.append('g')
+        .attr('class', 'nodes')
 
 
+    var node = group
+        .selectAll('circle')
+        .data(graph.nodes)
+        .enter().append("circle")
+        .attr("r", function (d) {
+            if (d.type === "func") return 15;
+            else if (d.type === "file") return 15;
+            else if (d.type === "root") return 30;
+        })
+        // .attr("xlink:href", function(d) {
+        //     if (d.type === "file") return "./image/filenode_default.png";
+        //     else if (d.type === "func") return "./image/funcnode_default.png";
+        //     else if (d.type === "root") return "./image/rootnode_default.png";})
+        .attr("fill", function (d) { return nodeColor[d.group]; })
+        .attr("id", function (d) { return d.id; })
+        .call(d3.drag()
+            .on('start', dragstarted)
+            .on('drag', dragged)
+            .on('end', dragended))
 
-        node.append('title')
-            .text(function (d) { return d.id })
+    var icons = group
+        .selectAll("image")
+        .data(graph.nodes)
+        .enter().append("image")
+        .attr("height", function (d) {
+            if (d.type === "func") return 10;
+            else if (d.type === "file") return 15;
+            else if (d.type === "root") return 15;
+        })
+        .attr("width", function (d) {
+            if (d.type === "func") return 10;
+            else if (d.type === "file") return 15;
+            else if (d.type === "root") return 15;
+        })
+        .attr("xlink:href", function (d) {
+            if (d.type === "func") return "./image/func_icon.png";
+            else if (d.type === "file") return "./image/file_icon.png";
+            else if (d.type === "root") return "./image/file_icon.png";
+        })
 
-        simulation
-            .nodes(graph.nodes)
-            .on('tick', ticked)
+    var text = group.selectAll("text")
+        .data(graph.nodes)
+        .enter().append("text")
+        .attr("fill", "#ddd")
+        .on("mousedown", toggleColor)
+        .text(function (d) { return d.name; });
 
-        simulation.force('link')
-            .links(graph.links)
 
-        function ticked() {
-            link
-                .attr('x1', function (d) { return d.source.x })
-                .attr('y1', function (d) { return d.source.y })
-                .attr('x2', function (d) { return d.target.x })
-                .attr('y2', function (d) { return d.target.y })
 
-            node
-                .attr('cx', function (d) { return d.x })
-                .attr('cy', function (d) { return d.y })
+    node.append("title")
+        .text(function (d) { return d.name; });
 
-            text
-                .attr('x', function (d) { return d.x })
-                .attr('y', function (d) { return d.y })
-        }
-    })
+    simulation
+        .nodes(graph.nodes)
+        .on('tick', ticked)
+
+    simulation.force('link')
+        .links(graph.links)
+
+    function ticked() {
+        link
+            .attr('x1', function (d) { return d.source.x })
+            .attr('y1', function (d) { return d.source.y })
+            .attr('x2', function (d) { return d.target.x })
+            .attr('y2', function (d) { return d.target.y })
+
+        // todo change the const 15 in 'd.x - 15'
+        node
+            .attr("cx", function (d) { return d.x - 5; })
+            .attr("cy", function (d) { return d.y - 5; });
+
+        icons
+            .attr("x", function (d) {
+                if (d.type === "func") return d.x - 10;
+                else if (d.type === "file") return d.x - 12;
+                else if (d.type === "root") return -100;
+            })
+            .attr("y", function (d) {
+                if (d.type === "func") return d.y - 10;
+                else if (d.type === "file") return d.y - 12;
+                else if (d.type === "root") return -100;
+            })
+
+        text
+            .attr("x", function (d) {
+                if (d.type === "root") return d.x - 30;
+                return -100;
+            })
+            .attr("y", function (d) {
+                if (d.type === "root") return d.y;
+                return -100;
+            });
+    }
+
 
     function toggleColor(d) {
         console.log(d.path)
@@ -267,7 +321,7 @@ function askDeleteIfNeed() {
                 buttons: ['Yes', 'No']
             })
             if (response === 0) {
-                fs.unlinkSync('./tree.json')
+                // fs.unlinkSync('./tree.json')
                 fs.unlinkSync(currentTagFile)
             }
         }
@@ -333,7 +387,7 @@ class TreeNode {
         this.type = type
     }
     SetFilename(str) {
-        this.filename = str
+        this.name = str
     }
     SetLine(line) {
         this.line = line
@@ -367,11 +421,11 @@ let rootNode = new TreeNode(null, 'root', 'root')
 
  */
 function resolveFile(texts, node, level) {
-    var tagx = 'Analysing:'
-    var tag0 = 'Relied Files:'
-    var tag1 = 'Contained Functions:'
-    var tag2 = 'There are '
-    var tag3 = 'in line'
+    var tagx = "Analysing:"
+    var tag0 = "Relied Files:"
+    var tag1 = "Contained Functions:"
+    var tag2 = "There are "
+    var tag3 = "in line"
 
     var indexx = texts.indexOf(tagx)
     if (indexx < 0) return
@@ -384,6 +438,7 @@ function resolveFile(texts, node, level) {
     node.SetFilePath(filename.split('\n')[0])
     filename = filename.split('\n')[0].split('/')
     filename = filename[filename.length - 1]
+    node.SetFilename(filename)
 
     // str0: substring containing all relied files, split by '\n'
     var str0 = texts.substring(index0 + tag0.length, index1)
@@ -393,22 +448,22 @@ function resolveFile(texts, node, level) {
 
     // record all the relied files
     var countFile = 0
-    var res = str0.split('\n')
+    var res = str0.split("\n")
     for (var i = 0; i < res.length; i++) {
         if (res[i].length > 0) {
-            var tempNode = new TreeNode(node, res[i], 'file')
+            var tempNode = new TreeNode(node, res[i], "file")
             tempNode.SetFilename(res[i])
             node.Add(tempNode)
             countFile++
         }
     }
     // record current file's contained functions
-    res = str1.split('\n')
+    res = str1.split("\n")
     for (var i = 0; i < res.length; i++) {
         // tag: containing "in line"
         if (res[i].length > 0 && res[i].indexOf(tag3) > 0) {
             var temp = res[i].split(' ')
-            var tempNode = new TreeNode(node, temp[0], 'func')
+            var tempNode = new TreeNode(node, temp[0], "func")
             tempNode.SetFilename(filename)
             tempNode.SetLine(temp[3])
             node.Add(tempNode)
@@ -423,14 +478,14 @@ function resolveFile(texts, node, level) {
     for (var i = 0; i < children.length; i++) {
         // console.log("/" + children[i].name)
         // console.log(occurrences(texts, "/" + children[i].name, false) > 0)
-        if (children[i].type === 'file' && occurrences(texts, '/' + children[i].name, false) > 0) {
+        if (children[i].type === "file" && occurrences(texts, "/" + children[i].name, false) > 0) {
             // since all nodes are in order, we can just do this:
             // if children contains N 'file' node, indices.length must > N-1
             var start = getStartIndex(indices[index], texts)
             var end = indices.length === index + 1 ? texts.length - 1 : getEndIndex(indices[index + 1], texts)
             // subtexts contains the new text for iteration
             var subtexts = texts.substring(start, end)
-            // console.log(subtexts)
+            //console.log(subtexts)
             resolveFile(subtexts, children[i], level + 1)
             index++
         }
@@ -616,27 +671,15 @@ document.getElementById('open').addEventListener('click', function () {
 document.getElementById('show').addEventListener('click', function () {
     if (currentTagFile != null) {
         const txtRead = readText(currentTagFile)
-
-        //
         resolveFile(txtRead, rootNode, 1)
         writeJson()
-
-        // currentNode = rootNode
-        // rootNode.Print()
-        // todo: now the tree structure is ready, we need to draw it on screen
-        // DrawTree(rootNode, rightDiv.clientWidth / 2, rightDiv.clientHeight / 2, 1)
     } else {
         const notification = {
             title: 'Oops!',
             body: 'Please select a file'
         }
-        const myNotification = new window.Notification(notification.title, notification)
-        myNotification.onclick = () => {
-            console.log('Notification clicked')
-        }
     }
-}
-)
+})
 
 document.getElementById('close').addEventListener('click', function () {
     askDeleteIfNeed()

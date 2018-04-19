@@ -40,7 +40,7 @@ const createWindow = () => {
         },
         {
           role: 'quit',
-          click () {
+          click() {
             app.quit()
           }
         }
@@ -51,28 +51,28 @@ const createWindow = () => {
       submenu: [
         {
           label: 'New',
-          click () {
+          click() {
             mainWindow.webContents.send('action', 'new') // 点击后向主页渲染进程发送“打开文件”的命令
           },
           accelerator: 'CmdOrCtrl+N'
         },
         {
           label: 'Open',
-          click () {
+          click() {
             mainWindow.webContents.send('action', 'open') // 点击后向主页渲染进程发送“打开文件”的命令
           },
           accelerator: 'CmdOrCtrl+O'
         },
         {
           label: 'Save',
-          click () {
+          click() {
             mainWindow.webContents.send('action', 'save') // 点击后向主页渲染进程发送“打开文件”的命令
           },
           accelerator: 'CmdOrCtrl+s'
         },
         {
           label: 'Close',
-          click () {
+          click() {
             mainWindow.webContents.send('action', 'exiting')
           },
           accelerator: 'CmdOrCtrl+w'
@@ -157,13 +157,21 @@ ipcMain.on('open-file', (event, arg) => {
   console.log(arg)
   const path = require('path')
   let str = path.join(arg, '..', 'result')
-  exec(`./findFunctions ${arg} > ${str}`, (error, stdout, stderr) => {
+  let p = path.join(app.getAppPath(), 'findFunctions')
+  exec(`${p} ${arg} > ${str}`, (error, stdout, stderr) => {
     if (error) {
       console.error(`exec error: ${error}`)
     }
     console.log(`stdout: ${stdout}`)
     console.log(`stderr: ${stderr}`)
   })
+  // exec(`./findFunctions ${arg} > ${str}`, (error, stdout, stderr) => {
+  //   if (error) {
+  //     console.error(`exec error: ${error}`)
+  //   }
+  //   console.log(`stdout: ${stdout}`)
+  //   console.log(`stderr: ${stderr}`)
+  // })
   // event.sender.send('action', 'tagsGen')
 })
 // -----------------------------------------------------------------
