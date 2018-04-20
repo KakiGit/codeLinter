@@ -663,10 +663,11 @@ document.getElementById('open').addEventListener('click', function () {
         properties: ['openFile']
     })
     if (files) {
+        d3.select("svg").selectAll("*").remove();
         currentFile = files[0]
         const txtRead = readText(currentFile)
         txtEditor.value = txtRead
-        document.title = 'Notepad - ' + currentFile
+        // document.title = 'Notepad - ' + currentFile
         ipcRenderer.sendSync('open-file', currentFile)
         const path = require('path')
         currentTagFile = path.join(currentFile, '..', 'result')
