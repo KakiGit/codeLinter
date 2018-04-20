@@ -22,6 +22,9 @@ const createWindow = () => {
 
   // Open the DevTools.
   //mainWindow.webContents.openDevTools()
+  ipcMain.on('synchronous-message', (event, arg) => {
+  event.sender.send('notification', '')//在main process里向web page发出message
+})
 
   let menuTemplate = new Menu()
   menuTemplate = [
@@ -158,6 +161,7 @@ ipcMain.on('reqaction', (event, arg) => {
       break
   }
 })
+
 ipcMain.on('open-file', (event, arg) => {
   console.log(arg)
   const path = require('path')

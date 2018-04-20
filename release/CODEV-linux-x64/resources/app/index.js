@@ -46,6 +46,12 @@ showBtn.disabled = true
 // }
 
 // 监听与主进程的通信
+ipcRenderer.send('synchronous-message', '')
+
+ipcRenderer.on('notification', (event, arg) => {
+    alert("Before you use: This is the beta version(v-1.0) of CODEV. Please click the buttons to open file and show analysis. \nOnly .c file are supported now.")
+})
+
 ipcRenderer.on('action', (event, arg) => {
     switch (arg) {
         // case 'new': // 新建文件
@@ -89,8 +95,6 @@ ipcRenderer.on('action', (event, arg) => {
 //   const window = remote.fromWebContents(event.sender)
 //   const files = dialog.showOpenDialog(window, { properties: ['openFile'] })
 // })
-
-alert("Before you use: This is the initial version(v-1.0) of codeV. Please click the buttons to open file and show analysis. Only .c file supported.")
 // 读取文本文件
 function readText(file) {
     const fs = require('fs')
@@ -664,6 +668,7 @@ document.getElementById('open').addEventListener('click', function () {
         properties: ['openFile']
     })
     if (files) {
+        d3.select("svg").selectAll("*").remove()
         currentFile = files[0]
         const txtRead = readText(currentFile)
         txtEditor.value = txtRead
