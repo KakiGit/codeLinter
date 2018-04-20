@@ -1,0 +1,13 @@
+Analysing: /home/pengjiaqiao/codeLinter/utilities/testFiles/c.c
+
+[1-1]
+Relied Files:
+
+Contained Functions:
+>void c1() in line 2
+<
+>void c2() in line 6
+<
+
+There are 8 lines in /home/pengjiaqiao/codeLinter/utilities/testFiles/c.c
+
