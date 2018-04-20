@@ -59,21 +59,21 @@ const createWindow = () => {
           click() {
             mainWindow.webContents.send('action', 'new') // 点击后向主页渲染进程发送“打开文件”的命令
           },
-          accelerator: 'CmdOrCtrl+N'
+          // accelerator: 'CmdOrCtrl+N'
         },
         {
           label: 'Open',
           click() {
             mainWindow.webContents.send('action', 'open') // 点击后向主页渲染进程发送“打开文件”的命令
           },
-          accelerator: 'CmdOrCtrl+O'
+          // accelerator: 'CmdOrCtrl+O'
         },
         {
           label: 'Save',
           click() {
             mainWindow.webContents.send('action', 'save') // 点击后向主页渲染进程发送“打开文件”的命令
           },
-          accelerator: 'CmdOrCtrl+s'
+          // accelerator: 'CmdOrCtrl+s'
         },
         {
           label: 'Close',

@@ -21,6 +21,9 @@ document.title = 'Notepad - Untitled' // 设置文档标题，影响窗口标题
 // document.getElementById('show').disabled = true
 var showBtn = document.getElementById('show')
 showBtn.disabled = true
+
+dialog.showErrorBox('Beta Usage ', 'This is the beta version(v-1.0) of CODEV.\n Please click open to select an *.c file to analysis. Then click show to show analysis graph. \n Demo files are in the \"testFiles\" folder you downloed, select entry.c to see the demo. \n Analysis data is store in the result file named "result" in the same folder you select, you can open it with editors to see the data.')
+
 // 给文本框增加右键菜单
 // const contextMenuTemplate = [
 //   { role: 'undo' }, // Undo菜单项
@@ -701,3 +704,4 @@ document.getElementById('close').addEventListener('click', function () {
     ipcRenderer.sendSync('reqaction', 'exit')
 }
 )
+
