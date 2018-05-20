@@ -21,7 +21,7 @@ const createWindow = () => {
   mainWindow.loadURL(`file://${__dirname}/index.html`)
 
   // Open the DevTools.
-  //mainWindow.webContents.openDevTools()
+  mainWindow.webContents.openDevTools()
   ipcMain.on('synchronous-message', (event, arg) => {
   event.sender.send('notification', '')//在main process里向web page发出message
 })
