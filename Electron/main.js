@@ -13,18 +13,15 @@ const createWindow = () => {
   // Create the browser window.
   mainWindow = new BrowserWindow({
     width: 1000,
-    height: 600,
-    frame: false
+    height: 600
+    // frame: false
   })
   // app.addRecentDocument('/Users/lijiaqi/GitHub/learnCocoa/codeLinter/work.type')
   // and load the index.html of the app.
   mainWindow.loadURL(`file://${__dirname}/index.html`)
 
   // Open the DevTools.
-  mainWindow.webContents.openDevTools()
-  ipcMain.on('synchronous-message', (event, arg) => {
-  event.sender.send('notification', '')//在main process里向web page发出message
-})
+  // mainWindow.webContents.openDevTools()
 
   let menuTemplate = new Menu()
   menuTemplate = [
@@ -58,13 +55,6 @@ const createWindow = () => {
       label: 'File',
       submenu: [
         {
-          label: 'New',
-          click() {
-            mainWindow.webContents.send('action', 'new') // 点击后向主页渲染进程发送“打开文件”的命令
-          },
-          accelerator: 'CmdOrCtrl+N'
-        },
-        {
           label: 'Open',
           click() {
             mainWindow.webContents.send('action', 'open') // 点击后向主页渲染进程发送“打开文件”的命令
@@ -91,6 +81,18 @@ const createWindow = () => {
         {
           role: 'quit'
         }
+      ]
+    },
+    {
+      label: "Edit",
+      submenu: [
+        { label: "Undo", accelerator: "CmdOrCtrl+Z", selector: "undo:" },
+        { label: "Redo", accelerator: "Shift+CmdOrCtrl+Z", selector: "redo:" },
+        { type: "separator" },
+        { label: "Cut", accelerator: "CmdOrCtrl+X", selector: "cut:" },
+        { label: "Copy", accelerator: "CmdOrCtrl+C", selector: "copy:" },
+        { label: "Paste", accelerator: "CmdOrCtrl+V", selector: "paste:" },
+        { label: "Select All", accelerator: "CmdOrCtrl+A", selector: "selectAll:" }
       ]
     }
   ]
@@ -178,6 +180,8 @@ ipcMain.on('open-file', (event, arg) => {
   )
 
 
+
+
   // exec(`./findFunctions ${arg} > ${str}`, (error, stdout, stderr) => {
   //   if (error) {
   //     console.error(`exec error: ${error}`)
@@ -187,6 +191,17 @@ ipcMain.on('open-file', (event, arg) => {
   // })
   // event.sender.send('action', 'tagsGen')
 })
+
+ipcMain.on('githubLink', (event, arg) => {
+  exec(`git clone ${arg} ~/temp > ~/temp/gitlog.txt `, (error, stdout, stderr) => {
+    if (error) {
+      console.error(`exec error: ${error}`)
+    }
+    console.log(`stdout: ${stdout}`)
+    console.log(`stderr: ${stderr}`)
+  })
+})
 // -----------------------------------------------------------------
 
 // console.log('hello world from log')
+
