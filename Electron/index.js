@@ -1,5 +1,5 @@
 　"use strict"
-
+const { clipboard } = require('electron')
 const { ipcRenderer, remote } = require('electron')
 const { Menu, MenuItem, dialog } = remote
 // const ctags = require('ctags')
@@ -9,20 +9,21 @@ let currentTagFile = null
 // let isSaved = true // 当前文档是否已保存
 let txtEditor = document.getElementById('txtEditor') // 获得TextArea文本框的引用
 // let txtEditor1 = document.getElementById('txtEditor1')
+let githubLink = document.getElementById('githubLink')
+let githubBtn = document.getElementById('githubBtn')
 let rightDiv = document.getElementById('rightDiv')
 let myCanvas = document.getElementById('myCanvas')
+let myDirc = document.getElementById('direc')
 let rightDivWidth = rightDiv.clientWidth
 let rightDivHeight = rightDiv.clientHeight
 let nodeID = 0
 let currentNode
 let nodeList = [] // stores used nodes. (for "go back" button)
 let currentOpenedFile = null
-document.title = 'Notepad - Untitled' // 设置文档标题，影响窗口标题栏名称
+document.title = 'CODEV' // 设置文档标题，影响窗口标题栏名称
 // document.getElementById('show').disabled = true
-var showBtn = document.getElementById('show')
-showBtn.disabled = true
 
-dialog.showErrorBox('Beta Usage ', 'This is the beta version(v-1.0) of CODEV.\n Please click open to select an *.c file to analysis. Then click show to show analysis graph. \n Demo files are in the \"testFiles\" folder you downloed, select entry.c to see the demo. \n Analysis data is store in the result file named "result" in the same folder you select, you can open it with editors to see the data.')
+// dialog.showErrorBox('Beta Usage ', 'This is the beta version(v-1.0) of CODEV.\n Please click open to select an *.c file to analysis. Then click show to show analysis graph. \n Demo files are in the \"testFiles\" folder you downloed, select entry.c to see the demo. \n Analysis data is store in the result file named "result" in the same folder you select, you can open it with editors to see the data.')
 
 // 给文本框增加右键菜单
 // const contextMenuTemplate = [
@@ -48,36 +49,49 @@ dialog.showErrorBox('Beta Usage ', 'This is the beta version(v-1.0) of CODEV.\n 
 //   isSaved = false
 // }
 
+// githubLink.oninput = (e) => {
+//     //   if (isSaved) document.title += ' *'
+//     //   isSaved = false
+// }
 // 监听与主进程的通信
 ipcRenderer.on('action', (event, arg) => {
     switch (arg) {
-        // case 'new': // 新建文件
-        //   askSaveIfNeed()
-        //   currentFile = null
-        //   txtEditor.value = ''
-        //   document.title = 'Notepad - Untitled'
-        //   // remote.getCurrentWindow().setTitle("Notepad - Untitled *");
-        //   isSaved = true
-        //   break
-        // case 'open': // 打开文件
-        //   askSaveIfNeed()
-        //   const files = remote.dialog.showOpenDialog(remote.getCurrentWindow(), {
-        //     filters: [
-        //       { name: 'Text Files', extensions: ['txt', 'js', 'html', 'md'] },
-        //       { name: 'All Files', extensions: ['*'] }],
-        //     properties: ['openFile']
-        //   })
-        //   if (files) {
-        //     currentFile = files[0]
-        //     const txtRead = readText(currentFile)
-        //     txtEditor.value = txtRead
-        //     document.title = 'Notepad - ' + currentFile
-        //     isSaved = true
-        //   }
-        //   break
-        // case 'save': // 保存文件
-        //   saveCurrentDoc()
-        //   break
+        case 'open': // 打开文件
+            const files = remote.dialog.showOpenDialog(remote.getCurrentWindow(), {
+                filters: [
+                    { name: 'Text Files', extensions: ['c', 'cpp'] },
+                    { name: 'All Files', extensions: ['*'] }],
+                properties: ['openFile']
+            })
+            if (files) {
+                d3.select("svg").selectAll("*").remove();
+                currentFile = files[0]
+                const txtRead = readText(currentFile)
+                txtEditor.value = txtRead
+                // document.title = 'Notepad - ' + currentFile
+                ipcRenderer.sendSync('open-file', currentFile)
+                const path = require('path')
+                currentTagFile = path.join(currentFile, '..', 'result')
+                const txtRead1 = readText(currentTagFile)
+                resolveFile(txtRead1, rootNode, 1)
+                writeJson()
+
+            }
+            break
+        case 'save':
+            if (currentTagFile != null) {
+
+                drawD3Tree()
+                jsonObj = null
+                rootNode = new TreeNode(null, 'root', 'root')
+
+            } else {
+                const notification = {
+                    title: 'Oops!',
+                    body: 'Please select a file'
+                }
+            }
+            break
         case 'exiting':
             // askSaveIfNeed()
             askDeleteIfNeed()
@@ -658,50 +672,11 @@ function DrawTree(node, posy, posx, level) {
 //     var tagFile = path.join(filepath, '..', 'result')
 //     const txtRead = readText(tagFile)
 // }
-document.getElementById('open').addEventListener('click', function () {
-    const files = remote.dialog.showOpenDialog(remote.getCurrentWindow(), {
-        filters: [
-            { name: 'Text Files', extensions: ['c', 'cpp'] },
-            { name: 'All Files', extensions: ['*'] }],
-        properties: ['openFile']
-    })
-    if (files) {
-        d3.select("svg").selectAll("*").remove();
-        currentFile = files[0]
-        const txtRead = readText(currentFile)
-        txtEditor.value = txtRead
-        // document.title = 'Notepad - ' + currentFile
-        ipcRenderer.sendSync('open-file', currentFile)
-        const path = require('path')
-        currentTagFile = path.join(currentFile, '..', 'result')
 
-        const txtRead1 = readText(currentTagFile)
-        resolveFile(txtRead1, rootNode, 1)
-        writeJson()
-        showBtn.disabled = false
 
-    }
-})
 
-document.getElementById('show').addEventListener('click', function () {
-    if (currentTagFile != null) {
 
-        showBtn.disabled = true
-        drawD3Tree()
-        jsonObj = null
-        rootNode = new TreeNode(null, 'root', 'root')
 
-    } else {
-        const notification = {
-            title: 'Oops!',
-            body: 'Please select a file'
-        }
-    }
-})
 
-document.getElementById('close').addEventListener('click', function () {
-    askDeleteIfNeed()
-    ipcRenderer.sendSync('reqaction', 'exit')
-}
-)
+
 
