@@ -9,11 +9,15 @@
         body,
         html {
             margin: 0px;
+            padding: 0px;
+            border: 0px;
             height: 100vh;
         }
 
         .mh1 #direc div {
             height: 100vh;
+            margin: 0px;
+            border: 0px;
         }
 
         #txtEditor {
@@ -35,24 +39,31 @@
             stroke: #fff;
             stroke-width: 1.5px;
         }
+
+        #mytitle {
+            width: 100%;
+            height: 52px;
+            background-color: rgb(198, 47, 47);
+            -webkit-app-region: drag;
+        }
     </style>
 </head>
 
-<body>
+<body style="background:rgba(33,37,43,1); height: 100vh;">
     <div class="container-fluid" style="background:rgba(33,37,43,1); height: 100vh;">
 
 
         <!-- Content here -->
         <div class="row mh1" style="overflow:auto">
-            <table class="col-3" id="direc" style="background:rgba(33,37,43,1);height: 100vh;">
+            <table class="col-3" id="direc" style="background:rgba(33,37,43,1);height: 100vh; width: 100%;padding: 0px;padding-right: 0px">
             </table>
-            <div class="col-4">
+            <div class="col-4" style="padding-left: 0px;padding-right: 0px">
                 <textarea id="txtEditor" readonly="readonly" style="background:rgba(60,66,79,1);"></textarea>
             </div>
-            <div class="col-5" id="rightDiv" style="background:rgba(60,66,79,1);">
+            <div class="col-5" id="rightDiv" style="background:rgba(60,66,79,1); height: 100vh;padding-left: 0px;padding-right: 0px;">
                 <!-- canvas id="myCanvas" width="500px" height="500px" -->
 
-                <svg width="500" height="500"></svg>
+                <svg id="svgCanvas" width="100%" height="100%"></svg>
                 <!-- /canvas -->
             </div>
         </div>
