@@ -21,7 +21,7 @@ const createWindow = () => {
   mainWindow.loadURL(`file://${__dirname}/index.html`)
 
   // Open the DevTools.
-  // mainWindow.webContents.openDevTools()
+  mainWindow.webContents.openDevTools()
 
   let menuTemplate = new Menu()
   menuTemplate = [
@@ -204,3 +204,12 @@ ipcMain.on('githubLink', (event, arg) => {
 
 // console.log('hello world from log')
 
+// ipcMain.on('min', e => mainWindow.minimize());
+// ipcMain.on('max', e => {
+//   if (mainWindow.isMaximized()) {
+//     mainWindow.unmaximize()
+//   } else {
+//     mainWindow.maximize()
+//   }
+// });
+// ipcMain.on('close', e => mainWindow.close());

@@ -69,8 +69,26 @@ ipcRenderer.on('action', (event, arg) => {
                 const txtRead = readText(currentFile)
                 txtEditor.value = txtRead
                 // document.title = 'Notepad - ' + currentFile
-                ipcRenderer.sendSync('open-file', currentFile)
+
                 const path = require('path')
+                let dir = path.join(currentFile, '..')
+                const rd = require('rd')
+                rd.read(dir, function (err, files) {
+                    if (err) throw err;
+                    for (let i = 0; i < files.length; i++) {
+                        let fileN = files[i].lastIndexOf('/')
+                        fileN = files[i].substr(fileN)
+                        let newRow = document.createElement('tr')
+                        let newItem = document.createElement('button')
+                        let newContent = document.createTextNode(fileN);
+                        newRow.appendChild(newItem)
+                        newItem.appendChild(newContent)
+                        myDirc.appendChild(newRow)
+                    }
+
+                })
+
+                ipcRenderer.sendSync('open-file', currentFile)
                 currentTagFile = path.join(currentFile, '..', 'result')
                 const txtRead1 = readText(currentTagFile)
                 resolveFile(txtRead1, rootNode, 1)
@@ -181,11 +199,13 @@ function writeJson() {
     traverseD3TreeLinks(rootNode, jsonObj)
 
 }
-
+var svgCanva = document.getElementById("svgCanvas")
 function drawD3Tree() {
-    var svg = d3.select('svg'),
-        width = +svg.attr('width'),
-        height = +svg.attr('height')
+    var svg = d3.select('svg')
+    // width = +svg.attr('width'),
+    // height = +svg.attr('height')
+    var width = svgCanva.getClientRects()[0].width
+    var height = svgCanva.getClientRects()[0].height
 
     var color = d3.scaleOrdinal(d3.schemeCategory20)
 
