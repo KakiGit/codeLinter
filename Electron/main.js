@@ -168,6 +168,11 @@ ipcMain.on('open-file', (event, arg) => {
   const path = require('path')
   let str = path.join(arg, '..', 'result')
   let p = path.join(app.getAppPath(), exeFile)
+
+  // var files = rd.readSync(dir)
+  // for (let i = 0; i < files.length; i++)
+  //   console.log(files[i])
+
   exec(`${p} ${arg} > ${str}`, (error, stdout, stderr) => {
     event.returnValue = 0
     if (error) {
