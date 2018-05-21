@@ -24,7 +24,18 @@ document.title = 'CODEV' // 设置文档标题，影响窗口标题栏名称
 // document.getElementById('show').disabled = true
 
 // dialog.showErrorBox('Beta Usage ', 'This is the beta version(v-1.0) of CODEV.\n Please click open to select an *.c file to analysis. Then click show to show analysis graph. \n Demo files are in the \"testFiles\" folder you downloed, select entry.c to see the demo. \n Analysis data is store in the result file named "result" in the same folder you select, you can open it with editors to see the data.')
+let openBtn = document.createElement("button")
+openBtn.setAttribute("class", "btn btn-primary btn-lg")
+openBtn.setAttribute("type", "button")
+openBtn.style.marginTop = "50%"
+openBtn.style.outline = "none"
+openBtn.innerHTML = "Open Folder"
+myDirc.appendChild(openBtn)
 
+openBtn.addEventListener('click', function () {
+    openFile()
+    myDirc.removeChild(openBtn)
+})
 // 给文本框增加右键菜单
 // const contextMenuTemplate = [
 //   { role: 'undo' }, // Undo菜单项
@@ -54,53 +65,112 @@ document.title = 'CODEV' // 设置文档标题，影响窗口标题栏名称
 //     //   isSaved = false
 // }
 // 监听与主进程的通信
-ipcRenderer.send('synchronous-message', '')
 
-ipcRenderer.on('notification', (event, arg) => {
-    alert("Before you use: This is the beta version(v-1.0) of CODEV. Please click the buttons to open file and show analysis. \nOnly .c file are supported now.")
-})
+function openFile() {
+    const files = remote.dialog.showOpenDialog(remote.getCurrentWindow(), {
+        filters: [
+            { name: 'Text Files', extensions: ['c', 'cpp'] },
+            { name: 'All Files', extensions: ['*'] }],
+        properties: ['openFile']
+    })
+    if (files) {
+        d3.select("svg").selectAll("*").remove();
+        currentFile = files[0]
+        const txtRead = readText(currentFile)
+        txtEditor.value = txtRead
+        // document.title = 'Notepad - ' + currentFile
+
+        const path = require('path')
+        // let dir = path.join(currentFile, '..')
+        // const rd = require('rd')
+        // rd.read(dir, function (err, files) {
+        //     if (err) throw err;
+        //     for (let i = 0; i < files.length; i++) {
+        //         let fileN = files[i].lastIndexOf('/')
+        //         fileN = files[i].substr(fileN)
+        //         let newRow = document.createElement('tr')
+        //         newRow.style.width = "100%"
+        //         let newItem = document.createElement('button')
+        //         newItem.style.width = "100%"
+        //         let newContent = document.createTextNode(fileN);
+        //         newRow.appendChild(newItem)
+        //         newItem.appendChild(newContent)
+        //         myDirc.appendChild(newRow)
+        //     }
+        // })
+
+        let dir = path.join(currentFile, '..')
+        readFolders(dir, myDirc)
+
+
+        ipcRenderer.sendSync('open-file', currentFile)
+        currentTagFile = path.join(currentFile, '..', 'result')
+        const txtRead1 = readText(currentTagFile)
+        resolveFile(txtRead1, rootNode, 1)
+        writeJson()
+
+    }
+}
+
+function readFolders(dir, par) {
+    let folders = [];
+    let fs = require('fs')
+    fs.readdir(dir, function (err, files) {
+        //声明一个数组存储目录下的所有文件夹
+        //从数组的第一个元素开始遍历数组
+        //遍历数组files结束
+        for (let i = 0; i < files.length; i++) {
+            // console.log(files[i])
+            //遍历查看目录下所有东西
+            fs.stat(dir + '/' + files[i], function (err, stats) {
+                //如果是文件夹，就放入存放文件夹的数组中
+                if (stats.isDirectory()) {
+                    folders.push(files[i])
+                    let newRow = document.createElement('tr')
+                    newRow.style.width = "100%"
+                    let newItem = document.createElement('button')
+                    newItem.setAttribute("class", "btn")
+                    newItem.setAttribute("type", "button")
+
+                    // newItem.setAttribute("data-toggle", "collapse")
+                    // newItem.setAttribute("data-target", "#collapse" + files[i])
+
+                    newItem.style.width = "100%"
+                    let newContent = document.createTextNode(files[i]);
+
+                    // let newCollapse = document.createElement('table')
+                    // newCollapse.setAttribute("class", "collapse")
+                    // newCollapse.setAttribute("id", "collapse" + files[i])
+                    // newCollapse.setAttribute("aria-expanded", "false")
+                    // newCollapse.setAttribute("aria-controls", "#collapse" + files[i])
+                    // newCollapse.style.width = "100%"
+
+                    newRow.appendChild(newItem)
+                    newItem.appendChild(newContent)
+                    // newRow.appendChild(newCollapse)
+                    par.appendChild(newRow)
+
+                    readFolders(dir + '/' + files[i], newRow)
+                }
+                else {
+                    let newRow = document.createElement('tr')
+                    let newItem = document.createElement('button')
+                    newItem.setAttribute("class", "btn")
+                    newItem.setAttribute("type", "button")
+                    let newContent = document.createTextNode(files[i]);
+                    newRow.appendChild(newItem)
+                    newItem.appendChild(newContent)
+                    par.appendChild(newRow)
+                }
+            })
+        }
+    })
+}
 
 ipcRenderer.on('action', (event, arg) => {
     switch (arg) {
         case 'open': // 打开文件
-            const files = remote.dialog.showOpenDialog(remote.getCurrentWindow(), {
-                filters: [
-                    { name: 'Text Files', extensions: ['c', 'cpp'] },
-                    { name: 'All Files', extensions: ['*'] }],
-                properties: ['openFile']
-            })
-            if (files) {
-                d3.select("svg").selectAll("*").remove();
-                currentFile = files[0]
-                const txtRead = readText(currentFile)
-                txtEditor.value = txtRead
-                // document.title = 'Notepad - ' + currentFile
-
-                const path = require('path')
-                let dir = path.join(currentFile, '..')
-                const rd = require('rd')
-                rd.read(dir, function (err, files) {
-                    if (err) throw err;
-                    for (let i = 0; i < files.length; i++) {
-                        let fileN = files[i].lastIndexOf('/')
-                        fileN = files[i].substr(fileN)
-                        let newRow = document.createElement('tr')
-                        let newItem = document.createElement('button')
-                        let newContent = document.createTextNode(fileN);
-                        newRow.appendChild(newItem)
-                        newItem.appendChild(newContent)
-                        myDirc.appendChild(newRow)
-                    }
-
-                })
-
-                ipcRenderer.sendSync('open-file', currentFile)
-                currentTagFile = path.join(currentFile, '..', 'result')
-                const txtRead1 = readText(currentTagFile)
-                resolveFile(txtRead1, rootNode, 1)
-                writeJson()
-
-            }
+            openFile()
             break
         case 'save':
             if (currentTagFile != null) {
