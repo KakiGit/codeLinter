@@ -14,6 +14,8 @@ let githubBtn = document.getElementById('githubBtn')
 let rightDiv = document.getElementById('rightDiv')
 let myCanvas = document.getElementById('myCanvas')
 let myDirc = document.getElementById('direc')
+var svgCanva = document.getElementById("svgCanvas")
+
 let rightDivWidth = rightDiv.clientWidth
 let rightDivHeight = rightDiv.clientHeight
 let nodeID = 0
@@ -34,7 +36,19 @@ myDirc.appendChild(openBtn)
 
 openBtn.addEventListener('click', function () {
     openFile()
+    rightDiv.insertBefore(showBtn, svgCanva)
     myDirc.removeChild(openBtn)
+})
+
+let showBtn = document.createElement("button")
+showBtn.setAttribute("class", "btn btn-primary btn-lg")
+showBtn.setAttribute("type", "button")
+showBtn.style.outline = "none"
+showBtn.innerHTML = "Show"
+
+showBtn.addEventListener('click', function () {
+    show()
+    rightDiv.removeChild(showBtn)
 })
 // 给文本框增加右键菜单
 // const contextMenuTemplate = [
@@ -131,13 +145,18 @@ function readFolders(dir, par) {
                     let newItem = document.createElement('button')
                     newItem.setAttribute("class", "btn")
                     newItem.setAttribute("type", "button")
-
+                    newItem.style.backgroundColor = "Transparent"
+                    newItem.style.color = "rgba(255,255,255,1)"
                     // newItem.setAttribute("data-toggle", "collapse")
                     // newItem.setAttribute("data-target", "#collapse" + files[i])
 
                     newItem.style.width = "100%"
-                    let newContent = document.createTextNode(files[i]);
+                    let newIcon = document.createElement('img')
+                    newIcon.setAttribute('src', './image/Icons_Regular_folder@3x.png')
+                    newIcon.setAttribute('class', 'img-responsive')
+                    newIcon.setAttribute('alt', 'Responsive image')
 
+                    let newContent = document.createTextNode(' ' + files[i]);
                     // let newCollapse = document.createElement('table')
                     // newCollapse.setAttribute("class", "collapse")
                     // newCollapse.setAttribute("id", "collapse" + files[i])
@@ -146,6 +165,7 @@ function readFolders(dir, par) {
                     // newCollapse.style.width = "100%"
 
                     newRow.appendChild(newItem)
+                    newItem.appendChild(newIcon)
                     newItem.appendChild(newContent)
                     // newRow.appendChild(newCollapse)
                     par.appendChild(newRow)
@@ -157,8 +177,15 @@ function readFolders(dir, par) {
                     let newItem = document.createElement('button')
                     newItem.setAttribute("class", "btn")
                     newItem.setAttribute("type", "button")
-                    let newContent = document.createTextNode(files[i]);
+                    newItem.style.backgroundColor = "Transparent"
+                    newItem.style.color = "rgba(255,255,255,1)"
+                    let newContent = document.createTextNode(' ' + files[i]);
+                    let newIcon = document.createElement('img')
+                    newIcon.setAttribute('src', './image/Icons_Regular_file-alt@3x.png')
+                    newIcon.setAttribute('class', 'img-responsive')
+                    newIcon.setAttribute('alt', 'Responsive image')
                     newRow.appendChild(newItem)
+                    newItem.appendChild(newIcon)
                     newItem.appendChild(newContent)
                     par.appendChild(newRow)
                 }
@@ -167,24 +194,28 @@ function readFolders(dir, par) {
     })
 }
 
+function show() {
+    if (currentTagFile != null) {
+
+        drawD3Tree()
+        jsonObj = null
+        rootNode = new TreeNode(null, 'root', 'root')
+
+    } else {
+        const notification = {
+            title: 'Oops!',
+            body: 'Please select a file'
+        }
+    }
+}
+
 ipcRenderer.on('action', (event, arg) => {
     switch (arg) {
         case 'open': // 打开文件
             openFile()
             break
         case 'save':
-            if (currentTagFile != null) {
-
-                drawD3Tree()
-                jsonObj = null
-                rootNode = new TreeNode(null, 'root', 'root')
-
-            } else {
-                const notification = {
-                    title: 'Oops!',
-                    body: 'Please select a file'
-                }
-            }
+            show()
             break
         case 'exiting':
             // askSaveIfNeed()
@@ -275,7 +306,6 @@ function writeJson() {
     traverseD3TreeLinks(rootNode, jsonObj)
 
 }
-var svgCanva = document.getElementById("svgCanvas")
 function drawD3Tree() {
     var svg = d3.select('svg')
     // width = +svg.attr('width'),
