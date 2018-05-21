@@ -12,8 +12,8 @@ else
 const createWindow = () => {
   // Create the browser window.
   mainWindow = new BrowserWindow({
-    width: 1000,
-    height: 600
+    width: 1120,
+    height: 702
     // frame: false
   })
   // app.addRecentDocument('/Users/lijiaqi/GitHub/learnCocoa/codeLinter/work.type')

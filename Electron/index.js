@@ -207,6 +207,7 @@ function writeJson() {
 var svgCanva = document.getElementById("svgCanvas")
 function drawD3Tree() {
     var svg = d3.select('svg')
+
     // width = +svg.attr('width'),
     // height = +svg.attr('height')
     var width = svgCanva.getClientRects()[0].width
@@ -244,10 +245,6 @@ function drawD3Tree() {
             else if (d.type === "file") return 15;
             else if (d.type === "root") return 30;
         })
-        // .attr("xlink:href", function(d) {
-        //     if (d.type === "file") return "./image/filenode_default.png";
-        //     else if (d.type === "func") return "./image/funcnode_default.png";
-        //     else if (d.type === "root") return "./image/rootnode_default.png";})
         .attr("fill", function (d) { return nodeColor[d.group]; })
         .attr("id", function (d) { return d.id; })
         .call(d3.drag()
@@ -257,6 +254,7 @@ function drawD3Tree() {
         .on("mouseover", ChangeIcon)
         .on("mouseout", Re_ChangeIcon)
         .on("mousedown", OpenFile_Jump)
+        .style("stroke-width", "0px")
 
     var icons = group
         .selectAll("image")
@@ -615,11 +613,3 @@ function getIndicesOf(searchStr, str, caseSensitive) {
 //     var tagFile = path.join(filepath, '..', 'result')
 //     const txtRead = readText(tagFile)
 // }
-
-
-
-
-
-
-
-

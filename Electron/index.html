@@ -6,12 +6,12 @@
     <meta charset="utf-8">
     <title>Notepad</title>
     <style type="text/css">
-        body,
-        html {
+        body,html {
             margin: 0px;
             padding: 0px;
             border: 0px;
             height: 100vh;
+            overflow-y:hidden;
         }
 
         .mh1 #direc div {
@@ -27,7 +27,7 @@
             margin: 0px;
             border: 0px;
             font-size: 14px;
-            color: #fff
+            color: #ffe
         }
 
         .links line {
@@ -42,23 +42,22 @@
 
         #mytitle {
             width: 100%;
-            height: 52px;
+            height: 27px;
             background-color: rgb(198, 47, 47);
             -webkit-app-region: drag;
         }
     </style>
 </head>
 
-<body style="background:rgba(33,37,43,1); height: 100vh;">
-    <div class="container-fluid" style="background:rgba(33,37,43,1); height: 100vh;">
-
+<body style="background:rgba(33,37,43,1); height: 702px;">
+    <div class="container-fluid" style="background:rgba(33,37,43,1); height: 702px;">
 
         <!-- Content here -->
         <div class="row mh1" style="overflow:auto">
             <table class="col-3" id="direc" style="background:rgba(33,37,43,1);height: 100vh; width: 100%;padding: 0px;padding-right: 0px">
             </table>
             <div class="col-4" style="padding-left: 0px;padding-right: 0px">
-                <textarea id="txtEditor" readonly="readonly" style="background:rgba(60,66,79,1);"></textarea>
+                <textarea id="txtEditor" readonly="readonly" style="background:rgba(40,44,52,1);"></textarea>
             </div>
             <div class="col-5" id="rightDiv" style="background:rgba(60,66,79,1); height: 100vh;padding-left: 0px;padding-right: 0px;">
                 <!-- canvas id="myCanvas" width="500px" height="500px" -->
