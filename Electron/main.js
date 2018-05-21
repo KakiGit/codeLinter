@@ -12,8 +12,8 @@ else
 const createWindow = () => {
   // Create the browser window.
   mainWindow = new BrowserWindow({
-    width: 1120,
-    height: 702
+    width: 1280,
+    height: 768
     // frame: false
   })
   // app.addRecentDocument('/Users/lijiaqi/GitHub/learnCocoa/codeLinter/work.type')
@@ -21,7 +21,7 @@ const createWindow = () => {
   mainWindow.loadURL(`file://${__dirname}/index.html`)
 
   // Open the DevTools.
-  mainWindow.webContents.openDevTools()
+  // mainWindow.webContents.openDevTools()
 
   let menuTemplate = new Menu()
   menuTemplate = [
