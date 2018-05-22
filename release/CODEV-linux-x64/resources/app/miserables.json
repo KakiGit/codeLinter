@@ -1,0 +1,29 @@
+{
+  "nodes": [
+    {"id": "ROOT", "group": 0},
+    {"id": "P1-1", "group": 1},
+    {"id": "P1-1-1", "group": 2},
+    {"id": "P1-1-2", "group": 2},
+    {"id": "P1-2", "group": 1},
+    {"id": "P1-2-1", "group": 3},
+    {"id": "P1-2-2", "group": 3},
+    {"id": "P1-3", "group": 1},
+    {"id": "P1-3-1", "group": 4},
+    {"id": "P1-3-2", "group": 4},
+    {"id": "P1-4", "group": 1},
+    {"id": "P1-5", "group": 1}
+  ],
+  "links": [
+    {"source": "ROOT", "target": "P1-1", "value": 1},
+    {"source": "P1-1", "target": "P1-1-1", "value": 1},
+    {"source": "P1-1", "target": "P1-1-2", "value": 1},
+    {"source": "ROOT", "target": "P1-2", "value": 1},
+    {"source": "P1-2", "target": "P1-2-1", "value": 1},
+    {"source": "P1-2", "target": "P1-2-2", "value": 1},
+    {"source": "ROOT", "target": "P1-3", "value": 1},
+    {"source": "P1-3", "target": "P1-3-1", "value": 1},
+    {"source": "P1-3", "target": "P1-3-2", "value": 1},
+    {"source": "ROOT", "target": "P1-4", "value": 1},
+    {"source": "ROOT", "target": "P1-5", "value": 1}
+  ]
+}

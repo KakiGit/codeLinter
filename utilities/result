@@ -1,4 +1,4 @@
-Analysing: /Users/lijiaqi/GitHub/codeLinter/utilities/asciiImg.c
+Analysing: /home/pengjiaqiao/codeLinter/utilities/asciiImg.c
 
 [1-1]
 Relied Files:
@@ -18,9 +18,9 @@ rgbToGray
 >char asciiToBinary (unsigned char c) in line 78
 <
 
-There are 86 lines in /Users/lijiaqi/GitHub/codeLinter/utilities/asciiImg.c
+There are 86 lines in /home/pengjiaqiao/codeLinter/utilities/asciiImg.c
 
-Analysing: /Users/lijiaqi/GitHub/codeLinter/utilities/ass/mengnan/imageProcessFunc.c
+Analysing: /home/pengjiaqiao/codeLinter/utilities/ass/mengnan/imageProcessFunc.c
 
 [2-1]
 Relied Files:
@@ -47,9 +47,9 @@ printAscii
 printf
 <
 
-There are 237 lines in /Users/lijiaqi/GitHub/codeLinter/utilities/ass/mengnan/imageProcessFunc.c
+There are 237 lines in /home/pengjiaqiao/codeLinter/utilities/ass/mengnan/imageProcessFunc.c
 
-Analysing: /Users/lijiaqi/GitHub/codeLinter/utilities/ass/mengnan/3-1.c
+Analysing: /home/pengjiaqiao/codeLinter/utilities/ass/mengnan/3-1.c
 
 [3-1]
 Relied Files:
@@ -57,9 +57,9 @@ stdio.h
 
 Contained Functions:
 
-There are 1 lines in /Users/lijiaqi/GitHub/codeLinter/utilities/ass/mengnan/3-1.c
+There are 1 lines in /home/pengjiaqiao/codeLinter/utilities/ass/mengnan/3-1.c
 
-Analysing: /Users/lijiaqi/GitHub/codeLinter/utilities/ass/mengnan/3-2.c
+Analysing: /home/pengjiaqiao/codeLinter/utilities/ass/mengnan/3-2.c
 
 [3-2]
 Relied Files:
@@ -67,9 +67,9 @@ stdio.h
 
 Contained Functions:
 
-There are 1 lines in /Users/lijiaqi/GitHub/codeLinter/utilities/ass/mengnan/3-2.c
+There are 1 lines in /home/pengjiaqiao/codeLinter/utilities/ass/mengnan/3-2.c
 
-Analysing: /Users/lijiaqi/GitHub/codeLinter/utilities/test.c
+Analysing: /home/pengjiaqiao/codeLinter/utilities/test.c
 
 [2-2]
 Relied Files:
@@ -77,5 +77,5 @@ stdio.h
 
 Contained Functions:
 
-There are 3 lines in /Users/lijiaqi/GitHub/codeLinter/utilities/test.c
+There are 3 lines in /home/pengjiaqiao/codeLinter/utilities/test.c
 

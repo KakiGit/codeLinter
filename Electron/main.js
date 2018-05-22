@@ -164,6 +164,7 @@ ipcMain.on('reqaction', (event, arg) => {
       break
   }
 })
+
 ipcMain.on('open-file', (event, arg) => {
   console.log(arg)
   const path = require('path')

@@ -1,3 +1,9 @@
+<<<<<<< HEAD
+Analysing: /home/pengjiaqiao/codeLinter/utilities/testFiles/c.c
+
+[1-1]
+Relied Files:
+=======
 Analysing: /Users/lijiaqi/GitHub/codeLinter/utilities/testFiles/entry.c
 
 [1-1]
@@ -36,6 +42,7 @@ Analysing: /Users/lijiaqi/GitHub/codeLinter/utilities/testFiles/c.c
 
 [3-1]
 Relied Files:
+>>>>>>> Kaki
 
 Contained Functions:
 >void c1() in line 2
@@ -43,6 +50,9 @@ Contained Functions:
 >void c2() in line 6
 <
 
+<<<<<<< HEAD
+There are 8 lines in /home/pengjiaqiao/codeLinter/utilities/testFiles/c.c
+=======
 There are 8 lines in /Users/lijiaqi/GitHub/codeLinter/utilities/testFiles/c.c
 
 Analysing: /Users/lijiaqi/GitHub/codeLinter/utilities/testFiles/d/d.c
@@ -107,4 +117,5 @@ Contained Functions:
 <
 
 There are 11 lines in /Users/lijiaqi/GitHub/codeLinter/utilities/testFiles/b_2.c
+>>>>>>> Kaki
 
