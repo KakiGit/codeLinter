@@ -24,6 +24,9 @@ let highLBtn
 let rightDivWidth = rightDiv.clientWidth
 let rightDivHeight = rightDiv.clientHeight
 let nodeID = 0
+var ForTextDisplay_Hide_name
+var ForTextDisplay_Hide_x
+var ForTextDisplay_Hide_y
 let currentNode
 let nodeList = [] // stores used nodes. (for "go back" button)
 let currentOpenedFile = null
@@ -457,28 +460,37 @@ function drawD3Tree() {
             .on('start', dragstarted)
             .on('drag', dragged)
             .on('end', dragended))
-        .on("mouseover", ChangeIcon)
-        .on("mouseout", Re_ChangeIcon)
+        .on("mouseover", ChangeIcon_DisplayText)
+        .on("mouseout", ReviseIcon_HideText)
         .on("mousedown", OpenFile_Jump)
         .style("stroke-width", "0px")
         .attr("opacity", "1")
 
-    function ChangeIcon(d) {
+    function ChangeIcon_DisplayText(d) {
         d3.select(this).attr("r", function (d) {
-            if (d.type === "func") return 25;
+            ForTextDisplay_Hide_name = d.name
+            ForTextDisplay_Hide_x = d.x - 30
+            ForTextDisplay_Hide_y = d.y - 20
+            group.select("text")
+                .attr("x", function (d) { return ForTextDisplay_Hide_x; })
+                .attr("y", function (d) { return ForTextDisplay_Hide_y; })
+            if (d.type === "func") return 25
+            if (d.type === "func") return 25
             else if (d.type === "file") return 25;
             else if (d.type === "root") return 40;
         })
             .attr("opacity", "0.3")
+        group.select("text").text(function (d) { return ForTextDisplay_Hide_name; })
     }
 
-    function Re_ChangeIcon(d) {
+    function ReviseIcon_HideText(d) {
         d3.select(this).attr("r", function (d) {
             if (d.type === "func") return 15;
             else if (d.type === "file") return 15;
             else if (d.type === "root") return 30;
         })
             .attr("opacity", "1")
+        group.selectAll("text").text(function (d) { return ""; });
     }
 
     function OpenFile_Jump(d) {
@@ -509,9 +521,6 @@ function drawD3Tree() {
     var text = group.selectAll("text")
         .data(graph.nodes)
         .enter().append("text")
-        .text(function (d) { return d.name; });
-
-
 
 
     simulation
@@ -544,17 +553,7 @@ function drawD3Tree() {
                 else if (d.type === "file") return d.y - 12;
                 else if (d.type === "root") return d.y - 12;
             })
-
-        text
-            .attr("x", function (d) {
-                return d.x - 30;
-            })
-            .attr("y", function (d) {
-                return d.y - 20;
-            });
     }
-
-
 
     function dragstarted(d) {
         if (!d3.event.active) simulation.alphaTarget(0.3).restart()
