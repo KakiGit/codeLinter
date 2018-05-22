@@ -149,8 +149,7 @@ githubBtn.addEventListener('click', function () {
 function openFile() {
     const files = remote.dialog.showOpenDialog(remote.getCurrentWindow(), {
         filters: [
-            { name: 'Text Files', extensions: ['c', 'cpp'] },
-            { name: 'All Files', extensions: ['*'] }],
+            { name: 'Text Files', extensions: ['c', 'cpp'] }],
         properties: ['openFile']
     })
     if (files) {
@@ -174,6 +173,10 @@ function openFile() {
         rightDiv.insertBefore(tem2Div, svgCanva)
         temDiv.removeChild(openBtn)
     }
+}
+
+function isAssetTypeAnImage(ext) {
+    return ['c', 'cpp'].indexOf(ext.toLowerCase()) !== -1;
 }
 
 function readFolders(dir, par) {
@@ -244,47 +247,49 @@ function readFolders(dir, par) {
                     readFolders(dir + '/' + files[i], newCollapse)
                 }
                 else {
-                    let newRow = document.createElement('tr')
-                    newRow.style.width = "100%"
-                    let newItem = document.createElement('button')
-                    newItem.setAttribute("class", "btn btn-xs")
-                    newItem.setAttribute("type", "button")
-                    newItem.style.width = "100%"
-                    newItem.style.backgroundColor = "Transparent"
-                    newItem.style.color = "rgba(255,255,255,1)"
-                    // newItem.focus.outline = "none"
-                    // newItem.active.focus.outline = "none"
+                    if (isAssetTypeAnImage(files[i].substr(files[i].lastIndexOf(".") + 1))) {
+                        let newRow = document.createElement('tr')
+                        newRow.style.width = "100%"
+                        let newItem = document.createElement('button')
+                        newItem.setAttribute("class", "btn btn-xs")
+                        newItem.setAttribute("type", "button")
+                        newItem.style.width = "100%"
+                        newItem.style.backgroundColor = "Transparent"
+                        newItem.style.color = "rgba(255,255,255,1)"
+                        // newItem.focus.outline = "none"
+                        // newItem.active.focus.outline = "none"
 
-                    newItem.style.textAlign = "left"
-                    newItem.style.border = "0"
-                    newItem.addEventListener('click', function () {
-                        if (highLBtn != null)
-                            if (highLBtn != newItem)
-                                highLBtn.style.backgroundColor = "Transparent"
-                        highLBtn = newItem
-                        highLBtn.style.backgroundColor = "rgba(30,30,30,1)"
+                        newItem.style.textAlign = "left"
+                        newItem.style.border = "0"
+                        newItem.addEventListener('click', function () {
+                            if (highLBtn != null)
+                                if (highLBtn != newItem)
+                                    highLBtn.style.backgroundColor = "Transparent"
+                            highLBtn = newItem
+                            highLBtn.style.backgroundColor = "rgba(30,30,30,1)"
 
-                        let path = require('path')
-                        d3.select("svg").selectAll("*").remove();
-                        currentFile = dir + '/' + files[i]
-                        const txtRead = readText(currentFile)
-                        txtEditor.value = txtRead
-                        ipcRenderer.sendSync('open-file', currentFile)
-                        rightDiv.insertBefore(tem2Div, svgCanva)
-                        currentTagFile = path.join(currentFile, '..', 'result')
-                        const txtRead1 = readText(currentTagFile)
-                        resolveFile(txtRead1, rootNode, 1)
-                        writeJson()
-                    })
-                    let newContent = document.createTextNode(' ' + files[i]);
-                    let newIcon = document.createElement('img')
-                    newIcon.setAttribute('src', './image/Icons_Regular_file-alt@3x.png')
-                    newIcon.setAttribute('class', 'img-responsive')
-                    newIcon.setAttribute('alt', 'Responsive image')
-                    newRow.appendChild(newItem)
-                    newItem.appendChild(newIcon)
-                    newItem.appendChild(newContent)
-                    par.appendChild(newRow)
+                            let path = require('path')
+                            d3.select("svg").selectAll("*").remove();
+                            currentFile = dir + '/' + files[i]
+                            const txtRead = readText(currentFile)
+                            txtEditor.value = txtRead
+                            ipcRenderer.sendSync('open-file', currentFile)
+                            rightDiv.insertBefore(tem2Div, svgCanva)
+                            currentTagFile = path.join(currentFile, '..', 'result')
+                            const txtRead1 = readText(currentTagFile)
+                            resolveFile(txtRead1, rootNode, 1)
+                            writeJson()
+                        })
+                        let newContent = document.createTextNode(' ' + files[i]);
+                        let newIcon = document.createElement('img')
+                        newIcon.setAttribute('src', './image/Icons_Regular_file-alt@3x.png')
+                        newIcon.setAttribute('class', 'img-responsive')
+                        newIcon.setAttribute('alt', 'Responsive image')
+                        newRow.appendChild(newItem)
+                        newItem.appendChild(newIcon)
+                        newItem.appendChild(newContent)
+                        par.appendChild(newRow)
+                    }
                 }
             })
         }
