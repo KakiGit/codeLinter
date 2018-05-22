@@ -728,6 +728,7 @@ function resolveFile(texts, node, level) {
             var temp = res[i].split(' ')
             var tempNode = new TreeNode(node, temp[0], "func")
             tempNode.SetFilename(filename)
+            tempNode.name = temp[1]
             tempNode.SetLine(temp[3])
             node.Add(tempNode)
         }
