@@ -1,8 +1,4 @@
-<<<<<<< HEAD
 Analysing: /home/pengjiaqiao/codeLinter/utilities/asciiImg.c
-=======
-Analysing: /Users/lijiaqi/GitHub/codeLinter/utilities/asciiImg.c
->>>>>>> Kaki
 
 [1-1]
 Relied Files:
@@ -22,15 +18,9 @@ rgbToGray
 >char asciiToBinary (unsigned char c) in line 78
 <
 
-<<<<<<< HEAD
 There are 86 lines in /home/pengjiaqiao/codeLinter/utilities/asciiImg.c
 
 Analysing: /home/pengjiaqiao/codeLinter/utilities/ass/mengnan/imageProcessFunc.c
-=======
-There are 86 lines in /Users/lijiaqi/GitHub/codeLinter/utilities/asciiImg.c
-
-Analysing: /Users/lijiaqi/GitHub/codeLinter/utilities/ass/mengnan/imageProcessFunc.c
->>>>>>> Kaki
 
 [2-1]
 Relied Files:
@@ -57,15 +47,9 @@ printAscii
 printf
 <
 
-<<<<<<< HEAD
 There are 237 lines in /home/pengjiaqiao/codeLinter/utilities/ass/mengnan/imageProcessFunc.c
 
 Analysing: /home/pengjiaqiao/codeLinter/utilities/ass/mengnan/3-1.c
-=======
-There are 237 lines in /Users/lijiaqi/GitHub/codeLinter/utilities/ass/mengnan/imageProcessFunc.c
-
-Analysing: /Users/lijiaqi/GitHub/codeLinter/utilities/ass/mengnan/3-1.c
->>>>>>> Kaki
 
 [3-1]
 Relied Files:
@@ -73,15 +57,9 @@ stdio.h
 
 Contained Functions:
 
-<<<<<<< HEAD
 There are 1 lines in /home/pengjiaqiao/codeLinter/utilities/ass/mengnan/3-1.c
 
 Analysing: /home/pengjiaqiao/codeLinter/utilities/ass/mengnan/3-2.c
-=======
-There are 1 lines in /Users/lijiaqi/GitHub/codeLinter/utilities/ass/mengnan/3-1.c
-
-Analysing: /Users/lijiaqi/GitHub/codeLinter/utilities/ass/mengnan/3-2.c
->>>>>>> Kaki
 
 [3-2]
 Relied Files:
@@ -89,15 +67,9 @@ stdio.h
 
 Contained Functions:
 
-<<<<<<< HEAD
 There are 1 lines in /home/pengjiaqiao/codeLinter/utilities/ass/mengnan/3-2.c
 
 Analysing: /home/pengjiaqiao/codeLinter/utilities/test.c
-=======
-There are 1 lines in /Users/lijiaqi/GitHub/codeLinter/utilities/ass/mengnan/3-2.c
-
-Analysing: /Users/lijiaqi/GitHub/codeLinter/utilities/test.c
->>>>>>> Kaki
 
 [2-2]
 Relied Files:
@@ -105,9 +77,5 @@ stdio.h
 
 Contained Functions:
 
-<<<<<<< HEAD
 There are 3 lines in /home/pengjiaqiao/codeLinter/utilities/test.c
-=======
-There are 3 lines in /Users/lijiaqi/GitHub/codeLinter/utilities/test.c
->>>>>>> Kaki
 

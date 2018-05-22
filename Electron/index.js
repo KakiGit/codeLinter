@@ -146,7 +146,7 @@ function readFolders(dir, par) {
                     newItem.setAttribute("class", "btn")
                     newItem.setAttribute("type", "button")
                     newItem.style.backgroundColor = "Transparent"
-                    newItem.style.color = "rgba(255,255,255,1)"
+                    newItem.style.color = "rgba(220,220,220,1)"
                     // newItem.setAttribute("data-toggle", "collapse")
                     // newItem.setAttribute("data-target", "#collapse" + files[i])
 
@@ -178,7 +178,7 @@ function readFolders(dir, par) {
                     newItem.setAttribute("class", "btn")
                     newItem.setAttribute("type", "button")
                     newItem.style.backgroundColor = "Transparent"
-                    newItem.style.color = "rgba(255,255,255,1)"
+                    newItem.style.color = "rgba(211,211,211,1)"
                     let newContent = document.createTextNode(' ' + files[i]);
                     let newIcon = document.createElement('img')
                     newIcon.setAttribute('src', './image/Icons_Regular_file-alt@3x.png')
@@ -335,7 +335,6 @@ function drawD3Tree() {
     var group = svg.append('g')
         .attr('class', 'nodes')
 
-
     var node = group
         .selectAll('circle')
         .data(graph.nodes)
@@ -355,6 +354,30 @@ function drawD3Tree() {
         .on("mouseout", Re_ChangeIcon)
         .on("mousedown", OpenFile_Jump)
         .style("stroke-width", "0px")
+        .attr("opacity", "1")
+
+    function ChangeIcon(d) {
+        d3.select(this).attr("r", function (d) {
+            if (d.type === "func") return 25;
+            else if (d.type === "file") return 25;
+            else if (d.type === "root") return 40;
+        })
+        .attr("opacity", "0.3")
+    }
+
+    function Re_ChangeIcon(d) {
+        d3.select(this).attr("r", function (d) {
+            if (d.type === "func") return 15;
+            else if (d.type === "file") return 15;
+            else if (d.type === "root") return 30;
+        })
+        .attr("opacity", "1")
+    }
+
+    function OpenFile_Jump(d) {
+        console.log(d.path)
+        currentFile = d.path
+    }
 
     var icons = group
         .selectAll("image")
@@ -382,28 +405,6 @@ function drawD3Tree() {
         //set text color
         //.attr("fill", "#ddd")
         .text(function (d) { return d.name; });
-
-    function ChangeIcon(d) {
-        //d3.select('[id="' + d.id + '"]').style('fill', 'yellow')
-        d3.select(this).attr("r", function (d) {
-            if (d.type === "func") return 25;
-            else if (d.type === "file") return 25;
-            else if (d.type === "root") return 40;
-        })
-    }
-
-    function Re_ChangeIcon(d) {
-        d3.select(this).attr("r", function (d) {
-            if (d.type === "func") return 15;
-            else if (d.type === "file") return 15;
-            else if (d.type === "root") return 30;
-        })
-    }
-
-    function OpenFile_Jump(d) {
-        console.log(d.path)
-        currentFile = d.path
-    }
 
     simulation
         .nodes(graph.nodes)
