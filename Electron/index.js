@@ -15,6 +15,7 @@ let rightDiv = document.getElementById('rightDiv')
 let myCanvas = document.getElementById('myCanvas')
 let myDirc = document.getElementById('direc')
 
+
 var svgCanva = document.getElementById("svgCanvas")
 // var svgCanva = document.createElement("svg")
 // svgCanva.setAttribute('id', 'svgCanvas')
