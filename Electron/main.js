@@ -16,7 +16,6 @@ const createWindow = () => {
     height: 768,
     frame: false
   })
-
   // app.addRecentDocument('/Users/lijiaqi/GitHub/learnCocoa/codeLinter/work.type')
   // and load the index.html of the app.
   mainWindow.loadURL(`file://${__dirname}/index.html`)
@@ -164,7 +163,6 @@ ipcMain.on('reqaction', (event, arg) => {
       break
   }
 })
-
 ipcMain.on('open-file', (event, arg) => {
   console.log(arg)
   const path = require('path')
