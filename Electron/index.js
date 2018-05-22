@@ -39,14 +39,12 @@ openBtn.setAttribute("class", "btn btn-primary btn-lg")
 openBtn.setAttribute("type", "button")
 openBtn.style.marginTop = "50%"
 openBtn.style.outline = "none"
-openBtn.innerHTML = "Open Folder"
+openBtn.innerHTML = "Open Entry"
 temDiv.appendChild(openBtn)
 myDirc.appendChild(temDiv)
 
 openBtn.addEventListener('click', function () {
     openFile()
-    rightDiv.insertBefore(tem2Div, svgCanva)
-    temDiv.removeChild(openBtn)
 })
 
 let tem2Div = document.createElement('div')
@@ -141,6 +139,8 @@ function openFile() {
         const txtRead1 = readText(currentTagFile)
         resolveFile(txtRead1, rootNode, 1)
         writeJson()
+        rightDiv.insertBefore(tem2Div, svgCanva)
+        temDiv.removeChild(openBtn)
     }
 }
 
@@ -190,7 +190,7 @@ function readFolders(dir, par) {
                     newIcon.setAttribute('src', './image/Icons_Regular_folder@3x.png')
                     newIcon.setAttribute('class', 'img-responsive')
                     newIcon.setAttribute('alt', 'Responsive image')
-
+                    let newContent0 = document.createTextNode("- ");
                     let newContent = document.createTextNode(' ' + files[i]);
                     let newCollapse = document.createElement('table')
                     newCollapse.setAttribute("class", "collapse")
@@ -203,6 +203,7 @@ function readFolders(dir, par) {
                     // newCollapse.style.width = "100%"
 
                     newRow.appendChild(newItem)
+                    newItem.appendChild(newContent0)
                     newItem.appendChild(newIcon)
                     newItem.appendChild(newContent)
                     par.appendChild(newRow)
