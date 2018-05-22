@@ -62,9 +62,9 @@ const createWindow = () => {
           accelerator: 'CmdOrCtrl+O'
         },
         {
-          label: 'Save',
+          label: 'Show',
           click() {
-            mainWindow.webContents.send('action', 'save') // 点击后向主页渲染进程发送“打开文件”的命令
+            mainWindow.webContents.send('action', 'show') // 点击后向主页渲染进程发送“打开文件”的命令
           },
           accelerator: 'CmdOrCtrl+s'
         },

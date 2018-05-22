@@ -14,7 +14,7 @@ let githubBtn = document.getElementById('githubBtn')
 let rightDiv = document.getElementById('rightDiv')
 let myCanvas = document.getElementById('myCanvas')
 let myDirc = document.getElementById('direc')
-
+let fileTitle = document.getElementById('fileName')
 var svgCanva = document.getElementById("svgCanvas")
 // var svgCanva = document.createElement("svg")
 // svgCanva.setAttribute('id', 'svgCanvas')
@@ -63,6 +63,8 @@ showBtn.addEventListener('click', function () {
     show()
     // rightDiv.removeChild(showBtn)
 })
+
+
 // 给文本框增加右键菜单
 // const contextMenuTemplate = [
 //   { role: 'undo' }, // Undo菜单项
@@ -86,6 +88,34 @@ showBtn.addEventListener('click', function () {
 //   if (isSaved) document.title += ' *'
 //   isSaved = false
 // }
+
+githubLink.addEventListener('keyup', function (e) {
+    if (e.keyCode == 13) {
+        if (githubLink.value == "") {
+            const notification = {
+                title: 'Oops!',
+                body: 'Please enter a link'
+            }
+            let myNotification = new Notification(notification.title, {
+                body: notification.body
+            })
+        }
+        else {
+            const files = remote.dialog.showOpenDialog(remote.getCurrentWindow(), {
+                filters: [],
+                properties: ['openDirectory']
+            })
+            if (files) {
+                let arg = githubLink.value + '^' + files[0]
+                ipcRenderer.sendSync('githubLink', arg)
+                readFolders(files[0], myDirc)
+                temDiv.removeChild(openBtn)
+                githubLink.value = ""
+            }
+        }
+    }
+})
+
 githubBtn.addEventListener('click', function () {
     if (githubLink.value == "") {
         const notification = {
@@ -106,6 +136,7 @@ githubBtn.addEventListener('click', function () {
             ipcRenderer.sendSync('githubLink', arg)
             readFolders(files[0], myDirc)
             temDiv.removeChild(openBtn)
+            githubLink.value = ""
         }
     }
 })
@@ -137,6 +168,7 @@ function openFile() {
         ipcRenderer.sendSync('open-file', currentFile)
         currentTagFile = path.join(currentFile, '..', 'result')
         const txtRead1 = readText(currentTagFile)
+        fileTitle.innerHTML = currentFile.substr(currentFile.lastIndexOf('/') + 1)
         resolveFile(txtRead1, rootNode, 1)
         writeJson()
         rightDiv.insertBefore(tem2Div, svgCanva)
@@ -283,7 +315,7 @@ ipcRenderer.on('action', (event, arg) => {
         case 'open': // 打开文件
             openFile()
             break
-        case 'save':
+        case 'show':
             show()
             break
         case 'exiting':
