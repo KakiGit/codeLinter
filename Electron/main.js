@@ -197,7 +197,15 @@ ipcMain.on('open-file', (event, arg) => {
 })
 
 ipcMain.on('githubLink', (event, arg) => {
-  exec(`git clone ${arg} ~/temp > ~/temp/gitlog.txt `, (error, stdout, stderr) => {
+  console.log(arg)
+  let ind = arg.indexOf('^')
+  let arg1 = arg.substr(0, ind)
+  let arg2 = arg.substr(ind + 1)
+  console.log(arg1)
+  console.log(arg2)
+
+  exec(`git clone ${arg1} ${arg2}`, (error, stdout, stderr) => {
+    event.returnValue = 0
     if (error) {
       console.error(`exec error: ${error}`)
     }

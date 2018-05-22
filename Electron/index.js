@@ -88,7 +88,29 @@ showBtn.addEventListener('click', function () {
 //   if (isSaved) document.title += ' *'
 //   isSaved = false
 // }
-
+githubBtn.addEventListener('click', function () {
+    if (githubLink.value == "") {
+        const notification = {
+            title: 'Oops!',
+            body: 'Please enter a link'
+        }
+        let myNotification = new Notification(notification.title, {
+            body: notification.body
+        })
+    }
+    else {
+        const files = remote.dialog.showOpenDialog(remote.getCurrentWindow(), {
+            filters: [],
+            properties: ['openDirectory']
+        })
+        if (files) {
+            let arg = githubLink.value + '^' + files[0]
+            ipcRenderer.sendSync('githubLink', arg)
+            readFolders(files[0], myDirc)
+            temDiv.removeChild(openBtn)
+        }
+    }
+})
 // githubLink.oninput = (e) => {
 //     //   if (isSaved) document.title += ' *'
 //     //   isSaved = false
@@ -249,6 +271,9 @@ function show() {
             title: 'Oops!',
             body: 'Please select a file'
         }
+        let myNotification = new Notification(notification.title, {
+            body: notification.body
+        })
     }
 }
 
