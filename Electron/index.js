@@ -367,8 +367,6 @@ function drawD3Tree() {
 
     var nodeColor = ["#1e7dd8", "#b5575b", "#4099a8", "#ffff00", "#00ffff"]
 
-    // d3.json("./tree.json", function(error, graph) {
-    //     if (error) throw error;
     var graph = jsonObj
     var link = svg.append("g")
         .attr("class", "links")
@@ -390,16 +388,40 @@ function drawD3Tree() {
             else if (d.type === "file") return 15;
             else if (d.type === "root") return 30;
         })
-        // .attr("xlink:href", function(d) {
-        //     if (d.type === "file") return "./image/filenode_default.png";
-        //     else if (d.type === "func") return "./image/funcnode_default.png";
-        //     else if (d.type === "root") return "./image/rootnode_default.png";})
         .attr("fill", function (d) { return nodeColor[d.group]; })
         .attr("id", function (d) { return d.id; })
         .call(d3.drag()
             .on('start', dragstarted)
             .on('drag', dragged)
             .on('end', dragended))
+        .on("mouseover", ChangeIcon)
+        .on("mouseout", Re_ChangeIcon)
+        .on("mousedown", OpenFile_Jump)
+        .style("stroke-width", "0px")
+        .attr("opacity", "1")
+
+    function ChangeIcon(d) {
+        d3.select(this).attr("r", function (d) {
+            if (d.type === "func") return 25;
+            else if (d.type === "file") return 25;
+            else if (d.type === "root") return 40;
+        })
+            .attr("opacity", "0.3")
+    }
+
+    function Re_ChangeIcon(d) {
+        d3.select(this).attr("r", function (d) {
+            if (d.type === "func") return 15;
+            else if (d.type === "file") return 15;
+            else if (d.type === "root") return 30;
+        })
+            .attr("opacity", "1")
+    }
+
+    function OpenFile_Jump(d) {
+        console.log(d.path)
+        currentFile = d.path
+    }
 
     var icons = group
         .selectAll("image")
@@ -408,12 +430,12 @@ function drawD3Tree() {
         .attr("height", function (d) {
             if (d.type === "func") return 10;
             else if (d.type === "file") return 15;
-            else if (d.type === "root") return 15;
+            else if (d.type === "root") return 20;
         })
         .attr("width", function (d) {
             if (d.type === "func") return 10;
             else if (d.type === "file") return 15;
-            else if (d.type === "root") return 15;
+            else if (d.type === "root") return 20;
         })
         .attr("xlink:href", function (d) {
             if (d.type === "func") return "./image/func_icon.png";
@@ -424,14 +446,10 @@ function drawD3Tree() {
     var text = group.selectAll("text")
         .data(graph.nodes)
         .enter().append("text")
-        .attr("fill", "#ddd")
-        .on("mousedown", toggleColor)
         .text(function (d) { return d.name; });
 
 
 
-    node.append("title")
-        .text(function (d) { return d.name; });
 
     simulation
         .nodes(graph.nodes)
@@ -456,34 +474,25 @@ function drawD3Tree() {
             .attr("x", function (d) {
                 if (d.type === "func") return d.x - 10;
                 else if (d.type === "file") return d.x - 12;
-                else if (d.type === "root") return -100;
+                else if (d.type === "root") return d.x - 12;
             })
             .attr("y", function (d) {
                 if (d.type === "func") return d.y - 10;
                 else if (d.type === "file") return d.y - 12;
-                else if (d.type === "root") return -100;
+                else if (d.type === "root") return d.y - 12;
             })
 
         text
             .attr("x", function (d) {
-                if (d.type === "root") return d.x - 30;
-                return -100;
+                return d.x - 30;
             })
             .attr("y", function (d) {
-                if (d.type === "root") return d.y;
-                return -100;
+                return d.y - 20;
             });
     }
 
 
-    function toggleColor(d) {
-        console.log(d.path)
-        currentFile = d.path
-        // TODO open new file?!
-        var currentColor = 'pink';
-        d3.select(this).style('fill', currentColor)
-        d3.select('[id="' + d.id + '"]').style('fill', 'yellow')
-    }
+
     function dragstarted(d) {
         if (!d3.event.active) simulation.alphaTarget(0.3).restart()
         d.fx = d.x
@@ -745,102 +754,7 @@ function getIndicesOf(searchStr, str, caseSensitive) {
     }
     return indices
 }
-function TraverseTree(id) {
-    BSTree(rootNode, id)
-    var children = rightDiv.children
-    for (var i = 0; i < children.length; i++) {
-        var color
-        if (children[i].className === 'node-file') {
-            color = '#dd948a'
-        } else if (children[i].className === 'node-func') {
-            color = '#f9fbb6'
-        }
-        children[i].setAttribute('style', 'border-radius: 15px; background-color:' + color + ';position: absolute;top:' +
-            children[i].offsetTop.toString() + 'px;' + 'left:' + children[i].offsetLeft.toString() + 'px;')
 
-        color = '#31ee72';
-        if (children[i].id === currentNode.GetID().toString()) {
-            children[i].setAttribute('style', 'border-radius: 15px; background-color:' + color + ';position: absolute;top:' +
-                children[i].offsetTop.toString() + 'px;' + 'left:' + children[i].offsetLeft.toString() + 'px;')
-        }
-        for (var j = 0; j < currentNode.children.length; j++) {
-            if (children[i].id === currentNode.children[j].GetID().toString()) {
-                children[i].setAttribute('style', 'border-radius: 15px; background-color:' + color + ';position: absolute;top:' +
-                    children[i].offsetTop.toString() + 'px;' + 'left:' + children[i].offsetLeft.toString() + 'px;')
-            }
-        }
-    }
-}
-function BSTree(node, id) {
-    if (node === null) {
-        return
-    }
-    if (node.GetID().toString() === id) {
-        currentNode = node
-        return
-    }
-    for (var i = 0; i < node.children.length; i++) {
-        BSTree(node.children[i], id)
-    }
-}
-function DrawTree(node, posy, posx, level) {
-    posy = 10
-    if (node.name == 'root') {
-        var btn1 = document.createElement('button')
-        btn1.innerText = node.GetName()
-        btn1.setAttribute('class', 'node-root')
-        btn1.setAttribute('style', 'background-color: #697586; color: #eeeeee;' +
-            'border-radius: 15px;position: absolute;top:' +
-            posx.toString() + 'px;' + 'left:' + (posy.toString() + 'px;'))
-        node.SetPosition(posx, posy)
-        rightDiv.appendChild(btn1)
-    }
-    var children = node.GetChildren()
-    for (var i = 0; i < children.length; i++) {
-        // if (children[i].type == "func") {
-        //     return
-        // }
-        var btn1 = document.createElement('button')
-        btn1.innerText = children[i].GetName()
-        // var x = posx + 100 * Math.cos(Math.PI / 3 * i)
-        // var y = posy + 100 * Math.sin(Math.PI / 3 * i)
-        var x = posx + 60 * (i - children.length / 2) * Math.pow(0.6, level)
-        var y = 100 * level
-        var color
-        if (children[i].GetType() === 'file') {
-            btn1.setAttribute('class', 'node-file')
-            color = '#dd948a'
-        } else {
-            btn1.setAttribute('class', 'node-func')
-            color = '#f9fbb6'
-        }
-
-        btn1.setAttribute('style', 'border-radius: 15px; background-color:' + color + ';position: absolute;top:' +
-            x.toString() + 'px;' + 'left:' + y.toString() + 'px;')
-        btn1.setAttribute('id', children[i].GetID().toString())
-        btn1.addEventListener('click', function () {
-            TraverseTree(this.id)
-        })
-        rightDiv.appendChild(btn1)
-        children[i].SetPosition(x, y)
-
-        var context = myCanvas.getContext('2d')
-        context.beginPath()
-
-        context.moveTo(node.GetY(), node.GetX())
-        context.lineTo(y, x)
-        context.stroke()
-
-        DrawTree(children[i], y, x, level + 1)
-    }
-}
-
-// function getFileContent(filepath) {
-//     ipcRenderer.sendSync('open-file', filepath)
-//     const path = require('path')
-//     var tagFile = path.join(filepath, '..', 'result')
-//     const txtRead = readText(tagFile)
-// }
 
 
 document.getElementById('close').addEventListener('click', function () {
