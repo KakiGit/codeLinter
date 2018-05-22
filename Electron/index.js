@@ -14,8 +14,13 @@ let githubBtn = document.getElementById('githubBtn')
 let rightDiv = document.getElementById('rightDiv')
 let myCanvas = document.getElementById('myCanvas')
 let myDirc = document.getElementById('direc')
-var svgCanva = document.getElementById("svgCanvas")
 
+var svgCanva = document.getElementById("svgCanvas")
+// var svgCanva = document.createElement("svg")
+// svgCanva.setAttribute('id', 'svgCanvas')
+// svgCanva.setAttribute('width', '100%')
+// svgCanva.setAttribute('height', '100%')
+let highLBtn
 let rightDivWidth = rightDiv.clientWidth
 let rightDivHeight = rightDiv.clientHeight
 let nodeID = 0
@@ -26,29 +31,39 @@ document.title = 'CODEV' // 设置文档标题，影响窗口标题栏名称
 // document.getElementById('show').disabled = true
 
 // dialog.showErrorBox('Beta Usage ', 'This is the beta version(v-1.0) of CODEV.\n Please click open to select an *.c file to analysis. Then click show to show analysis graph. \n Demo files are in the \"testFiles\" folder you downloed, select entry.c to see the demo. \n Analysis data is store in the result file named "result" in the same folder you select, you can open it with editors to see the data.')
+let temDiv = document.createElement('div')
+temDiv.style.textAlign = "center"
+temDiv.style.height = "auto"
 let openBtn = document.createElement("button")
 openBtn.setAttribute("class", "btn btn-primary btn-lg")
 openBtn.setAttribute("type", "button")
 openBtn.style.marginTop = "50%"
 openBtn.style.outline = "none"
 openBtn.innerHTML = "Open Folder"
-myDirc.appendChild(openBtn)
+temDiv.appendChild(openBtn)
+myDirc.appendChild(temDiv)
 
 openBtn.addEventListener('click', function () {
     openFile()
-    rightDiv.insertBefore(showBtn, svgCanva)
-    myDirc.removeChild(openBtn)
+    rightDiv.insertBefore(tem2Div, svgCanva)
+    temDiv.removeChild(openBtn)
 })
+
+let tem2Div = document.createElement('div')
+tem2Div.style.textAlign = "center"
+tem2Div.style.height = "auto"
 
 let showBtn = document.createElement("button")
 showBtn.setAttribute("class", "btn btn-primary btn-lg")
 showBtn.setAttribute("type", "button")
 showBtn.style.outline = "none"
 showBtn.innerHTML = "Show"
+showBtn.style.marginTop = "50%"
 
+tem2Div.appendChild(showBtn)
 showBtn.addEventListener('click', function () {
     show()
-    rightDiv.removeChild(showBtn)
+    // rightDiv.removeChild(showBtn)
 })
 // 给文本框增加右键菜单
 // const contextMenuTemplate = [
@@ -88,30 +103,12 @@ function openFile() {
         properties: ['openFile']
     })
     if (files) {
-        d3.select("svg").selectAll("*").remove();
         currentFile = files[0]
+        d3.select("svg").selectAll("*").remove();
         const txtRead = readText(currentFile)
         txtEditor.value = txtRead
-        // document.title = 'Notepad - ' + currentFile
 
         const path = require('path')
-        // let dir = path.join(currentFile, '..')
-        // const rd = require('rd')
-        // rd.read(dir, function (err, files) {
-        //     if (err) throw err;
-        //     for (let i = 0; i < files.length; i++) {
-        //         let fileN = files[i].lastIndexOf('/')
-        //         fileN = files[i].substr(fileN)
-        //         let newRow = document.createElement('tr')
-        //         newRow.style.width = "100%"
-        //         let newItem = document.createElement('button')
-        //         newItem.style.width = "100%"
-        //         let newContent = document.createTextNode(fileN);
-        //         newRow.appendChild(newItem)
-        //         newItem.appendChild(newContent)
-        //         myDirc.appendChild(newRow)
-        //     }
-        // })
 
         let dir = path.join(currentFile, '..')
         readFolders(dir, myDirc)
@@ -122,7 +119,6 @@ function openFile() {
         const txtRead1 = readText(currentTagFile)
         resolveFile(txtRead1, rootNode, 1)
         writeJson()
-
     }
 }
 
@@ -143,10 +139,27 @@ function readFolders(dir, par) {
                     let newRow = document.createElement('tr')
                     newRow.style.width = "100%"
                     let newItem = document.createElement('button')
-                    newItem.setAttribute("class", "btn")
+                    newItem.setAttribute("class", "btn-xs btn")
                     newItem.setAttribute("type", "button")
                     newItem.style.backgroundColor = "Transparent"
                     newItem.style.color = "rgba(220,220,220,1)"
+                    newItem.style.border = "0"
+                    newItem.style.textAlign = "left"
+                    // newItem.focus.outline = "none"
+                    // newItem.active.focus.outline = "none"
+
+                    newItem.addEventListener('click', function () {
+                        if (highLBtn != null)
+                            if (highLBtn != newItem)
+                                highLBtn.style.backgroundColor = "Transparent"
+                        highLBtn = newItem
+                        highLBtn.style.backgroundColor = "rgba(30,30,30,1)"
+
+                        if (newCollapse.style.display == "block")
+                            newCollapse.style.display = "none"
+                        else
+                            newCollapse.style.display = "block"
+                    })
                     // newItem.setAttribute("data-toggle", "collapse")
                     // newItem.setAttribute("data-target", "#collapse" + files[i])
 
@@ -157,9 +170,12 @@ function readFolders(dir, par) {
                     newIcon.setAttribute('alt', 'Responsive image')
 
                     let newContent = document.createTextNode(' ' + files[i]);
-                    // let newCollapse = document.createElement('table')
-                    // newCollapse.setAttribute("class", "collapse")
-                    // newCollapse.setAttribute("id", "collapse" + files[i])
+                    let newCollapse = document.createElement('table')
+                    newCollapse.setAttribute("class", "collapse")
+                    newCollapse.setAttribute("id", "collapse" + files[i])
+                    newCollapse.setAttribute('height', '100vh')
+                    newCollapse.style.marginLeft = "15px"
+                    // newCollapse.style.display = "block"
                     // newCollapse.setAttribute("aria-expanded", "false")
                     // newCollapse.setAttribute("aria-controls", "#collapse" + files[i])
                     // newCollapse.style.width = "100%"
@@ -167,16 +183,18 @@ function readFolders(dir, par) {
                     newRow.appendChild(newItem)
                     newItem.appendChild(newIcon)
                     newItem.appendChild(newContent)
-                    // newRow.appendChild(newCollapse)
                     par.appendChild(newRow)
+                    newRow.appendChild(newCollapse)
 
-                    readFolders(dir + '/' + files[i], newRow)
+                    readFolders(dir + '/' + files[i], newCollapse)
                 }
                 else {
                     let newRow = document.createElement('tr')
+                    newRow.style.width = "100%"
                     let newItem = document.createElement('button')
-                    newItem.setAttribute("class", "btn")
+                    newItem.setAttribute("class", "btn btn-xs")
                     newItem.setAttribute("type", "button")
+                    newItem.style.width = "100%"
                     newItem.style.backgroundColor = "Transparent"
                     newItem.style.color = "rgba(211,211,211,1)"
                     let newContent = document.createTextNode(' ' + files[i]);
@@ -196,7 +214,8 @@ function readFolders(dir, par) {
 
 function show() {
     if (currentTagFile != null) {
-
+        rightDiv.removeChild(tem2Div)
+        // rightDiv.appendChild(svgCanva)
         drawD3Tree()
         jsonObj = null
         rootNode = new TreeNode(null, 'root', 'root')
@@ -714,3 +733,22 @@ function getIndicesOf(searchStr, str, caseSensitive) {
 //     var tagFile = path.join(filepath, '..', 'result')
 //     const txtRead = readText(tagFile)
 // }
+
+
+document.getElementById('close').addEventListener('click', function () {
+    ipcRenderer.send('close', 'close')
+})
+
+document.getElementById('min').addEventListener('click', function () {
+    ipcRenderer.send('min', 'min')
+
+})
+
+document.getElementById('max').addEventListener('click', function () {
+    ipcRenderer.send('max', 'max')
+
+})
+
+
+
+

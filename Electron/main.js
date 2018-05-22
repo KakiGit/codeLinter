@@ -13,8 +13,8 @@ const createWindow = () => {
   // Create the browser window.
   mainWindow = new BrowserWindow({
     width: 1280,
-    height: 768
-    // frame: false
+    height: 768,
+    frame: false
   })
   // app.addRecentDocument('/Users/lijiaqi/GitHub/learnCocoa/codeLinter/work.type')
   // and load the index.html of the app.
@@ -210,12 +210,12 @@ ipcMain.on('githubLink', (event, arg) => {
 
 // console.log('hello world from log')
 
-// ipcMain.on('min', e => mainWindow.minimize());
-// ipcMain.on('max', e => {
-//   if (mainWindow.isMaximized()) {
-//     mainWindow.unmaximize()
-//   } else {
-//     mainWindow.maximize()
-//   }
-// });
-// ipcMain.on('close', e => mainWindow.close());
+ipcMain.on('min', e => mainWindow.minimize());
+ipcMain.on('max', e => {
+  if (mainWindow.isMaximized()) {
+    mainWindow.unmaximize()
+  } else {
+    mainWindow.maximize()
+  }
+});
+ipcMain.on('close', e => mainWindow.close());

@@ -1,7 +1,48 @@
+<<<<<<< HEAD
 Analysing: /home/pengjiaqiao/codeLinter/utilities/testFiles/c.c
 
 [1-1]
 Relied Files:
+=======
+Analysing: /Users/lijiaqi/GitHub/codeLinter/utilities/testFiles/entry.c
+
+[1-1]
+Relied Files:
+b.c
+stdio.h
+b_1.c
+b_2.c
+
+Contained Functions:
+>int main() in line 6
+b1
+b2
+<
+
+There are 11 lines in /Users/lijiaqi/GitHub/codeLinter/utilities/testFiles/entry.c
+
+Analysing: /Users/lijiaqi/GitHub/codeLinter/utilities/testFiles/b.c
+
+[2-1]
+Relied Files:
+c.c
+d.c
+
+Contained Functions:
+>void b1() in line 4
+c1
+<
+>void b2() in line 9
+c2
+<
+
+There are 12 lines in /Users/lijiaqi/GitHub/codeLinter/utilities/testFiles/b.c
+
+Analysing: /Users/lijiaqi/GitHub/codeLinter/utilities/testFiles/c.c
+
+[3-1]
+Relied Files:
+>>>>>>> Kaki
 
 Contained Functions:
 >void c1() in line 2
@@ -9,5 +50,72 @@ Contained Functions:
 >void c2() in line 6
 <
 
+<<<<<<< HEAD
 There are 8 lines in /home/pengjiaqiao/codeLinter/utilities/testFiles/c.c
+=======
+There are 8 lines in /Users/lijiaqi/GitHub/codeLinter/utilities/testFiles/c.c
+
+Analysing: /Users/lijiaqi/GitHub/codeLinter/utilities/testFiles/d/d.c
+
+[3-2]
+Relied Files:
+stdio.h
+e.c
+
+Contained Functions:
+>void d1() in line 4
+e1
+<
+>void d2() in line 9
+e2
+<
+
+There are 12 lines in /Users/lijiaqi/GitHub/codeLinter/utilities/testFiles/d/d.c
+
+Analysing: /Users/lijiaqi/GitHub/codeLinter/utilities/testFiles/d/e/e.c
+
+[4-1]
+Relied Files:
+stdio.h
+
+Contained Functions:
+>void e1() in line 3
+printf
+<
+>void e2() in line 8
+printf
+<
+
+There are 11 lines in /Users/lijiaqi/GitHub/codeLinter/utilities/testFiles/d/e/e.c
+
+Analysing: /Users/lijiaqi/GitHub/codeLinter/utilities/testFiles/b_1.c
+
+[2-2]
+Relied Files:
+
+Contained Functions:
+>void b_11() in line 1
+<
+>void b_12() in line 5
+<
+>void b_13() in line 9
+<
+
+There are 11 lines in /Users/lijiaqi/GitHub/codeLinter/utilities/testFiles/b_1.c
+
+Analysing: /Users/lijiaqi/GitHub/codeLinter/utilities/testFiles/b_2.c
+
+[2-3]
+Relied Files:
+
+Contained Functions:
+>void b_21() in line 1
+<
+>void b_22() in line 5
+<
+>void b_23() in line 9
+<
+
+There are 11 lines in /Users/lijiaqi/GitHub/codeLinter/utilities/testFiles/b_2.c
+>>>>>>> Kaki
 
