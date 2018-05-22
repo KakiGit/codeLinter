@@ -13,12 +13,59 @@
             border: 0px;
             height: 100vh;
             overflow-y: hidden;
+            color: #fff;
+            /* -webkit-app-region: drag; */
+        }
+
+        .btn-circle {
+            width: 12px;
+            height: 12px;
+            line-height: 12px;
+            padding: 0;
+            text-align: center;
+            border-radius: 50%;
+            -webkit-app-region: no-drag;
+
+        }
+
+        .navibar {
+            background-color: rgba(33, 37, 43, 1);
+            -webkit-app-region: drag;
+            -webkit-user-select: none;
+            height: 25px;
+            width: 100vw;
+            margin: 0px;
+            margin-left: 0px;
+            padding: 0px;
+            padding-left: 0px;
+            user-select: none;
+            text-align: left;
+            vertical-align: middle;
+        }
+
+        .btn-xs {
+            font-size: 12px;
+        }
+
+        .btn:focus,
+        .btn:active:focus,
+        .btn.active:focus,
+        .btn.focus,
+        .btn:active.focus,
+        .btn.active.focus {
+            outline: none !important;
+            box-shadow: none;
         }
 
         .mh1 #direc div {
             height: 100vh;
-            margin: 0px;
             border: 0px;
+        }
+
+        .collapse {
+            height: auto;
+            width: 100%;
+
         }
 
         #txtEditor {
@@ -53,19 +100,28 @@
 </head>
 
 <body style="background:rgba(33,37,43,1); height: 100vh; margin: 0px; padding: 0px; padding-top: 0px;padding-bottom: 0px;">
+    <div class="navibar">
+        <button type="button" id="close" class="btn btn-danger btn-circle" style="margin-left: 8px">
+            <i class="glyphicon glyphicon-heart"></i>
+        </button>
+        <button type="button" id="min" class="btn btn-warning btn-circle" style="margin-left: 3px">
+            <i class="glyphicon glyphicon-remove"></i>
+        </button>
+        <button type="button" id="max" class="btn btn-success btn-circle" style="margin-left: 3px">
+            <i class="glyphicon glyphicon-link"></i>
+        </button>
+    </div>
     <div class="container-fluid" style="background:rgba(33,37,43,1); height: 100vh;">
-
-
         <!-- Content here -->
         <div class="row mh1" style="overflow:auto">
             <div class="col-2" style="background:rgba(33,37,43,1); height: 100vh; width: 100%;padding: 0px;padding-right: 0px;text-align: center;overflow-y:scroll">
-                <table id="direc" cellpadding="1" cellspacing="" style="background:rgba(33,37,43,1); width: 100%;padding: 0px;padding-right: 0px;text-align: center;overflow-y:scroll">
+                <table id="direc" style="background:rgba(33,37,43,1); width: 100%;padding: 0px;padding-right: 0px;text-align: left;overflow-y:scroll">
                 </table>
             </div>
             <div class="col-5" style="padding-left: 0px;padding-right: 0px">
                 <textarea id="txtEditor" readonly="readonly" style="background:rgba(40,44,52,1);outline: none"></textarea>
             </div>
-            <div class="col-5" id="rightDiv" style="background:rgba(60,66,79,1); height: 100vh;padding-left: 0px;padding-right: 0px;">
+            <div class="col-5" id="rightDiv" style="background:rgba(60,66,79,1); height: 100vh;padding-left: 0px;padding-right: 0px;overflow-y: hidden">
                 <!-- canvas id="myCanvas" width="500px" height="500px" -->
 
                 <svg id="svgCanvas" width="100%" height="100%"></svg>
