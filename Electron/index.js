@@ -24,9 +24,11 @@ let highLBtn
 let rightDivWidth = rightDiv.clientWidth
 let rightDivHeight = rightDiv.clientHeight
 let nodeID = 0
-var ForTextDisplay_Hide_name
-var ForTextDisplay_Hide_x
-var ForTextDisplay_Hide_y
+let ForTextDisplay_Hide_name
+let ForTextDisplay_Hide_x
+let ForTextDisplay_Hide_y
+let Icon_Stable = 0
+let Icon_Stable_ID = 0
 let currentNode
 let nodeList = [] // stores used nodes. (for "go back" button)
 let currentOpenedFile = null
@@ -465,7 +467,7 @@ function drawD3Tree() {
             .on('end', dragended))
         .on("mouseover", ChangeIcon_DisplayText)
         .on("mouseout", ReviseIcon_HideText)
-        .on("click", OpenFile_Jump)
+        .on("click", OpenFile_FreezeIcon)
         .style("stroke-width", "0px")
         .attr("opacity", "1")
 
@@ -488,16 +490,18 @@ function drawD3Tree() {
 
     function ReviseIcon_HideText(d) {
         d3.select(this).attr("r", function (d) {
-            if (d.type === "func") return 15;
-            else if (d.type === "file") return 15;
-            else if (d.type === "root") return 30;
+            if (d.type === "func" && Icon_Stable === 0) return 15;
+            else if (d.type === "func" && Icon_Stable === 1) return 25;
+            else if (d.type === "file" && Icon_Stable === 0) return 15;
+            else if (d.type === "file" && Icon_Stable === 1) return 25;
+            else if (d.type === "root" && Icon_Stable === 0) return 30;
+            else if (d.type === "root" && Icon_Stable === 1) return 40;
         })
         .attr("opacity", "1")
         group.selectAll("text").text(function (d) {return ""; });
     }
 
-    function OpenFile_Jump(d) {
-        console.log(d.path)
+    function OpenFile_FreezeIcon(d) {
         if (d.path[0] != "/")
             d.path = d.path.substr(1)
         if (d.path != "") {
@@ -505,7 +509,19 @@ function drawD3Tree() {
             txtEditor.value = txtRead
             fileTitle.innerHTML = currentFile.substr(currentFile.lastIndexOf('/') + 1)
         }
-
+        group.selectAll("circle").attr("r", function (d) {
+          if (d.type === "func") return 15;
+          else if (d.type === "file") return 15;
+          else if (d.type === "root") return 30;
+        })
+        d3.select(this).attr("r", function (d) {
+            if (d.type === "func" ) return 25;
+            else if (d.type === "file" ) return 25;
+            else if (d.type === "root" ) return 40;
+        })
+        Icon_Stable = 1
+        Icon_Stable_ID = d.id
+        d3.select(this).attr("opacity", "1")
     }
 
     var icons = group
