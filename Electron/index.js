@@ -14,7 +14,7 @@ let githubBtn = document.getElementById('githubBtn')
 let rightDiv = document.getElementById('rightDiv')
 let myCanvas = document.getElementById('myCanvas')
 let myDirc = document.getElementById('direc')
-
+let fileTitle = document.getElementById('fileName')
 var svgCanva = document.getElementById("svgCanvas")
 // var svgCanva = document.createElement("svg")
 // svgCanva.setAttribute('id', 'svgCanvas')
@@ -42,14 +42,12 @@ openBtn.setAttribute("class", "btn btn-primary btn-lg")
 openBtn.setAttribute("type", "button")
 openBtn.style.marginTop = "50%"
 openBtn.style.outline = "none"
-openBtn.innerHTML = "Open Folder"
+openBtn.innerHTML = "Open Entry"
 temDiv.appendChild(openBtn)
 myDirc.appendChild(temDiv)
 
 openBtn.addEventListener('click', function () {
     openFile()
-    rightDiv.insertBefore(tem2Div, svgCanva)
-    temDiv.removeChild(openBtn)
 })
 
 let tem2Div = document.createElement('div')
@@ -68,6 +66,8 @@ showBtn.addEventListener('click', function () {
     show()
     // rightDiv.removeChild(showBtn)
 })
+
+
 // 给文本框增加右键菜单
 // const contextMenuTemplate = [
 //   { role: 'undo' }, // Undo菜单项
@@ -92,6 +92,57 @@ showBtn.addEventListener('click', function () {
 //   isSaved = false
 // }
 
+githubLink.addEventListener('keyup', function (e) {
+    if (e.keyCode == 13) {
+        if (githubLink.value == "") {
+            const notification = {
+                title: 'Oops!',
+                body: 'Please enter a link'
+            }
+            let myNotification = new Notification(notification.title, {
+                body: notification.body
+            })
+        }
+        else {
+            const files = remote.dialog.showOpenDialog(remote.getCurrentWindow(), {
+                filters: [],
+                properties: ['openDirectory']
+            })
+            if (files) {
+                let arg = githubLink.value + '^' + files[0]
+                ipcRenderer.sendSync('githubLink', arg)
+                readFolders(files[0], myDirc)
+                temDiv.removeChild(openBtn)
+                githubLink.value = ""
+            }
+        }
+    }
+})
+
+githubBtn.addEventListener('click', function () {
+    if (githubLink.value == "") {
+        const notification = {
+            title: 'Oops!',
+            body: 'Please enter a link'
+        }
+        let myNotification = new Notification(notification.title, {
+            body: notification.body
+        })
+    }
+    else {
+        const files = remote.dialog.showOpenDialog(remote.getCurrentWindow(), {
+            filters: [],
+            properties: ['openDirectory']
+        })
+        if (files) {
+            let arg = githubLink.value + '^' + files[0]
+            ipcRenderer.sendSync('githubLink', arg)
+            readFolders(files[0], myDirc)
+            temDiv.removeChild(openBtn)
+            githubLink.value = ""
+        }
+    }
+})
 // githubLink.oninput = (e) => {
 //     //   if (isSaved) document.title += ' *'
 //     //   isSaved = false
@@ -101,8 +152,7 @@ showBtn.addEventListener('click', function () {
 function openFile() {
     const files = remote.dialog.showOpenDialog(remote.getCurrentWindow(), {
         filters: [
-            { name: 'Text Files', extensions: ['c', 'cpp'] },
-            { name: 'All Files', extensions: ['*'] }],
+            { name: 'Text Files', extensions: ['c', 'cpp'] }],
         properties: ['openFile']
     })
     if (files) {
@@ -120,9 +170,16 @@ function openFile() {
         ipcRenderer.sendSync('open-file', currentFile)
         currentTagFile = path.join(currentFile, '..', 'result')
         const txtRead1 = readText(currentTagFile)
+        fileTitle.innerHTML = currentFile.substr(currentFile.lastIndexOf('/') + 1)
         resolveFile(txtRead1, rootNode, 1)
         writeJson()
+        rightDiv.insertBefore(tem2Div, svgCanva)
+        temDiv.removeChild(openBtn)
     }
+}
+
+function isAssetTypeAnImage(ext) {
+    return ['c', 'cpp'].indexOf(ext.toLowerCase()) !== -1;
 }
 
 function readFolders(dir, par) {
@@ -145,7 +202,7 @@ function readFolders(dir, par) {
                     newItem.setAttribute("class", "btn-xs btn")
                     newItem.setAttribute("type", "button")
                     newItem.style.backgroundColor = "Transparent"
-                    newItem.style.color = "rgba(220,220,220,1)"
+                    newItem.style.color = "rgba(255,255,255,1)"
                     newItem.style.border = "0"
                     newItem.style.textAlign = "left"
                     // newItem.focus.outline = "none"
@@ -171,7 +228,7 @@ function readFolders(dir, par) {
                     newIcon.setAttribute('src', './image/Icons_Regular_folder@3x.png')
                     newIcon.setAttribute('class', 'img-responsive')
                     newIcon.setAttribute('alt', 'Responsive image')
-
+                    let newContent0 = document.createTextNode("- ");
                     let newContent = document.createTextNode(' ' + files[i]);
                     let newCollapse = document.createElement('table')
                     newCollapse.setAttribute("class", "collapse")
@@ -184,6 +241,7 @@ function readFolders(dir, par) {
                     // newCollapse.style.width = "100%"
 
                     newRow.appendChild(newItem)
+                    newItem.appendChild(newContent0)
                     newItem.appendChild(newIcon)
                     newItem.appendChild(newContent)
                     par.appendChild(newRow)
@@ -192,23 +250,49 @@ function readFolders(dir, par) {
                     readFolders(dir + '/' + files[i], newCollapse)
                 }
                 else {
-                    let newRow = document.createElement('tr')
-                    newRow.style.width = "100%"
-                    let newItem = document.createElement('button')
-                    newItem.setAttribute("class", "btn btn-xs")
-                    newItem.setAttribute("type", "button")
-                    newItem.style.width = "100%"
-                    newItem.style.backgroundColor = "Transparent"
-                    newItem.style.color = "rgba(211,211,211,1)"
-                    let newContent = document.createTextNode(' ' + files[i]);
-                    let newIcon = document.createElement('img')
-                    newIcon.setAttribute('src', './image/Icons_Regular_file-alt@3x.png')
-                    newIcon.setAttribute('class', 'img-responsive')
-                    newIcon.setAttribute('alt', 'Responsive image')
-                    newRow.appendChild(newItem)
-                    newItem.appendChild(newIcon)
-                    newItem.appendChild(newContent)
-                    par.appendChild(newRow)
+                    if (isAssetTypeAnImage(files[i].substr(files[i].lastIndexOf(".") + 1))) {
+                        let newRow = document.createElement('tr')
+                        newRow.style.width = "100%"
+                        let newItem = document.createElement('button')
+                        newItem.setAttribute("class", "btn btn-xs")
+                        newItem.setAttribute("type", "button")
+                        newItem.style.width = "100%"
+                        newItem.style.backgroundColor = "Transparent"
+                        newItem.style.color = "rgba(255,255,255,1)"
+                        // newItem.focus.outline = "none"
+                        // newItem.active.focus.outline = "none"
+
+                        newItem.style.textAlign = "left"
+                        newItem.style.border = "0"
+                        newItem.addEventListener('click', function () {
+                            if (highLBtn != null)
+                                if (highLBtn != newItem)
+                                    highLBtn.style.backgroundColor = "Transparent"
+                            highLBtn = newItem
+                            highLBtn.style.backgroundColor = "rgba(30,30,30,1)"
+
+                            let path = require('path')
+                            d3.select("svg").selectAll("*").remove();
+                            currentFile = dir + '/' + files[i]
+                            const txtRead = readText(currentFile)
+                            txtEditor.value = txtRead
+                            ipcRenderer.sendSync('open-file', currentFile)
+                            rightDiv.insertBefore(tem2Div, svgCanva)
+                            currentTagFile = path.join(currentFile, '..', 'result')
+                            const txtRead1 = readText(currentTagFile)
+                            resolveFile(txtRead1, rootNode, 1)
+                            writeJson()
+                        })
+                        let newContent = document.createTextNode(' ' + files[i]);
+                        let newIcon = document.createElement('img')
+                        newIcon.setAttribute('src', './image/Icons_Regular_file-alt@3x.png')
+                        newIcon.setAttribute('class', 'img-responsive')
+                        newIcon.setAttribute('alt', 'Responsive image')
+                        newRow.appendChild(newItem)
+                        newItem.appendChild(newIcon)
+                        newItem.appendChild(newContent)
+                        par.appendChild(newRow)
+                    }
                 }
             })
         }
@@ -228,6 +312,9 @@ function show() {
             title: 'Oops!',
             body: 'Please select a file'
         }
+        let myNotification = new Notification(notification.title, {
+            body: notification.body
+        })
     }
 }
 
@@ -236,7 +323,7 @@ ipcRenderer.on('action', (event, arg) => {
         case 'open': // 打开文件
             openFile()
             break
-        case 'save':
+        case 'show':
             show()
             break
         case 'exiting':
@@ -253,6 +340,7 @@ ipcRenderer.on('action', (event, arg) => {
 //   const window = remote.fromWebContents(event.sender)
 //   const files = dialog.showOpenDialog(window, { properties: ['openFile'] })
 // })
+
 // 读取文本文件
 function readText(file) {
     const fs = require('fs')
@@ -329,7 +417,6 @@ function writeJson() {
 }
 function drawD3Tree() {
     var svg = d3.select('svg')
-
     // width = +svg.attr('width'),
     // height = +svg.attr('height')
     var width = svgCanva.getClientRects()[0].width
@@ -356,6 +443,7 @@ function drawD3Tree() {
 
     var group = svg.append('g')
         .attr('class', 'nodes')
+
 
     var node = group
         .selectAll('circle')
@@ -433,9 +521,7 @@ function drawD3Tree() {
     var text = group.selectAll("text")
         .data(graph.nodes)
         .enter().append("text")
-        //set text color
-        //.attr("fill", "#ddd")
-        //.text(function (d) { return d.name; });
+
 
     simulation
         .nodes(graph.nodes)
@@ -641,6 +727,7 @@ function resolveFile(texts, node, level) {
             var temp = res[i].split(' ')
             var tempNode = new TreeNode(node, temp[0], "func")
             tempNode.SetFilename(filename)
+            tempNode.name = temp[1]
             tempNode.SetLine(temp[3])
             node.Add(tempNode)
         }
@@ -731,12 +818,6 @@ function getIndicesOf(searchStr, str, caseSensitive) {
     return indices
 }
 
-// function getFileContent(filepath) {
-//     ipcRenderer.sendSync('open-file', filepath)
-//     const path = require('path')
-//     var tagFile = path.join(filepath, '..', 'result')
-//     const txtRead = readText(tagFile)
-// }
 
 
 document.getElementById('close').addEventListener('click', function () {
