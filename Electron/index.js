@@ -503,7 +503,7 @@ function drawD3Tree() {
         if (d.path != "") {
             const txtRead = readText(d.path)
             txtEditor.value = txtRead
-            fileTitle.innerHTML = currentFile.substr(currentFile.lastIndexOf('/') + 1)
+            fileTitle.innerHTML = d.path.substr(d.path.lastIndexOf('/') + 1)
         }
 
     }
@@ -709,6 +709,7 @@ function resolveFile(texts, node, level) {
 
     // obtain filename
     var filename = texts.substring(indexx + tagx.length, index0)
+    let filep = filename.split('\n')[0]
     node.SetFilePath(filename.split('\n')[0])
     filename = filename.split('\n')[0].split('/')
     filename = filename[filename.length - 1]
@@ -727,6 +728,7 @@ function resolveFile(texts, node, level) {
         if (res[i].length > 0) {
             var tempNode = new TreeNode(node, res[i], "file")
             tempNode.SetFilename(res[i])
+            tempNode.SetFilePath(filep)
             node.Add(tempNode)
             countFile++
         }
@@ -739,6 +741,7 @@ function resolveFile(texts, node, level) {
             var temp = res[i].split(' ')
             var tempNode = new TreeNode(node, temp[0], "func")
             tempNode.SetFilename(filename)
+            tempNode.SetFilePath(filep)
             tempNode.name = temp[1]
             tempNode.SetLine(temp[3])
             node.Add(tempNode)
