@@ -28,7 +28,6 @@ let ForTextDisplay_Hide_name
 let ForTextDisplay_Hide_x
 let ForTextDisplay_Hide_y
 let Icon_Stable = 0
-let Icon_Stable_ID = 0
 let currentNode
 let nodeList = [] // stores used nodes. (for "go back" button)
 let currentOpenedFile = null
@@ -520,7 +519,6 @@ function drawD3Tree() {
             else if (d.type === "root" ) return 40;
         })
         Icon_Stable = 1
-        Icon_Stable_ID = d.id
         d3.select(this).attr("opacity", "1")
     }
 
