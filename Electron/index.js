@@ -517,11 +517,12 @@ function drawD3Tree() {
             else if (d.type === "file") return "./image/file_icon.png";
             else if (d.type === "root") return "./image/file_icon.png";
         })
+        .attr("pointer-events", "none")
 
     var text = group.selectAll("text")
         .data(graph.nodes)
         .enter().append("text")
-
+        .attr("pointer-events", "none")
 
     simulation
         .nodes(graph.nodes)
