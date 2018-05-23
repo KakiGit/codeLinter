@@ -278,6 +278,9 @@ function readFolders(dir, par) {
                             txtEditor.value = txtRead
                             ipcRenderer.sendSync('open-file', currentFile)
                             rightDiv.insertBefore(tem2Div, svgCanva)
+
+                            fileTitle.innerHTML = currentFile.substr(currentFile.lastIndexOf('/') + 1)
+
                             currentTagFile = path.join(currentFile, '..', 'result')
                             const txtRead1 = readText(currentTagFile)
                             resolveFile(txtRead1, rootNode, 1)
@@ -462,7 +465,7 @@ function drawD3Tree() {
             .on('end', dragended))
         .on("mouseover", ChangeIcon_DisplayText)
         .on("mouseout", ReviseIcon_HideText)
-        .on("mousedown", OpenFile_Jump)
+        .on("click", OpenFile_Jump)
         .style("stroke-width", "0px")
         .attr("opacity", "1")
 
@@ -495,7 +498,14 @@ function drawD3Tree() {
 
     function OpenFile_Jump(d) {
         console.log(d.path)
-        currentFile = d.path
+        if (d.path[0] != "/")
+            d.path = d.path.substr(1)
+        if (d.path != "") {
+            const txtRead = readText(d.path)
+            txtEditor.value = txtRead
+            fileTitle.innerHTML = currentFile.substr(currentFile.lastIndexOf('/') + 1)
+        }
+
     }
 
     var icons = group
