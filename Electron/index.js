@@ -27,7 +27,7 @@ let nodeID = 0
 let ForTextDisplay_Hide_name
 let ForTextDisplay_Hide_x
 let ForTextDisplay_Hide_y
-let Icon_Stable = 0
+let For_Stable_name
 let currentNode
 let nodeList = [] // stores used nodes. (for "go back" button)
 let currentOpenedFile = null
@@ -489,15 +489,15 @@ function drawD3Tree() {
 
     function ReviseIcon_HideText(d) {
         d3.select(this).attr("r", function (d) {
-            if (d.type === "func" && Icon_Stable === 0) return 15;
-            else if (d.type === "func" && Icon_Stable === 1) return 25;
-            else if (d.type === "file" && Icon_Stable === 0) return 15;
-            else if (d.type === "file" && Icon_Stable === 1) return 25;
-            else if (d.type === "root" && Icon_Stable === 0) return 30;
-            else if (d.type === "root" && Icon_Stable === 1) return 40;
+            if (d.type === "func" && d.name != For_Stable_name) return 15;
+            else if (d.type === "func" ) return 25;
+            else if (d.type === "file" && d.name != For_Stable_name) return 15;
+            else if (d.type === "file" ) return 25;
+            else if (d.type === "root" && d.name != For_Stable_name) return 30;
+            else if (d.type === "root" ) return 30;
         })
         .attr("opacity", "1")
-        group.selectAll("text").text(function (d) {return ""; });
+        if(d.name != For_Stable_name) group.select("text").text(function (d) {return ""; });
     }
 
     function OpenFile_FreezeIcon(d) {
@@ -506,7 +506,7 @@ function drawD3Tree() {
         if (d.path != "") {
             const txtRead = readText(d.path)
             txtEditor.value = txtRead
-            fileTitle.innerHTML = currentFile.substr(currentFile.lastIndexOf('/') + 1)
+            fileTitle.innerHTML = d.path.substr(d.path.lastIndexOf('/') + 1)
         }
         group.selectAll("circle").attr("r", function (d) {
           if (d.type === "func") return 15;
@@ -514,12 +514,13 @@ function drawD3Tree() {
           else if (d.type === "root") return 30;
         })
         d3.select(this).attr("r", function (d) {
+            For_Stable_name = d.name
             if (d.type === "func" ) return 25;
             else if (d.type === "file" ) return 25;
             else if (d.type === "root" ) return 40;
         })
-        Icon_Stable = 1
-        d3.select(this).attr("opacity", "1")
+        .attr("opacity", "1")
+        group.select("text").text(function (d) {return For_Stable_name; })
     }
 
     var icons = group
@@ -722,6 +723,7 @@ function resolveFile(texts, node, level) {
 
     // obtain filename
     var filename = texts.substring(indexx + tagx.length, index0)
+    let filep = filename.split('\n')[0]
     node.SetFilePath(filename.split('\n')[0])
     filename = filename.split('\n')[0].split('/')
     filename = filename[filename.length - 1]
@@ -740,6 +742,7 @@ function resolveFile(texts, node, level) {
         if (res[i].length > 0) {
             var tempNode = new TreeNode(node, res[i], "file")
             tempNode.SetFilename(res[i])
+            tempNode.SetFilePath(filep)
             node.Add(tempNode)
             countFile++
         }
@@ -752,6 +755,7 @@ function resolveFile(texts, node, level) {
             var temp = res[i].split(' ')
             var tempNode = new TreeNode(node, temp[0], "func")
             tempNode.SetFilename(filename)
+            tempNode.SetFilePath(filep)
             tempNode.name = temp[1]
             tempNode.SetLine(temp[3])
             node.Add(tempNode)
