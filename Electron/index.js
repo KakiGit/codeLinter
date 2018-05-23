@@ -24,9 +24,10 @@ let highLBtn
 let rightDivWidth = rightDiv.clientWidth
 let rightDivHeight = rightDiv.clientHeight
 let nodeID = 0
-let ForTextDisplay_Hide_name
+let ForTextDisplay_Hide_ID
 let ForTextDisplay_Hide_x
 let ForTextDisplay_Hide_y
+let For_Stable_ID
 let For_Stable_name
 let currentNode
 let nodeList = [] // stores used nodes. (for "go back" button)
@@ -472,32 +473,34 @@ function drawD3Tree() {
 
     function ChangeIcon_DisplayText(d) {
         d3.select(this).attr("r", function (d) {
-            ForTextDisplay_Hide_name = d.name
-            ForTextDisplay_Hide_x = d.x - 30
-            ForTextDisplay_Hide_y = d.y - 20
-            group.select("text")
-            .attr("x", function (d) {return ForTextDisplay_Hide_x;})
-            .attr("y", function (d) {return ForTextDisplay_Hide_y;})
+            ForTextDisplay_Hide_ID = d.id
             if (d.type === "func") return 25;
             else if (d.type === "file") return 25;
             else if (d.type === "root") return 40;
-
         })
         .attr("opacity", "0.3")
-        group.select("text").text(function (d) {return ForTextDisplay_Hide_name; })
+        group.selectAll("text").text(function (d) {
+          if(d.id === ForTextDisplay_Hide_ID)return d.name;
+          else if(d.id === For_Stable_ID)return d.name;
+          else return "";
+        })
     }
 
     function ReviseIcon_HideText(d) {
+        group.selectAll("text").text(function (d) {return ""})
         d3.select(this).attr("r", function (d) {
-            if (d.type === "func" && d.name != For_Stable_name) return 15;
+            if (d.type === "func" && d.id != For_Stable_ID) return 15;
             else if (d.type === "func" ) return 25;
-            else if (d.type === "file" && d.name != For_Stable_name) return 15;
+            else if (d.type === "file" && d.name != For_Stable_ID) return 15;
             else if (d.type === "file" ) return 25;
-            else if (d.type === "root" && d.name != For_Stable_name) return 30;
+            else if (d.type === "root" && d.name != For_Stable_ID) return 30;
             else if (d.type === "root" ) return 30;
         })
         .attr("opacity", "1")
-        if(d.name != For_Stable_name) group.select("text").text(function (d) {return ""; });
+        group.selectAll("text").text(function (d) {
+          if(d.id === For_Stable_ID)return d.name;
+          else return "";
+        })
     }
 
     function OpenFile_FreezeIcon(d) {
@@ -514,13 +517,16 @@ function drawD3Tree() {
           else if (d.type === "root") return 30;
         })
         d3.select(this).attr("r", function (d) {
-            For_Stable_name = d.name
+            For_Stable_ID = d.id
             if (d.type === "func" ) return 25;
             else if (d.type === "file" ) return 25;
             else if (d.type === "root" ) return 40;
         })
         .attr("opacity", "1")
-        group.select("text").text(function (d) {return For_Stable_name; })
+        group.selectAll("text").text(function (d) {
+          if(d.id === For_Stable_ID)return d.name;
+          else return "";
+        })
     }
 
     var icons = group
@@ -579,6 +585,14 @@ function drawD3Tree() {
                 else if (d.type === "file") return d.y - 12;
                 else if (d.type === "root") return d.y - 12;
             })
+
+        text
+            .attr("x", function (d) {
+                return d.x - 30;
+            })
+            .attr("y", function (d) {
+                return d.y - 20;
+            });
     }
 
     function dragstarted(d) {
