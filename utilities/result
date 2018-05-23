@@ -1,4 +1,4 @@
-Analysing: /Users/lijiaqi/GitHub/codeLinter/utilities/test.cpp
+Analysing: /home/pengjiaqiao/codeLinter/utilities/test.cpp
 
 [1-1]
 Relied Files:
@@ -19,5 +19,5 @@ open
 path
 <
 
-There are 36 lines in /Users/lijiaqi/GitHub/codeLinter/utilities/test.cpp
+There are 36 lines in /home/pengjiaqiao/codeLinter/utilities/test.cpp
 

@@ -1,10 +1,49 @@
-Analysing: /home/pengjiaqiao/codeLinter/utilities/ass/mengnan/3-1.c
+Analysing: /home/pengjiaqiao/codeLinter/utilities/ass/mengnan/imageProcessFunc.c
 
 [1-1]
+Relied Files:
+stdio.h
+3-1.c
+3-2.c
+
+Contained Functions:
+>void printAscii(unsigned char* img) in line 17
+printf
+putchar
+<
+>void rgbToGray(unsigned char* base) in line 47
+<
+>void resizeImg(unsigned char* base) in line 83
+brightCorrect
+<
+>void brightCorrect(unsigned char* img) in line 116
+printAscii
+<
+>void sobel (unsigned char* base) in line 173
+abs
+printAscii
+printf
+<
+
+There are 237 lines in /home/pengjiaqiao/codeLinter/utilities/ass/mengnan/imageProcessFunc.c
+
+Analysing: /home/pengjiaqiao/codeLinter/utilities/ass/mengnan/3-1.c
+
+[2-1]
 Relied Files:
 stdio.h
 
 Contained Functions:
 
 There are 1 lines in /home/pengjiaqiao/codeLinter/utilities/ass/mengnan/3-1.c
+
+Analysing: /home/pengjiaqiao/codeLinter/utilities/ass/mengnan/3-2.c
+
+[2-2]
+Relied Files:
+stdio.h
+
+Contained Functions:
+
+There are 1 lines in /home/pengjiaqiao/codeLinter/utilities/ass/mengnan/3-2.c
 
