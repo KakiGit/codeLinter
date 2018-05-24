@@ -24,9 +24,11 @@ let highLBtn
 let rightDivWidth = rightDiv.clientWidth
 let rightDivHeight = rightDiv.clientHeight
 let nodeID = 0
-var ForTextDisplay_Hide_name
+var ForTextDisplay_Hide_ID
 var ForTextDisplay_Hide_x
 var ForTextDisplay_Hide_y
+let For_Stable_ID
+let Icon_Stable_name
 let currentNode
 let nodeList = [] // stores used nodes. (for "go back" button)
 let currentOpenedFile = null
@@ -465,38 +467,44 @@ function drawD3Tree() {
             .on('end', dragended))
         .on("mouseover", ChangeIcon_DisplayText)
         .on("mouseout", ReviseIcon_HideText)
-        .on("click", OpenFile_Jump)
+        .on("click", OpenFile_FreezeIcon)
         .style("stroke-width", "0px")
         .attr("opacity", "1")
 
     function ChangeIcon_DisplayText(d) {
         d3.select(this).attr("r", function (d) {
-            ForTextDisplay_Hide_name = d.name
-            ForTextDisplay_Hide_x = d.x - 30
-            ForTextDisplay_Hide_y = d.y - 20
-            group.select("text")
-                .attr("x", function (d) { return ForTextDisplay_Hide_x; })
-                .attr("y", function (d) { return ForTextDisplay_Hide_y; })
+            ForTextDisplay_Hide_ID = d.id
             if (d.type === "func") return 25
             if (d.type === "func") return 25
             else if (d.type === "file") return 25;
             else if (d.type === "root") return 40;
         })
             .attr("opacity", "0.3")
-        group.select("text").text(function (d) { return ForTextDisplay_Hide_name; })
+        group.selectAll("text").text(function (d) {
+            if (d.id === ForTextDisplay_Hide_ID) return d.name
+            else if (d.id === For_Stable_ID) return d.name
+            else return "";
+        })
     }
 
     function ReviseIcon_HideText(d) {
+        group.selectAll("text").text(function (d) { return "" })
         d3.select(this).attr("r", function (d) {
-            if (d.type === "func") return 15;
-            else if (d.type === "file") return 15;
+            if (d.type === "func" && d.id != For_Stable_ID) return 15;
+            else if (d.type === "func") return 25;
+            else if (d.type === "file" && d.name != For_Stable_ID) return 15;
+            else if (d.type === "file") return 25;
+            else if (d.type === "root" && d.name != For_Stable_ID) return 30;
             else if (d.type === "root") return 30;
         })
             .attr("opacity", "1")
-        group.selectAll("text").text(function (d) { return ""; });
+        group.selectAll("text").text(function (d) {
+            if (d.id === For_Stable_ID) return d.name;
+            else return "";
+        })
     }
 
-    function OpenFile_Jump(d) {
+    function OpenFile_FreezeIcon(d) {
         console.log(d.path)
         if (d.path[0] != "/")
             d.path = d.path.substr(1)
@@ -505,7 +513,22 @@ function drawD3Tree() {
             txtEditor.value = txtRead
             fileTitle.innerHTML = d.path.substr(d.path.lastIndexOf('/') + 1)
         }
-
+        group.selectAll("circle").attr("r", function (d) {
+            if (d.type === "func") return 15;
+            else if (d.type === "file") return 15;
+            else if (d.type === "root") return 30;
+        })
+        d3.select(this).attr("r", function (d) {
+            For_Stable_ID = d.id
+            if (d.type === "func") return 25;
+            else if (d.type === "file") return 25;
+            else if (d.type === "root") return 40;
+        })
+            .attr("opacity", "1")
+        group.selectAll("text").text(function (d) {
+            if (d.id === For_Stable_ID) return d.name;
+            else return "";
+        })
     }
 
     var icons = group
@@ -565,6 +588,13 @@ function drawD3Tree() {
                 else if (d.type === "file") return d.y - 12;
                 else if (d.type === "root") return d.y - 12;
             })
+        text
+            .attr("x", function (d) {
+                return d.x - 30;
+            })
+            .attr("y", function (d) {
+                return d.y - 20;
+            });
     }
 
     function dragstarted(d) {
@@ -692,7 +722,7 @@ class TreeNode {
 let rootNode = new TreeNode(null, 'root', 'root')
 
 /*
-
+ 
  */
 function resolveFile(texts, node, level) {
     var tagx = "Analysing:"
