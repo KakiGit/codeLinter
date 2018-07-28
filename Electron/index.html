@@ -1,7 +1,7 @@
-
 <!DOCTYPE html>
 <html>
 <link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap.css" crossorigin="anonymous">
+
 <head>
     <meta charset="utf-8">
     <title>Notepad</title>
@@ -9,52 +9,155 @@
         body,
         html {
             margin: 0px;
-            height: 100%;
+            padding: 0px;
+            border: 0px;
+            height: 100vh;
+            overflow-y: hidden;
+            color: #bbb;
+            /* -webkit-app-region: drag; */
         }
 
-        .mh1 div {
-        height: 90vh; 
+        .btn-circle {
+            width: 12px;
+            height: 12px;
+            line-height: 12px;
+            padding: 0;
+            text-align: center;
+            border-radius: 50%;
+            -webkit-app-region: no-drag;
+
         }
+
+        .navibar {
+            background-color: rgba(33, 37, 43, 1);
+            -webkit-app-region: drag;
+            -webkit-user-select: none;
+            height: 25px;
+            width: 100vw;
+            margin: 0px;
+            margin-left: 0px;
+            padding: 0px;
+            padding-left: 0px;
+            user-select: none;
+            text-align: left;
+            vertical-align: middle;
+            align-items: center;
+        }
+
+        .btn-xs {
+            font-size: 12px;
+        }
+
+        .btn:focus,
+        .btn:active:focus,
+        .btn.active:focus,
+        .btn.focus,
+        .btn:active.focus,
+        .btn.active.focus {
+            outline: none !important;
+            box-shadow: none;
+        }
+
+        .form-control:focus {
+            border-color: inherit;
+            -webkit-box-shadow: none;
+            box-shadow: none;
+        }
+
+        .mh1 #direc div {
+            height: 90vh;
+            border: 0px;
+        }
+
+        .collapse {
+            height: auto;
+            width: 100%;
+
+        }
+
         #txtEditor {
             width: 100%;
-            height: 89.535%;
+            height: 95vh;
             padding: 0px;
             margin: 0px;
             border: 0px;
-            font-size: 18px;
+            font-size: 14px;
+            color: #fff
         }
-        #txtEditor1 {
+
+
+
+        .links line {
+            stroke: #999;
+            stroke-opacity: 0.6;
+        }
+
+        .nodes circle {
+            stroke: #fff;
+            stroke-width: 1.5px;
+        }
+
+        #mytitle {
             width: 100%;
-            height: 89.535%;
-            padding: 0px;
-            margin: 0px;
-            border: 0px;
-            font-size: 18px;
+            height: 52px;
+            background-color: rgb(198, 47, 47);
+            -webkit-app-region: drag;
         }
     </style>
 </head>
 
-<body>
-    <div class="container-fluid" >
+<body style="background:rgba(33,37,43,1); height: 100vh; margin: 0px; padding: 0px; padding-top: 0px;padding-bottom: 0px;">
+    <div class="row navibar">
+        <button type="button" id="close" class="btn btn-danger btn-circle" style="margin-left: 8px">
+            <i class="glyphicon glyphicon-heart"></i>
+        </button>
+        <button type="button" id="min" class="btn btn-warning btn-circle" style="margin-left: 5px">
+            <i class="glyphicon glyphicon-remove"></i>
+        </button>
+        <button type="button" id="max" class="btn btn-success btn-circle" style="margin-left: 5px">
+            <i class="glyphicon glyphicon-link"></i>
+        </button>
+
+        <div class="input-group col-3" style="height: 25px;vertical-align: middle;align-items: center; text-align:center;align-self:flex-end;">
+            <input type="text" id="githubLink" class="form-control" placeholder="Github Link" aria-label="Github Link" style="-webkit-app-region: no-drag;font-size: 10px;height: 25px;vertical-align: middle;align-items: center;">
+            <div class="input-group-append">
+                <button class="btn btn-outline-secondary btn-xs" id="githubBtn" type="button" style="-webkit-app-region: no-drag;height: 25px;">↵</button>
+            </div>
+        </div>
+
+    </div>
+    <div class="container-fluid" style="background:rgba(33,37,43,1); height: 100vh;">
         <!-- Content here -->
-        <div class="row mh1">
-        <div class="col-6">            
-            <textarea  id="txtEditor" readonly="readonly"></textarea>
-        </div>
-        <div class="col-6">
-            <textarea  id="txtEditor1" readonly="readonly"></textarea>
-        </div>
+        <div class="row mh1" style="overflow:auto">
+            <div class="col-2" style="background:rgba(33,37,43,1); height: 100vh; width: 100%;padding: 0px;padding-right: 0px;text-align: center;overflow-y:scroll">
+                <div style="background:rgba(33,37,43,1); width: 100%;padding: 0px;padding-right: 0px;text-align: center">
+                    Project
+                </div>
+                <table id="direc" style="background:rgba(33,37,43,1); width: 100%;padding: 0px;padding-right: 0px;text-align: left;overflow-y:scroll">
+                </table>
+            </div>
+            <div class="col-5" style="padding-left: 0px;padding-right: 0px">
+                <div id="fileName" style="background:rgba(33,37,43,1); width: 100%;padding: 0px;padding-right: 0px;text-align: center">
+                    -
+                </div>
+                <textarea id="txtEditor" readonly="readonly" style="background:rgba(40,44,52,1);outline: none"></textarea>
+            </div>
+            <div class="col-5" id="rightDiv" style="background:rgba(60,66,79,1); height: 100vh;padding-left: 0px;padding-right: 0px;overflow-y: hidden">
+                <!-- canvas id="myCanvas" width="500px" height="500px" -->
+                <div style="background:rgba(33,37,43,1); width: 100%;padding: 0px;padding-right: 0px;text-align: center">
+                    Visualization
+                </div>
+                <svg id="svgCanvas" width="100%" height="100%"></svg>
+                <!-- /canvas -->
+            </div>
         </div>
     </div>
-    
-    <div class="text-center">
-        <button type="button" class="btn btn-primary" id="open">Open File</button>
-        
-        <button type="button" class="btn btn-success" id="show">Show Analysis</button>
-        <button type="button" class="btn btn-warning" id="close">Close</button>
-    </div>
+
+
 </body>
+<!-- <script src="https://d3js.org/d3.v4.min.js"></script> -->
 <script>
     require('./index.js');
 </script>
+
 </html>

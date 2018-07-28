@@ -3,12 +3,17 @@ let exec = require('child_process').exec
 let safeExit = false
 // be closed automatically when the JavaScript object is garbage collected.
 let mainWindow
-
+// console.log(process.platform)
+let exeFile
+if (process.platform === "darwin")
+  exeFile = 'findFunctions'
+else
+  exeFile = 'findFunctions_Linux'
 const createWindow = () => {
   // Create the browser window.
   mainWindow = new BrowserWindow({
-    width: 800,
-    height: 600,
+    width: 1280,
+    height: 768,
     frame: false
   })
   // app.addRecentDocument('/Users/lijiaqi/GitHub/learnCocoa/codeLinter/work.type')
@@ -16,7 +21,7 @@ const createWindow = () => {
   mainWindow.loadURL(`file://${__dirname}/index.html`)
 
   // Open the DevTools.
-  mainWindow.webContents.openDevTools()
+  // mainWindow.webContents.openDevTools()
 
   let menuTemplate = new Menu()
   menuTemplate = [
@@ -40,7 +45,7 @@ const createWindow = () => {
         },
         {
           role: 'quit',
-          click () {
+          click() {
             app.quit()
           }
         }
@@ -50,29 +55,22 @@ const createWindow = () => {
       label: 'File',
       submenu: [
         {
-          label: 'New',
-          click () {
-            mainWindow.webContents.send('action', 'new') // 点击后向主页渲染进程发送“打开文件”的命令
-          },
-          accelerator: 'CmdOrCtrl+N'
-        },
-        {
           label: 'Open',
-          click () {
+          click() {
             mainWindow.webContents.send('action', 'open') // 点击后向主页渲染进程发送“打开文件”的命令
           },
           accelerator: 'CmdOrCtrl+O'
         },
         {
-          label: 'Save',
-          click () {
-            mainWindow.webContents.send('action', 'save') // 点击后向主页渲染进程发送“打开文件”的命令
+          label: 'Show',
+          click() {
+            mainWindow.webContents.send('action', 'show') // 点击后向主页渲染进程发送“打开文件”的命令
           },
           accelerator: 'CmdOrCtrl+s'
         },
         {
           label: 'Close',
-          click () {
+          click() {
             mainWindow.webContents.send('action', 'exiting')
           },
           accelerator: 'CmdOrCtrl+w'
@@ -83,6 +81,18 @@ const createWindow = () => {
         {
           role: 'quit'
         }
+      ]
+    },
+    {
+      label: "Edit",
+      submenu: [
+        { label: "Undo", accelerator: "CmdOrCtrl+Z", selector: "undo:" },
+        { label: "Redo", accelerator: "Shift+CmdOrCtrl+Z", selector: "redo:" },
+        { type: "separator" },
+        { label: "Cut", accelerator: "CmdOrCtrl+X", selector: "cut:" },
+        { label: "Copy", accelerator: "CmdOrCtrl+C", selector: "copy:" },
+        { label: "Paste", accelerator: "CmdOrCtrl+V", selector: "paste:" },
+        { label: "Select All", accelerator: "CmdOrCtrl+A", selector: "selectAll:" }
       ]
     }
   ]
@@ -107,9 +117,9 @@ const createWindow = () => {
   }
   // Emitted when the window is closed.
   mainWindow.on('closed', () => {
-  // Dereference the window object, usually you would store windows
-  // in an array if your app supports multi windows, this is the time
-  // when you should delete the corresponding element.
+    // Dereference the window object, usually you would store windows
+    // in an array if your app supports multi windows, this is the time
+    // when you should delete the corresponding element.
     mainWindow = null
   })
 }
@@ -157,15 +167,62 @@ ipcMain.on('open-file', (event, arg) => {
   console.log(arg)
   const path = require('path')
   let str = path.join(arg, '..', 'result')
-  exec(`./findFunctions ${arg} > ${str}`, (error, stdout, stderr) => {
+  let p = path.join(app.getAppPath(), exeFile)
+
+  // var files = rd.readSync(dir)
+  // for (let i = 0; i < files.length; i++)
+  //   console.log(files[i])
+
+  exec(`${p} ${arg} > ${str}`, (error, stdout, stderr) => {
+    event.returnValue = 0
+    if (error) {
+      console.error(`exec error: ${error}`)
+    }
+    console.log(`stdout: ${stdout}`)
+    console.log(`stderr: ${stderr}`)
+  }
+  )
+
+
+
+
+  // exec(`./findFunctions ${arg} > ${str}`, (error, stdout, stderr) => {
+  //   if (error) {
+  //     console.error(`exec error: ${error}`)
+  //   }
+  //   console.log(`stdout: ${stdout}`)
+  //   console.log(`stderr: ${stderr}`)
+  // })
+  // event.sender.send('action', 'tagsGen')
+})
+
+ipcMain.on('githubLink', (event, arg) => {
+  console.log(arg)
+  let ind = arg.indexOf('^')
+  let arg1 = arg.substr(0, ind)
+  let arg2 = arg.substr(ind + 1)
+  console.log(arg1)
+  console.log(arg2)
+
+  exec(`git clone ${arg1} ${arg2}`, (error, stdout, stderr) => {
+    event.returnValue = 0
     if (error) {
       console.error(`exec error: ${error}`)
     }
     console.log(`stdout: ${stdout}`)
     console.log(`stderr: ${stderr}`)
   })
-  // event.sender.send('action', 'tagsGen')
 })
 // -----------------------------------------------------------------
 
-console.log('hello world from log')
+// console.log('hello world from log')
+
+ipcMain.on('min', e => mainWindow.minimize())
+ipcMain.on('max', e => {
+  if (mainWindow.isMaximized()) {
+    mainWindow.unmaximize()
+  } else {
+    mainWindow.maximize()
+  }
+})
+ipcMain.on('close', e => mainWindow.webContents.send('action', 'exiting'))
